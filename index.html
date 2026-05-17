@@ -1,1519 +1,1296 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuizEarn Pro - Telegram Mini App</title>
-    <!-- TailwindCSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>QuizEarn - Play & Earn</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide-icons"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&display=swap');
+        :root {
+            --primary-cyan: #6EE7B7; /* Light Cyan */
+            --primary-yellow: #FACC15; /* Yellow */
+            --primary-pink: #F472B6; /* Pink */
+            --primary-purple: #A78BFA; /* Purple */
+            --text-color: #333;
+            --bg-light: #F8F8F8;
+            --border-thick: 3px solid #000;
+            --shadow-premium: 8px 8px 0px #000;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #fff; /* White background for track */
-            border-radius: 10px;
+            background: var(--bg-light);
         }
         ::-webkit-scrollbar-thumb {
-            background: #888; /* Darker thumb */
-            border-radius: 10px;
+            background: #ccc;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Even darker on hover */
+            background: #aaa;
         }
 
-        /* Base Styles */
-        body {
-            font-family: 'Fredoka', sans-serif;
-            background-color: #f0f4f8; /* Clean white-ish background */
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-        }
-
-        /* Custom Class for Thick Border & Shadow */
-        .premium-card {
-            border: 3px solid #000;
-            box-shadow: 8px 8px 0px #000; /* Premium Shadow */
+        /* Shared Card Styles */
+        .card {
+            background-color: white;
+            border: var(--border-thick);
+            border-radius: 20px;
+            box-shadow: var(--shadow-premium);
             transition: all 0.2s ease-in-out;
         }
-        .premium-card:hover {
-            transform: translateY(-4px) translateX(-4px);
-            box-shadow: 12px 12px 0px #000;
+        .card:active {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px #000;
         }
 
         /* Glassmorphism Effect */
-        .glass-effect {
+        .glass {
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Animated Gradient Background for Loading */
-        .animated-gradient-bg {
-            background: linear-gradient(135deg, #FF69B4, #8A2BE2, #00BFFF, #FFD700);
-            background-size: 400% 400%;
-            animation: gradient-animation 15s ease infinite;
-        }
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating Particles (Simplified) */
-        .floating-particle {
+        /* Floating Particles Animation */
+        .particles {
             position: absolute;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            animation: float 10s infinite ease-in-out;
-            opacity: 0; /* Initially hidden */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
         }
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
-            50% { transform: translateY(-50px) translateX(20px) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) translateX(-40px) scale(0); opacity: 0; }
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--primary-cyan), var(--primary-yellow), var(--primary-pink), var(--primary-purple));
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatAndFade 15s infinite ease-in-out;
+        }
+        @keyframes floatAndFade {
+            0% {
+                transform: translateY(0) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            25% { opacity: 0.5; }
+            50% {
+                transform: translateY(-50vh) scale(1) rotate(180deg);
+                opacity: 0.7;
+            }
+            75% { opacity: 0.5; }
+            100% {
+                transform: translateY(-100vh) scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
         }
 
-        /* Shimmer Loading Effect */
-        .shimmer {
-            background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-            background-size: 200% 100%;
-            animation: shimmer-animation 1.5s infinite linear;
+        /* Loading Screen Specifics */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-purple) 100%);
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
         }
-        @keyframes shimmer-animation {
+        .loading-logo {
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="transparent"/><path d="M50 10 C30 10 15 25 15 45 C15 65 30 80 50 80 C70 80 85 65 85 45 C85 25 70 10 50 10 Z M50 25 L50 45 L70 45 C70 35 60 25 50 25 Z" fill="%23fff"/><circle cx="50" cy="50" r="40" fill="none" stroke="%23fff" stroke-width="8" stroke-dasharray="200" stroke-dashoffset="0"><animate attributeName="stroke-dashoffset" from="0" to="200" dur="2s" repeatCount="indefinite"/></circle></svg>') no-repeat center center;
+            background-size: contain;
+            animation: bounce 1s infinite alternate;
+        }
+        .loading-text {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .loading-bar-container {
+            width: 80%;
+            max-width: 300px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
+        }
+        .loading-status {
+            margin-top: 10px;
+            color: white;
+            font-size: 0.9rem;
+            animation: pulseFade 1.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        @keyframes pulseFade {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* Telegram Connecting Animation (CSS-only) */
+        .tg-connecting {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .tg-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            animation: tgDotPulse 1.4s infinite ease-in-out both;
+        }
+        .tg-dot:nth-child(1) { animation-delay: -0.32s; }
+        .tg-dot:nth-child(2) { animation-delay: -0.16s; }
+        .tg-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes tgDotPulse {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
 
-        /* Custom Icons - Lucide Icons replacement or pure CSS */
-        /* Example: A simple coin icon using pure CSS */
-        .icon-coin {
-            display: inline-block;
-            width: 1.2em;
-            height: 1.2em;
-            border-radius: 50%;
-            background-color: gold;
-            border: 2px solid orange;
-            position: relative;
-            vertical-align: middle;
-            margin-right: 0.2em;
-        }
-        .icon-coin::before {
-            content: 'C';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.8em;
-            font-weight: bold;
-            color: #8B4513; /* SaddleBrown */
-        }
-
-        /* Admin Tag CSS Badge */
-        .admin-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.6rem;
-            border-radius: 9999px; /* Pill shape */
-            background-color: #8B5CF6; /* Purple-500 */
-            color: white;
-            font-size: 0.75rem; /* text-xs */
-            font-weight: 600; /* font-semibold */
-            margin-left: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            animation: pulse-admin 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-admin {
-            0% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-            50% { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-            100% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        }
-
-        /* Sticky Bottom Nav */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background-color: #fff;
-            border-top: 3px solid #000;
-            box-shadow: 0 -8px 0 #000, 0 -8px 15px rgba(0,0,0,0.1);
-        }
-        .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 0.5rem;
-            color: #888;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s ease-in-out;
-        }
-        .bottom-nav-item.active {
-            color: #00BFFF; /* Cyan for active */
-            transform: translateY(-5px);
-            text-shadow: 0 2px 4px rgba(0,191,255,0.4);
-        }
-        .bottom-nav-item:hover {
-            color: #FFD700; /* Yellow on hover */
-        }
-        .bottom-nav-item svg {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 4px;
+        /* Admin panel specific styles */
+        .admin-card {
+            background-color: #ffe6f2; /* Light pink for admin */
+            border: var(--border-thick);
+            border-radius: 20px;
+            box-shadow: var(--shadow-premium);
         }
 
         /* Ad Frame Design */
         .ad-frame {
-            border: 3px dashed #000; /* Dashed border option */
-            background-color: #fff;
-            border-radius: 1rem;
-            padding: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            border: var(--border-thick);
+            border-radius: 15px;
+            background-color: white;
+            padding: 10px;
             text-align: center;
-            min-height: 100px; /* Minimum height for ad slot */
-            overflow: hidden; /* Ensure ad content fits */
+            font-size: 0.8rem;
+            color: #555;
+            box-shadow: var(--shadow-premium);
+            margin-bottom: 20px;
             position: relative;
-            margin-top: 1rem;
+            overflow: hidden;
+            background-image: repeating-linear-gradient(45deg, #f0f0f0 0px, #f0f0f0 5px, transparent 5px, transparent 10px);
+            background-size: 20px 20px;
         }
-        .ad-frame:before {
-            content: 'Advertisement';
+        .ad-frame.dashed {
+            border-style: dashed;
+        }
+        .ad-frame::before {
+            content: "ADVERTISEMENT";
             position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #FFD700; /* Yellow */
-            color: #000;
-            padding: 0.2rem 0.8rem;
-            border-radius: 9999px;
-            font-size: 0.7rem;
+            top: 5px;
+            left: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-size: 0.6em;
             font-weight: bold;
-            border: 2px solid #000;
-            z-index: 1;
+            color: #777;
+            z-index: 10;
+        }
+        .ad-content {
+            min-height: 80px; /* Ensure ad has space */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            margin-top: 20px; /* Space for the "ADVERTISEMENT" tag */
+            font-size: 0.9em;
+            color: #333;
+        }
+        .ad-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
         }
 
-        /* Specific tab content hidden by default */
-        .tab-content {
-            display: none;
+        /* Custom button style */
+        .btn-primary {
+            @apply px-6 py-3 font-bold rounded-xl text-white transition-all duration-200 ease-in-out flex items-center justify-center;
+            border: var(--border-thick);
+            box-shadow: var(--shadow-premium);
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
         }
-        .tab-content.active {
-            display: block;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 10px 10px 0px #000;
+        }
+        .btn-primary:active {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .btn-secondary {
+            @apply px-4 py-2 font-semibold rounded-lg text-gray-800 transition-all duration-200 ease-in-out flex items-center justify-center;
+            border: 2px solid #000;
+            background-color: var(--primary-yellow);
+            box-shadow: 4px 4px 0px #000;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 6px 6px 0px #000;
+        }
+        .btn-secondary:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            @apply fixed bottom-0 left-0 right-0 z-50 p-3 bg-white border-t-4 border-black flex justify-around items-center;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        .nav-item {
+            @apply flex flex-col items-center p-2 text-gray-600 font-semibold text-sm transition-colors duration-200 ease-in-out;
+            border-radius: 15px;
+            min-width: 60px;
+        }
+        .nav-item.active {
+            background-color: var(--primary-cyan);
+            color: #000;
+            border: 2px solid #000;
+            box-shadow: 3px 3px 0px #000;
+        }
+        .nav-item.active svg {
+            stroke: #000;
+        }
+
+        /* Custom icons using pure CSS/SVG/Lucide Icons - No Emojis! */
+        .icon-coins {
+            width: 24px; height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins"><circle cx="8" cy="8" r="6"/><path d="M18.77 15.23a2 2 0 0 1 0 2.83l-1.54 1.54a2 2 0 0 1-2.83 0L12 18"/><path d="M10 16a6 6 0 0 0 6-6"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+        .icon-usdt {
+            width: 24px; height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+        .icon-bdt {
+            width: 24px; height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dollar-sign"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+
+        /* General layout adjustments for Telegram Mini App */
+        #app {
+            padding-bottom: 90px; /* Space for bottom nav */
+            min-height: 100vh;
+        }
+        #main-content {
+            padding: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .card {
+                box-shadow: 6px 6px 0px #000;
+            }
+            .card:active {
+                transform: translate(1px, 1px);
+                box-shadow: 3px 3px 0px #000;
+            }
+            .bottom-nav {
+                padding-bottom: env(safe-area-inset-bottom, 10px);
+            }
+            #app {
+                padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+            }
         }
     </style>
 </head>
-<body class="bg-[#f0f4f8] text-gray-800 overflow-x-hidden">
+<body>
 
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 animated-gradient-bg flex flex-col items-center justify-center z-[9999] transition-opacity duration-700 ease-in-out">
-        <!-- Floating Particles -->
-        <div class="floating-particle" style="top: 10%; left: 20%; width: 20px; height: 20px; animation-delay: 0s;"></div>
-        <div class="floating-particle" style="top: 50%; left: 70%; width: 30px; height: 30px; animation-delay: 2s;"></div>
-        <div class="floating-particle" style="top: 80%; left: 10%; width: 25px; height: 25px; animation-delay: 4s;"></div>
-        <div class="floating-particle" style="top: 30%; left: 40%; width: 15px; height: 15px; animation-delay: 1s;"></div>
-        <div class="floating-particle" style="top: 60%; left: 85%; width: 35px; height: 35px; animation-delay: 3s;"></div>
-
-        <!-- Cartoon Logo Animation -->
-        <div class="relative w-32 h-32 mb-8 animate-bounce">
-            <svg class="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/>
-                <circle cx="12" cy="7.5" r="1.5"/>
-            </svg>
-            <div class="absolute inset-0 flex items-center justify-center text-4xl font-extrabold text-[#FFD700] drop-shadow-lg" style="text-shadow: 2px 2px 0 #000;">
-                Q
-            </div>
-            <div class="absolute inset-0 border-4 border-[#000] rounded-full animate-ping opacity-75"></div>
+    <!-- Premium Loading Screen -->
+    <div id="loading-screen" class="flex flex-col items-center justify-center">
+        <div class="particles"></div>
+        <div class="loading-logo"></div>
+        <div class="loading-text">QuizEarn</div>
+        <div class="loading-bar-container">
+            <div id="loading-bar" class="loading-bar"></div>
         </div>
-
-        <h1 class="text-3xl font-extrabold text-white mb-4 drop-shadow-lg" style="text-shadow: 2px 2px 0 #000;">QuizEarn Pro</h1>
-        <div class="w-64 h-2 bg-white rounded-full overflow-hidden mb-4 shimmer">
-            <div id="loading-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 to-purple-500 w-0 transition-all duration-300 ease-linear"></div>
+        <div id="loading-status" class="loading-status">Connecting to Telegram...</div>
+        <div class="tg-connecting">
+            <div class="tg-dot"></div>
+            <div class="tg-dot"></div>
+            <div class="tg-dot"></div>
         </div>
-        <p id="loading-text" class="text-white text-lg font-semibold drop-shadow-md">Connecting to Telegram...</p>
     </div>
 
     <!-- Main App Content -->
-    <div id="app-content" class="min-h-screen pb-20 p-4 transition-opacity duration-500 ease-in-out opacity-0 hidden">
-        <!-- Header -->
-        <header class="flex items-center justify-between p-4 bg-[#f0f4f8]">
-            <div class="flex items-center">
-                <img id="user-avatar" src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-black shadow-md">
-                <div class="ml-3">
-                    <p id="user-username" class="font-bold text-lg flex items-center">Guest</p>
-                    <p class="text-sm text-gray-500">Rank: <span id="user-rank" class="font-semibold text-purple-600">Bronze</span></p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center premium-card !shadow-none !border-gray-300 bg-white p-2 rounded-xl">
-                    <span class="icon-coin"></span>
-                    <span id="user-balance-coins" class="font-bold text-lg ml-1">0</span>
-                </div>
-                <div class="relative premium-card !shadow-none !border-gray-300 bg-white p-2 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell text-yellow-500"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                    <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">3</span>
-                </div>
-            </div>
-        </header>
+    <div id="app" class="hidden min-h-screen bg-gray-100 relative">
+        <div class="particles"></div>
 
         <!-- Main Content Area -->
-        <main class="p-4 space-y-6 max-w-lg mx-auto">
-            <!-- Balance Card -->
-            <div class="premium-card bg-gradient-to-r from-cyan-400 to-blue-500 p-6 rounded-2xl text-white flex flex-col justify-center items-center relative overflow-hidden">
-                <div class="absolute inset-0 opacity-20 floating-particle" style="width: 80px; height: 80px; top: -20px; left: -20px; animation-delay: 0s;"></div>
-                <div class="absolute inset-0 opacity-20 floating-particle" style="width: 60px; height: 60px; bottom: -20px; right: -20px; animation-delay: 2s;"></div>
-                <p class="text-lg font-semibold mb-2">Total Earnings</p>
-                <div class="flex items-baseline mb-4">
-                    <span class="text-5xl font-extrabold mr-2">$</span>
-                    <span id="user-balance-usd" class="text-5xl font-extrabold counter-animation">0.00</span>
-                    <span class="text-lg font-bold ml-2">USD</span>
-                </div>
-                <div class="flex justify-around w-full text-sm font-medium">
-                    <div class="text-center">
-                        <p>BDT</p>
-                        <p id="user-balance-bdt" class="font-bold counter-animation">0.00</p>
+        <main id="main-content" class="container mx-auto relative z-10 pt-4 pb-4">
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="tab-content active">
+                <div class="flex items-center justify-between p-4 card mb-4 glass">
+                    <div class="flex items-center">
+                        <img id="user-avatar" src="https://via.placeholder.com/60/6EE7B7/000000?text=TG" alt="User Avatar" class="w-14 h-14 rounded-full border-2 border-black object-cover shadow-md">
+                        <div class="ml-4">
+                            <p id="user-name" class="font-bold text-lg">Guest User</p>
+                            <p id="user-rank" class="text-sm text-gray-600">Rank: Newbie</p>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <p>Coins</p>
-                        <p id="user-balance-coins-large" class="font-bold counter-animation">0</p>
+                    <div class="text-right">
+                        <div class="flex items-center mb-1">
+                            <div class="icon-coins mr-1"></div>
+                            <span id="user-coins" class="font-bold text-xl text-yellow-600">0</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <div class="icon-usdt mr-1"></div>
+                            <span id="user-usdt">0.00 USDT</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700 mt-0.5">
+                            <div class="icon-bdt mr-1"></div>
+                            <span id="user-bdt">0.00 BDT</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Daily Reward Section -->
-            <div class="premium-card bg-yellow-400 p-4 rounded-2xl flex items-center justify-between">
-                <div class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift text-yellow-800 mr-3 animate-pulse"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13H7a2 2 0 0 1-2-2V8z"/><path d="M12 8v13h5a2 2 0 0 0 2-2V8z"/><path d="M7 8a5 5 0 0 1 10 0"/></svg>
-                    <p class="font-bold text-lg text-yellow-800">Daily Bonus Available!</p>
+                <!-- Daily Reward & Featured Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div class="card p-4 text-center bg-gradient-to-r from-cyan-400 to-green-300 text-white flex flex-col items-center justify-center min-h-[120px]">
+                        <lucide-icon name="gift" class="w-10 h-10 mb-2"></lucide-icon>
+                        <p class="font-bold text-lg">Daily Reward</p>
+                        <button class="btn-secondary mt-2 text-sm bg-white text-gray-800">Claim Now</button>
+                    </div>
+                    <div class="card p-4 text-center bg-gradient-to-r from-yellow-400 to-orange-300 text-white flex flex-col items-center justify-center min-h-[120px]">
+                        <lucide-icon name="rotate-ccw" class="w-10 h-10 mb-2"></lucide-icon>
+                        <p class="font-bold text-lg">Spin & Win</p>
+                        <button class="btn-secondary mt-2 text-sm bg-white text-gray-800" onclick="showTab('spin-view')">Play Now</button>
+                    </div>
+                    <div class="card p-4 text-center bg-gradient-to-r from-pink-400 to-purple-300 text-white flex flex-col items-center justify-center min-h-[120px]">
+                        <lucide-icon name="user-plus" class="w-10 h-10 mb-2"></lucide-icon>
+                        <p class="font-bold text-lg">Refer & Earn</p>
+                        <button class="btn-secondary mt-2 text-sm bg-white text-gray-800" onclick="showTab('refer-view')">Invite Friends</button>
+                    </div>
                 </div>
-                <button id="claim-daily-reward" class="px-4 py-2 bg-black text-white rounded-xl font-bold shadow-md hover:bg-gray-800 transition transform hover:scale-105">Claim</button>
-            </div>
 
-            <!-- Ad Frame Placeholder -->
-            <div class="ad-frame">
-                <p class="text-gray-600">Ad content from Adsgram/Monetag will appear here.</p>
-                <!-- This is where the actual ad network SDKs would inject their ads -->
-            </div>
+                <!-- Featured Quizzes -->
+                <h2 class="font-bold text-2xl mb-4">Featured Quizzes</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="card p-4 flex items-center bg-gradient-to-r from-blue-200 to-cyan-100">
+                        <lucide-icon name="help-circle" class="w-12 h-12 mr-4 text-blue-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">General Knowledge Quiz</p>
+                            <p class="text-sm text-gray-600">Test your wits, earn big!</p>
+                            <button class="btn-secondary mt-2 text-sm" onclick="showTab('quiz-view')">Start Quiz</button>
+                        </div>
+                    </div>
+                    <div class="card p-4 flex items-center bg-gradient-to-r from-purple-200 to-pink-100">
+                        <lucide-icon name="brain" class="w-12 h-12 mr-4 text-purple-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">Brain Teasers</p>
+                            <p class="text-sm text-gray-600">Challenge yourself daily.</p>
+                            <button class="btn-secondary mt-2 text-sm" onclick="showTab('quiz-view')">Start Quiz</button>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Featured Quizzes / Quick Actions -->
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Quiz Card -->
-                <div class="premium-card bg-pink-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-pink-500 transition-colors cursor-pointer" onclick="setActiveTab('quiz')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle mb-2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                    <p class="font-bold text-lg">Play Quiz</p>
-                    <p class="text-sm">Earn coins</p>
+                <!-- Banner Ad Placement (Skeletal) -->
+                <div class="ad-frame">
+                    <div class="ad-content">
+                        <span id="adsgram-banner-1">Loading Adsgram Banner...</span>
+                        <!-- <img src="https://via.placeholder.com/300x100?text=Banner+Ad" alt="Banner Ad" class="rounded-lg"> -->
+                    </div>
                 </div>
-                <!-- Spin Card -->
-                <div class="premium-card bg-purple-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-purple-500 transition-colors cursor-pointer" onclick="setActiveTab('spin')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw mb-2 animate-spin-slow"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-                    <p class="font-bold text-lg">Spin & Win</p>
-                    <p class="text-sm">Daily chances</p>
-                </div>
-                <!-- Refer Card -->
-                <div class="premium-card bg-cyan-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-cyan-500 transition-colors cursor-pointer" onclick="setActiveTab('refer')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mb-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <p class="font-bold text-lg">Refer Friends</p>
-                    <p class="text-sm">Earn more</p>
-                </div>
-                <!-- Leaderboard Card -->
-                <div class="premium-card bg-green-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-green-500 transition-colors cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy mb-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 11.4L12 17l2-5.6"/><path d="M12 2c3.27 0 6 4 6 9v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3c0-5 2.73-9 6-9z"/></svg>
-                    <p class="font-bold text-lg">Leaderboard</p>
-                    <p class="text-sm">Top earners</p>
-                </div>
-            </div>
 
-            <!-- More Ads (In-feed banner) -->
-            <div class="ad-frame">
-                <p class="text-gray-600">Another ad slot here.</p>
-            </div>
+            </section>
+
+            <!-- Quiz View -->
+            <section id="quiz-view" class="tab-content hidden">
+                <h2 class="font-bold text-3xl mb-6 text-center">Quiz Zone</h2>
+
+                <div class="card p-6 mb-6">
+                    <h3 class="font-bold text-xl mb-3">Daily Quiz Challenge</h3>
+                    <p class="text-gray-700 mb-4">Answer 10 questions correctly to earn <span class="font-bold text-yellow-600">500 Coins!</span></p>
+                    <button class="btn-primary w-full">
+                        <lucide-icon name="play-circle" class="mr-2"></lucide-icon> Start Daily Quiz
+                    </button>
+                </div>
+
+                <h3 class="font-bold text-2xl mb-4">Quiz Categories</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="card p-4 flex flex-col items-center justify-center text-center bg-yellow-100">
+                        <lucide-icon name="globe" class="w-10 h-10 mb-2 text-yellow-600"></lucide-icon>
+                        <p class="font-bold text-lg">World Facts</p>
+                        <button class="btn-secondary mt-2 text-sm">Play</button>
+                    </div>
+                    <div class="card p-4 flex flex-col items-center justify-center text-center bg-green-100">
+                        <lucide-icon name="book" class="w-10 h-10 mb-2 text-green-600"></lucide-icon>
+                        <p class="font-bold text-lg">Science</p>
+                        <button class="btn-secondary mt-2 text-sm">Play</button>
+                    </div>
+                    <div class="card p-4 flex flex-col items-center justify-center text-center bg-blue-100">
+                        <lucide-icon name="palette" class="w-10 h-10 mb-2 text-blue-600"></lucide-icon>
+                        <p class="font-bold text-lg">Art & Culture</p>
+                        <button class="btn-secondary mt-2 text-sm">Play</button>
+                    </div>
+                    <div class="card p-4 flex flex-col items-center justify-center text-center bg-red-100">
+                        <lucide-icon name="dumbbell" class="w-10 h-10 mb-2 text-red-600"></lucide-icon>
+                        <p class="font-bold text-lg">Sports</p>
+                        <button class="btn-secondary mt-2 text-sm">Play</button>
+                    </div>
+                </div>
+
+                <!-- Quiz Leaderboard (Skeletal) -->
+                <h3 class="font-bold text-2xl mt-6 mb-4">Top Scorers</h3>
+                <div class="card p-4 mb-4">
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center text-gray-800 font-medium">
+                            <span>1. Alice</span>
+                            <span class="text-yellow-600 font-bold">12000 Coins</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-800 font-medium">
+                            <span>2. Bob</span>
+                            <span class="text-yellow-600 font-bold">11500 Coins</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-800 font-medium">
+                            <span>3. Charlie</span>
+                            <span class="text-yellow-600 font-bold">10800 Coins</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Spin View -->
+            <section id="spin-view" class="tab-content hidden">
+                <h2 class="font-bold text-3xl mb-6 text-center">Spin & Win</h2>
+
+                <div class="card p-6 mb-6 flex flex-col items-center">
+                    <p class="text-lg text-gray-700 mb-4">Spins remaining today: <span id="spins-left" class="font-bold text-purple-600">3</span></p>
+                    <div class="relative w-64 h-64 bg-gray-200 border-4 border-black rounded-full flex items-center justify-center mb-6 overflow-hidden">
+                        <!-- Spin Wheel Placeholder SVG -->
+                        <svg viewBox="0 0 100 100" class="w-full h-full transform transition-transform duration-5000 ease-out" id="spin-wheel">
+                            <defs>
+                                <linearGradient id="segment1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FACC15"/><stop offset="100%" stop-color="#F472B6"/></linearGradient>
+                                <linearGradient id="segment2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6EE7B7"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="white" stroke="black" stroke-width="2"/>
+                            <!-- Example segments -->
+                            <path d="M50 50 L50 5 A45 45 0 0 1 72.5 17.5 Z" fill="url(#segment1)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L72.5 17.5 A45 45 0 0 1 85 50 Z" fill="url(#segment2)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L85 50 A45 45 0 0 1 72.5 82.5 Z" fill="url(#segment1)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L72.5 82.5 A45 45 0 0 1 50 95 Z" fill="url(#segment2)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L50 95 A45 45 0 0 1 27.5 82.5 Z" fill="url(#segment1)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L27.5 82.5 A45 45 0 0 1 15 50 Z" fill="url(#segment2)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L15 50 A45 45 0 0 1 27.5 17.5 Z" fill="url(#segment1)" stroke="black" stroke-width="1"/>
+                            <path d="M50 50 L27.5 17.5 A45 45 0 0 1 50 5 Z" fill="url(#segment2)" stroke="black" stroke-width="1"/>
+                            <!-- Pointer -->
+                            <polygon points="50,0 45,10 55,10" fill="black"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-3xl font-bold text-gray-800">SPIN</span>
+                        </div>
+                    </div>
+                    <button id="spin-button" class="btn-primary">
+                        <lucide-icon name="loader-2" class="mr-2"></lucide-icon> Spin Now!
+                    </button>
+                    <p id="spin-cooldown" class="text-sm text-gray-600 mt-3 hidden">Next spin in: <span class="font-bold">00:00</span></p>
+                </div>
+
+                <h3 class="font-bold text-2xl mb-4">Spin History</h3>
+                <div class="card p-4">
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center text-gray-800">
+                            <span>Yesterday</span>
+                            <span class="text-yellow-600 font-bold">+50 Coins</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-800">
+                            <span>2 days ago</span>
+                            <span class="text-purple-600 font-bold">+1 Spin</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Refer View -->
+            <section id="refer-view" class="tab-content hidden">
+                <h2 class="font-bold text-3xl mb-6 text-center">Refer & Earn</h2>
+
+                <div class="card p-6 mb-6 text-center">
+                    <lucide-icon name="award" class="w-16 h-16 mx-auto mb-4 text-pink-600"></lucide-icon>
+                    <h3 class="font-bold text-xl mb-3">Invite Friends, Earn Big!</h3>
+                    <p class="text-gray-700 mb-4">Get <span class="font-bold text-yellow-600">100 Coins</span> for every friend who joins using your link and completes their first quiz.</p>
+                    <div class="bg-gray-100 p-3 rounded-xl border border-dashed border-gray-400 mb-4">
+                        <p id="referral-link" class="text-gray-800 break-all font-mono text-sm">Loading referral link...</p>
+                    </div>
+                    <button class="btn-primary w-full" id="copy-referral-link-btn">
+                        <lucide-icon name="clipboard" class="mr-2"></lucide-icon> Copy Link
+                    </button>
+                </div>
+
+                <h3 class="font-bold text-2xl mb-4">Your Referrals</h3>
+                <div class="card p-4 mb-4">
+                    <ul id="referral-list" class="space-y-2">
+                        <li class="flex justify-between items-center text-gray-800">
+                            <span>Total Invited: <span class="font-bold" id="total-referrals">0</span></span>
+                            <span>Total Earned: <span class="font-bold text-yellow-600" id="referral-earnings">0 Coins</span></span>
+                        </li>
+                        <li class="text-gray-500 text-sm">No referrals yet. Share your link!</li>
+                    </ul>
+                </div>
+                <!-- Interstitial Ad Placement (Skeletal) -->
+                <div class="ad-frame dashed">
+                    <div class="ad-content">
+                        <span id="monetag-popup-1">Loading Monetag Popup...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cash View -->
+            <section id="cash-view" class="tab-content hidden">
+                <h2 class="font-bold text-3xl mb-6 text-center">Cash Out</h2>
+
+                <div class="card p-6 mb-6">
+                    <h3 class="font-bold text-xl mb-3">Your Balance</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-700">Coins:</span>
+                        <span id="cash-coins" class="font-bold text-yellow-600 text-xl">0</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-700">Equivalent USDT:</span>
+                        <span id="cash-usdt" class="font-bold text-green-600 text-xl">0.00 USDT</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-gray-700">Equivalent BDT:</span>
+                        <span id="cash-bdt" class="font-bold text-blue-600 text-xl">0.00 BDT</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Min. withdraw: 10,000 Coins (~$1)</p>
+                </div>
+
+                <h3 class="font-bold text-2xl mb-4">Withdraw Methods</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="card p-4 flex items-center justify-between bg-emerald-100">
+                        <lucide-icon name="wallet" class="w-10 h-10 mr-4 text-emerald-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">Binance UID</p>
+                            <p class="text-sm text-gray-600">Fastest withdrawal</p>
+                        </div>
+                        <button class="btn-secondary text-sm">Withdraw</button>
+                    </div>
+                    <div class="card p-4 flex items-center justify-between bg-amber-100">
+                        <lucide-icon name="zap" class="w-10 h-10 mr-4 text-amber-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">FaucetPay</p>
+                            <p class="text-sm text-gray-600">Instant micro-payments</p>
+                        </div>
+                        <button class="btn-secondary text-sm">Withdraw</button>
+                    </div>
+                    <div class="card p-4 flex items-center justify-between bg-rose-100">
+                        <lucide-icon name="credit-card" class="w-10 h-10 mr-4 text-rose-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">USDT TRC20</p>
+                            <p class="text-sm text-gray-600">Crypto direct</p>
+                        </div>
+                        <button class="btn-secondary text-sm">Withdraw</button>
+                    </div>
+                    <div class="card p-4 flex items-center justify-between bg-fuchsia-100">
+                        <lucide-icon name="smartphone" class="w-10 h-10 mr-4 text-fuchsia-600"></lucide-icon>
+                        <div>
+                            <p class="font-bold text-lg">Bkash / Nagad</p>
+                            <p class="text-sm text-gray-600">Local (BDT)</p>
+                        </div>
+                        <button class="btn-secondary text-sm">Withdraw</button>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-2xl mt-6 mb-4">Withdraw History</h3>
+                <div class="card p-4">
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center text-gray-800">
+                            <span>USDT (TRC20) - 0.5 USDT</span>
+                            <span class="text-green-600 font-bold">Approved</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-800">
+                            <span>Binance UID - 0.2 USDT</span>
+                            <span class="text-orange-500 font-bold">Pending</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Admin Panel View -->
+            <section id="admin-view" class="tab-content hidden admin-card p-6">
+                <h2 class="font-bold text-3xl mb-6 text-center text-pink-700">Admin Control Panel</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card p-4 bg-pink-100">
+                        <h3 class="font-bold text-xl mb-2 flex items-center">
+                            <lucide-icon name="users" class="mr-2"></lucide-icon> User Management
+                        </h3>
+                        <p>Total Users: <span id="admin-total-users" class="font-bold">0</span></p>
+                        <p>Online Users: <span id="admin-online-users" class="font-bold text-green-600">0</span></p>
+                        <button class="btn-secondary mt-2 w-full">Manage Users</button>
+                    </div>
+                    <div class="card p-4 bg-purple-100">
+                        <h3 class="font-bold text-xl mb-2 flex items-center">
+                            <lucide-icon name="dollar-sign" class="mr-2"></lucide-icon> Withdrawals
+                        </h3>
+                        <p>Pending: <span id="admin-pending-withdraws" class="font-bold text-orange-500">0</span></p>
+                        <p>Total Processed: <span id="admin-processed-withdraws" class="font-bold text-green-600">0</span></p>
+                        <button class="btn-secondary mt-2 w-full">Review Withdraws</button>
+                    </div>
+                    <div class="card p-4 bg-cyan-100">
+                        <h3 class="font-bold text-xl mb-2 flex items-center">
+                            <lucide-icon name="send" class="mr-2"></lucide-icon> Broadcast System
+                        </h3>
+                        <textarea class="w-full p-2 border rounded-lg mt-2" rows="3" placeholder="Enter message to broadcast..."></textarea>
+                        <button class="btn-secondary mt-2 w-full">Send Broadcast</button>
+                    </div>
+                    <div class="card p-4 bg-yellow-100">
+                        <h3 class="font-bold text-xl mb-2 flex items-center">
+                            <lucide-icon name="layout-list" class="mr-2"></lucide-icon> Quiz Management
+                        </h3>
+                        <p>Total Quizzes: <span id="admin-total-quizzes" class="font-bold">0</span></p>
+                        <button class="btn-secondary mt-2 w-full">Manage Quizzes</button>
+                    </div>
+                    <div class="card p-4 bg-lime-100 col-span-1 md:col-span-2">
+                        <h3 class="font-bold text-xl mb-2 flex items-center">
+                            <lucide-icon name="megaphone" class="mr-2"></lucide-icon> Ad Network Setup
+                        </h3>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-semibold mb-1">Adsgram Block ID</label>
+                            <input type="text" id="adsgram-block-id" class="w-full p-2 border rounded-lg" placeholder="Enter Adsgram Block ID">
+                            <label class="block text-gray-700 font-semibold mb-1 mt-2">Adsgram Zone ID</label>
+                            <input type="text" id="adsgram-zone-id" class="w-full p-2 border rounded-lg" placeholder="Enter Adsgram Zone ID">
+                            <label class="block text-gray-700 font-semibold mb-1 mt-2">Monetag Zone ID</label>
+                            <input type="text" id="monetag-zone-id" class="w-full p-2 border rounded-lg" placeholder="Enter Monetag Zone ID">
+                            <label class="block text-gray-700 font-semibold mb-1 mt-2">Monetag Smartlink</label>
+                            <input type="text" id="monetag-smartlink" class="w-full p-2 border rounded-lg" placeholder="Enter Monetag Smartlink URL">
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="auto-ads-toggle" class="form-checkbox h-5 w-5 text-green-600 rounded">
+                                <span class="ml-2 text-gray-700 font-semibold">Enable Auto Ads</span>
+                            </label>
+                            <button class="btn-secondary text-sm">Test Ad</button>
+                        </div>
+                        <button class="btn-primary w-full">Save Ad Settings</button>
+                    </div>
+                </div>
+            </section>
         </main>
-
-        <!-- Tab Content Sections -->
-        <div id="tab-home" class="tab-content active mt-4 px-4 max-w-lg mx-auto">
-            <!-- Content for Home is already in main -->
-        </div>
-
-        <div id="tab-quiz" class="tab-content mt-4 px-4 max-w-lg mx-auto">
-            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-pink-400 to-purple-500 text-white p-3 rounded-xl text-center">Quiz Categories</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Quiz Category Card -->
-                <div class="premium-card bg-white p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
-                    <div>
-                        <p class="font-bold text-lg">General Knowledge</p>
-                        <p class="text-sm text-gray-500">10 Questions, 50 Coins</p>
-                    </div>
-                    <button class="px-4 py-2 bg-blue-500 text-white rounded-xl font-bold shadow-md hover:bg-blue-600 transition transform hover:scale-105">Start</button>
-                </div>
-                <!-- ... more quiz categories -->
-                <div class="premium-card bg-white p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
-                    <div>
-                        <p class="font-bold text-lg">Science & Tech</p>
-                        <p class="text-sm text-gray-500">12 Questions, 60 Coins</p>
-                    </div>
-                    <button class="px-4 py-2 bg-green-500 text-white rounded-xl font-bold shadow-md hover:bg-green-600 transition transform hover:scale-105">Start</button>
-                </div>
-            </div>
-            <div class="ad-frame mt-4">
-                <p class="text-gray-600">Quiz page ad.</p>
-            </div>
-        </div>
-
-        <div id="tab-spin" class="tab-content mt-4 px-4 max-w-lg mx-auto">
-            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-3 rounded-xl text-center">Spin & Win</h2>
-            <div class="premium-card bg-white p-6 rounded-2xl flex flex-col items-center justify-center relative">
-                <!-- Spin Wheel Placeholder -->
-                <div class="w-64 h-64 border-4 border-black rounded-full bg-gradient-to-br from-red-400 to-purple-400 flex items-center justify-center relative mb-4">
-                    <span class="text-xl font-extrabold text-white text-shadow-md">Spin Wheel</span>
-                    <div class="absolute w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-black -top-4"></div>
-                </div>
-                <p id="spin-status" class="text-lg font-semibold mb-4">Spins Left: <span class="text-green-600">3</span></p>
-                <button id="do-spin" class="px-8 py-3 bg-black text-white rounded-full font-extrabold text-xl shadow-lg hover:bg-gray-800 transition transform hover:scale-105 active:scale-95">SPIN NOW!</button>
-            </div>
-            <div class="ad-frame mt-4">
-                <p class="text-gray-600">Spin page ad.</p>
-            </div>
-        </div>
-
-        <div id="tab-refer" class="tab-content mt-4 px-4 max-w-lg mx-auto">
-            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-cyan-400 to-blue-500 text-white p-3 rounded-xl text-center">Refer & Earn</h2>
-            <div class="premium-card bg-white p-6 rounded-2xl text-center">
-                <p class="text-lg font-semibold mb-4">Share your unique link and earn when friends join!</p>
-                <div class="bg-gray-100 p-4 rounded-xl border-2 border-dashed border-gray-300 mb-4 break-all">
-                    <p id="referral-link" class="font-mono text-gray-700">Loading referral link...</p>
-                </div>
-                <button id="copy-referral-link" class="px-6 py-3 bg-green-500 text-white rounded-full font-bold text-lg shadow-lg hover:bg-green-600 transition transform hover:scale-105">Copy Link</button>
-                <p class="mt-4 text-sm text-gray-600">You and your friend will get 50 coins!</p>
-            </div>
-            <div class="ad-frame mt-4">
-                <p class="text-gray-600">Refer page ad.</p>
-            </div>
-        </div>
-
-        <div id="tab-cash" class="tab-content mt-4 px-4 max-w-lg mx-auto">
-            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-purple-400 to-pink-500 text-white p-3 rounded-xl text-center">Withdraw Earnings</h2>
-            <div class="premium-card bg-white p-6 rounded-2xl">
-                <p class="text-lg font-semibold mb-4">Minimum withdraw: <span class="font-bold text-green-600">$5 USDT</span></p>
-                <div class="mb-4">
-                    <label for="withdraw-amount" class="block text-gray-700 font-bold mb-2">Amount (Coins)</label>
-                    <input type="number" id="withdraw-amount" placeholder="Enter coins to withdraw" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-                </div>
-                <div class="mb-4">
-                    <label for="withdraw-method" class="block text-gray-700 font-bold mb-2">Withdraw Method</label>
-                    <select id="withdraw-method" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-                        <option value="">Select Method</option>
-                        <option value="binance-uid">Binance UID</option>
-                        <option value="faucetpay">FaucetPay (Email)</option>
-                        <option value="usdt-trc20">USDT TRC20 (Address)</option>
-                        <option value="bkash">Bkash (Number)</option>
-                        <option value="nagad">Nagad (Number)</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="withdraw-address" class="block text-gray-700 font-bold mb-2">Account Details (UID/Email/Address/Number)</label>
-                    <input type="text" id="withdraw-address" placeholder="Enter account details" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-                </div>
-                <button id="submit-withdraw" class="w-full px-6 py-3 bg-red-500 text-white rounded-full font-bold text-lg shadow-lg hover:bg-red-600 transition transform hover:scale-105">Request Withdraw</button>
-            </div>
-            <h3 class="text-xl font-bold mt-6 mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-gray-400 to-gray-500 text-white p-3 rounded-xl text-center">Withdrawal History</h3>
-            <div id="withdraw-history" class="space-y-3">
-                <!-- History items will be dynamically loaded here -->
-                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-md">1000 Coins via USDT</p>
-                        <p class="text-sm text-gray-500">Address: 0x...abc</p>
-                    </div>
-                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Pending</span>
-                </div>
-                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-md">500 Coins via Bkash</p>
-                        <p class="text-sm text-gray-500">Number: 017xxxxxx</p>
-                    </div>
-                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Approved</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel (Hidden by default) -->
-        <div id="tab-admin" class="tab-content mt-4 px-4 max-w-lg mx-auto bg-red-100 border-2 border-red-500 rounded-xl p-6 hidden">
-            <h2 class="text-2xl font-bold mb-4 text-red-700 text-center">ADMIN PANEL</h2>
-            <p class="text-red-600 mb-4">Access granted for Telegram ID: <span id="admin-id-display" class="font-bold"></span></p>
-
-            <!-- Admin Stats Card -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="premium-card bg-white p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Total Users</p>
-                    <p id="admin-total-users" class="font-bold text-2xl counter-animation">0</p>
-                </div>
-                <div class="premium-card bg-white p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Online Users</p>
-                    <p id="admin-online-users" class="font-bold text-2xl text-green-500 counter-animation">0</p>
-                </div>
-                <div class="premium-card bg-white p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Total Withdrawals</p>
-                    <p id="admin-total-withdrawals" class="font-bold text-2xl text-red-500 counter-animation">0</p>
-                </div>
-                <div class="premium-card bg-white p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Pending Withdraws</p>
-                    <p id="admin-pending-withdraws" class="font-bold text-2xl text-yellow-500 counter-animation">0</p>
-                </div>
-            </div>
-
-            <!-- Ad Management -->
-            <h3 class="text-xl font-bold mb-3 text-gray-800">Ad Network Management</h3>
-            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
-                <h4 class="font-bold text-lg mb-2">Adsgram Settings</h4>
-                <div class="mb-3">
-                    <label for="adsgram-block-id" class="block text-sm font-medium text-gray-700">Block ID</label>
-                    <input type="text" id="adsgram-block-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Adsgram Block ID">
-                </div>
-                <div class="mb-3">
-                    <label for="adsgram-zone-id" class="block text-sm font-medium text-gray-700">Zone ID</label>
-                    <input type="text" id="adsgram-zone-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Adsgram Zone ID">
-                </div>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold mr-2">Save Adsgram</button>
-                <button class="px-4 py-2 bg-gray-500 text-white rounded-lg font-bold">Test Adsgram</button>
-            </div>
-
-            <!-- Coin Conversion Settings -->
-            <h3 class="text-xl font-bold mb-3 text-gray-800">Coin Conversion Rates</h3>
-            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
-                <div class="mb-3">
-                    <label for="coin-to-usdt" class="block text-sm font-medium text-gray-700">1 Coin = ? USDT</label>
-                    <input type="number" id="coin-to-usdt" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="e.g., 0.0001">
-                </div>
-                <div class="mb-3">
-                    <label for="coin-to-bdt" class="block text-sm font-medium text-gray-700">1 Coin = ? BDT</label>
-                    <input type="number" id="coin-to-bdt" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="e.g., 0.01">
-                </div>
-                <button class="px-4 py-2 bg-green-500 text-white rounded-lg font-bold">Save Conversions</button>
-            </div>
-
-            <!-- Broadcast Message -->
-            <h3 class="text-xl font-bold mb-3 text-gray-800">Broadcast Message (via Bot)</h3>
-            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
-                <textarea id="broadcast-message" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-lg h-24" placeholder="Enter message to broadcast to all users..."></textarea>
-                <button id="send-broadcast" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-bold">Send Broadcast</button>
-            </div>
-
-            <!-- User Management (Simplified) -->
-            <h3 class="text-xl font-bold mb-3 text-gray-800">User Management</h3>
-            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
-                <div class="mb-3">
-                    <label for="user-search-id" class="block text-sm font-medium text-gray-700">Search User by Telegram ID</label>
-                    <input type="text" id="user-search-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Telegram User ID">
-                </div>
-                <button id="search-user" class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-bold mb-4">Search</button>
-                <div id="user-details-display" class="border border-gray-200 p-3 rounded-lg bg-gray-50 hidden">
-                    <p class="font-bold mb-1">User: <span id="ud-username"></span> (ID: <span id="ud-id"></span>)</p>
-                    <p>Balance: <span id="ud-coins" class="font-bold"></span> coins</p>
-                    <input type="number" id="ud-add-coins" placeholder="Add coins" class="premium-card !shadow-none !border-gray-300 w-24 p-1 rounded-lg mt-2">
-                    <button id="ud-update-coins" class="ml-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm">Update</button>
-                </div>
-            </div>
-
-            <!-- Withdraw Requests (Simplified) -->
-            <h3 class="text-xl font-bold mb-3 text-gray-800">Withdraw Requests</h3>
-            <div id="admin-withdraw-requests" class="space-y-3">
-                <!-- Example Request -->
-                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-md">User 12345: 2000 Coins via USDT</p>
-                        <p class="text-sm text-gray-500">Address: 0x...def</p>
-                    </div>
-                    <div>
-                        <button class="px-3 py-1 bg-green-500 text-white rounded-lg text-sm mr-2">Approve</button>
-                        <button class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Reject</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Sticky Bottom Navigation -->
         <nav class="bottom-nav">
-            <div class="flex justify-around items-center h-full">
-                <a href="#" class="bottom-nav-item active" data-tab="home">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    <span>Home</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-tab="quiz">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-question"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/><path d="M12 10h.01"/><path d="M12 7a2 2 0 0 0-2 2c0 1 .5 2 2 2s2-1 2-2a2 2 0 0 0-2-2Z"/></svg>
-                    <span>Quiz</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-tab="spin">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dices"><rect width="8" height="8" x="2" y="2" rx="2"/><path d="M14 2h8v8h-8z"/><path d="M14 14h8v8h-8z"/><path d="M2 14h8v8h-8z"/><circle cx="18" cy="18" r="1.5"/><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="18" r="1.5"/></svg>
-                    <span>Spin</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-tab="refer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-                    <span>Refer</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-tab="cash">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4v-3"/><path d="M22 7V4a1 1 0 0 0-1-1H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4v-3"/></svg>
-                    <span>Cash</span>
-                </a>
-                <!-- Admin Tab - Only visible if admin -->
-                <a href="#" class="bottom-nav-item hidden" id="admin-nav-item" data-tab="admin">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <span>Admin</span>
-                </a>
-            </div>
+            <button class="nav-item active" data-tab="dashboard-view">
+                <lucide-icon name="home"></lucide-icon>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-tab="quiz-view">
+                <lucide-icon name="help-circle"></lucide-icon>
+                <span>Quiz</span>
+            </button>
+            <button class="nav-item" data-tab="spin-view">
+                <lucide-icon name="rotate-ccw"></lucide-icon>
+                <span>Spin</span>
+            </button>
+            <button class="nav-item" data-tab="refer-view">
+                <lucide-icon name="users"></lucide-icon>
+                <span>Refer</span>
+            </button>
+            <button class="nav-item" data-tab="cash-view">
+                <lucide-icon name="wallet"></lucide-icon>
+                <span>Cash</span>
+            </button>
+             <button id="admin-nav-item" class="nav-item hidden" data-tab="admin-view">
+                <lucide-icon name="shield"></lucide-icon>
+                <span>Admin</span>
+            </button>
         </nav>
-
-        <!-- Toast Notification Container -->
-        <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2">
-            <!-- Toasts will be appended here -->
-        </div>
-
     </div>
 
-    <!-- Firebase SDKs (CDN) -->
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics-compat.js"></script>
-    <!-- Firebase Storage would also be needed for avatars/quiz images -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-storage-compat.js"></script> -->
+    <!-- Firebase SDK CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics-compat.js"></script>
 
     <script>
-        // Check if Telegram WebApp SDK is available
-        // This is crucial to prevent errors when running outside Telegram environment.
-        const WebApp = window.Telegram && window.Telegram.WebApp;
-        let isTelegramEnv = !!WebApp; // True if WebApp object exists
+        // Initialize Lucide Icons
+        lucide.createIcons();
 
-        // Firebase Configuration
-        // IMPORTANT: Please make sure these values are correct from your Firebase Console.
-        const firebaseConfig = {
-            apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
-            authDomain: "ai-tools-9f9a3.firebaseapp.com",
-            projectId: "ai-tools-9f9a3",
-            storageBucket: "ai-tools-9f9a3.firebasestorage.app",
-            messagingSenderId: "839431476061",
-            appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
-            // For Realtime Database, it's usually: https://<projectId>-default-rtdb.firebaseio.com
-            databaseURL: "https://ai-tools-9f9a3-default-rtdb.firebaseio.com/",
-            // Measurement ID for analytics is usually also needed:
-            // measurementId: "G-HKSB33QGW8" 
-        };
-
-        // Initialize Firebase variables
-        let firebaseApp;
-        let auth;
-        let db;
-        let analytics;
-        // let storage; // For Firebase Storage
-
-        // Admin Telegram User ID
-        const ADMIN_TELEGRAM_ID = '8601120665'; // Your Telegram User ID. For local testing outside Telegram, you might temporarily set this to the test_user_id (e.g., 'test_user_standalonemode_1')
-
-        // --- Loading Screen DOM Elements ---
+        // ==================================
+        // IMPORTANT STARTUP SYSTEM
+        // ==================================
         const loadingScreen = document.getElementById('loading-screen');
-        const loadingProgressBar = document.getElementById('loading-progress-bar');
-        const loadingText = document.getElementById('loading-text');
-        const appContent = document.getElementById('app-content');
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingStatus = document.getElementById('loading-status');
+        const appContainer = document.getElementById('app');
+        const adminNavItem = document.getElementById('admin-nav-item');
 
-        // --- Loading State Management ---
-        let progress = 0;
-        let initReady = {
-            // If not in Telegram environment, consider Telegram part as "ready" immediately
-            telegram: !isTelegramEnv,
-            firebase: false,
-            userData: false,
-            minTimeElapsed: false // Ensures the loading screen stays for at least MIN_LOADING_TIME_MS
-        };
-        const MIN_LOADING_TIME_MS = 3000; // Minimum 3 seconds loading screen
-        let loadingStartTime = Date.now();
-        let dailyRewardTimer = null; // To store setInterval ID
+        const MIN_LOADING_TIME = 3000; // 3 seconds
+        let startTime = Date.now();
+        let currentProgress = 0;
+        let animationFrameId;
 
-        // Function to update loading text and progress bar
-        const updateLoading = (text, newProgress) => {
-            loadingText.textContent = text;
-            progress = Math.min(newProgress, 100); // Cap progress at 100%
-            loadingProgressBar.style.width = `${progress}%`;
-        };
+        const updateLoadingProgress = (targetProgress, statusText) => {
+            const duration = 200; // ms to reach target
+            const startProgress = currentProgress;
+            const distance = targetProgress - startProgress;
+            const startTimestamp = performance.now();
 
-        // Function to check all readiness conditions and hide loading screen
-        const checkAndHideLoadingScreen = () => {
-            // Check if all core components are ready AND minimum loading time has passed
-            if (initReady.telegram && initReady.firebase && initReady.userData && initReady.minTimeElapsed) {
-                console.log('All readiness conditions met. Hiding loading screen.');
-                loadingScreen.style.opacity = '0'; // Start fade out
-                setTimeout(() => {
-                    loadingScreen.classList.add('hidden'); // Hide completely after fade
-                    appContent.classList.remove('hidden'); // Show app content
-                    appContent.style.opacity = '1'; // Fade in app content
+            function animateProgress(currentTime) {
+                const elapsed = currentTime - startTimestamp;
+                const progress = Math.min(elapsed / duration, 1);
+                currentProgress = startProgress + (distance * progress);
+                loadingBar.style.width = `${currentProgress}%`;
+                if (statusText) loadingStatus.textContent = statusText;
 
-                    // Expand Telegram Mini App to full screen if in Telegram environment
-                    if (isTelegramEnv) {
-                        WebApp.expand();
-                    }
-
-                    // Update UI and set initial tab to home
-                    updateUI(); // Initial UI update after all data is loaded
-                    setActiveTab('home');
-
-                    // Make admin nav item visible if the user is an admin
-                    if (currentUser && currentUser.is_admin) {
-                        document.getElementById('admin-nav-item').classList.remove('hidden');
-                        document.getElementById('admin-id-display').textContent = currentUser.uid;
-                    }
-                }, 700); // Matches opacity transition duration
-            } else {
-                console.log('Not all readiness conditions met:', initReady);
+                if (progress < 1) {
+                    animationFrameId = requestAnimationFrame(animateProgress);
+                }
             }
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(animateProgress);
         };
 
-        // --- Core App State Variables ---
-        let currentUser = null; // Stores Telegram user ID and admin status
-        let telegramUser = null; // Stores full Telegram user data from WebApp.initDataUnsafe
-        let userData = {}; // Stores user profile data from Firebase Realtime Database
+        const initApp = async () => {
+            updateLoadingProgress(20, 'Loading cached data...');
+            // 1. Load cached LocalStorage data (synchronous)
+            const cachedUserData = localStorage.getItem('user');
+            const cachedBalance = localStorage.getItem('balance');
+            const cachedAds = localStorage.getItem('ads');
+            // ... load other cached data
+            updateLoadingProgress(40, 'Telegram SDK initialized...');
 
-        // --- DOMContentLoaded - Main App Initialization Flow ---
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded: Starting app initialization...');
-
-            // Start timer for minimum loading screen display time
-            setTimeout(() => {
-                initReady.minTimeElapsed = true;
-                console.log('Minimum loading time of 3 seconds elapsed.');
-                checkAndHideLoadingScreen(); // Re-check if all conditions are met
-            }, MIN_LOADING_TIME_MS - (Date.now() - loadingStartTime));
-
-            // 1. Telegram WebApp SDK Initialization (Conditional)
-            if (isTelegramEnv) {
+            // 2. Initialize Telegram WebApp SDK
+            let tgUser = null;
+            if (window.Telegram && window.Telegram.WebApp) {
                 try {
-                    WebApp.ready(); // Inform Telegram that the app is ready
+                    window.Telegram.WebApp.ready();
+                    window.Telegram.WebApp.expand();
+                    tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+                    console.log('Telegram WebApp initialized:', tgUser);
 
-                    // Safely get Telegram user data
-                    if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
-                        telegramUser = WebApp.initDataUnsafe.user;
-                        console.log('Telegram User data received:', telegramUser);
-                        updateLoading('Telegram connected...', 30);
-                    } else {
-                        // This might happen if initDataUnsafe is not immediately populated or on certain platforms
-                        console.warn('Telegram user data not immediately available via initDataUnsafe. Will re-check later if needed.');
-                        // Provide a placeholder user to avoid null errors during Firebase setup if telegramUser is delayed
-                        telegramUser = { id: 'fallback_telegram_user_id', first_name: 'Unknown', username: 'telegram_user' };
-                    }
-                    initReady.telegram = true; // Mark Telegram part as ready
-                    checkAndHideLoadingScreen(); // Re-check
-
-                    // Set up Telegram UI components
-                    WebApp.onEvent('themeChanged', () => {
-                        console.log('Telegram theme changed:', WebApp.themeParams);
-                        WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8');
-                        WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8');
-                    });
-
-                    WebApp.BackButton.onClick(() => {
-                        console.log('Telegram BackButton clicked!');
-                        showToast('Back button clicked! (Navigation not fully implemented)', 'info');
-                        // In a real app, you'd manage history and navigate back, or close the app if no history.
-                        // WebApp.close();
-                    });
-                    WebApp.BackButton.show();
-
-                    // Setup Telegram MainButton for the 'Cash' tab
-                    WebApp.MainButton.setText('Submit Withdraw Request');
-                    WebApp.MainButton.setParams({
-                        text_color: '#FFFFFF',
-                        color: '#EF4444' // red-500 from Tailwind
-                    });
-                    WebApp.MainButton.onClick(handleSubmitWithdrawFromMainButton); // Attach the withdraw function
-                    // Initially hide the MainButton, it will be shown when 'Cash' tab is active
-                    WebApp.MainButton.hide();
-
-                } catch (error) {
-                    console.error("Error initializing Telegram WebApp SDK:", error);
-                    loadingText.textContent = 'Telegram connection failed!';
-                    showToast('Telegram connection failed! Please restart the bot.', 'error');
-                }
-            } else {
-                // Not in Telegram environment (e.g., direct browser access)
-                console.warn('Running outside Telegram environment. Telegram SDK functions will be skipped.');
-                telegramUser = { id: 'test_user_standalonemode_1', first_name: 'Test', last_name: 'User', username: 'testuser', photo_url: 'https://via.placeholder.com/40' };
-                updateLoading('Running in test mode (no Telegram user)...', 30);
-                initReady.telegram = true; // Force Telegram ready in test mode
-                checkAndHideLoadingScreen();
-            }
-
-            // 2. Firebase Initialization
-            updateLoading('Connecting to Firebase...', 60);
-            try {
-                // Check if Firebase config placeholders are updated
-                if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE") { // This check should now pass
-                    throw new Error("Firebase configuration not updated. Please replace placeholder values.");
-                }
-
-                firebaseApp = firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.database();
-                analytics = firebase.analytics();
-                // storage = firebase.storage(); // if using storage for images
-
-                auth.signInAnonymously().then(() => {
-                    console.log('Firebase Anonymous user signed in.');
-                    updateLoading('Firebase connected...', 80);
-                    initReady.firebase = true; // Mark Firebase part as ready
-                    handleUserLogin(); // Proceed with user data loading
-                }).catch((error) => {
-                    console.error("Firebase Auth Error:", error);
-                    loadingText.textContent = 'Firebase connection failed!';
-                    showToast('Firebase connection failed! Check console for details.', 'error');
-                });
-            } catch (error) {
-                console.error("Firebase Initialization Error:", error);
-                loadingText.textContent = `Firebase config error: ${error.message}`;
-                showToast(`Firebase Init Error: ${error.message}`, 'error');
-            }
-        }); // End of DOMContentLoaded
-
-        // --- User Login and Data Handling ---
-        async function handleUserLogin() {
-            // Determine the user ID based on Telegram data or test mode
-            let userIdToUse;
-            let currentTelegramUser;
-
-            if (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
-                userIdToUse = WebApp.initDataUnsafe.user.id.toString();
-                currentTelegramUser = WebApp.initDataUnsafe.user;
-                // If telegramUser was a fallback, update it with real data now
-                telegramUser = currentTelegramUser;
-            } else {
-                // Use fallback test user ID
-                userIdToUse = telegramUser.id.toString();
-                currentTelegramUser = telegramUser;
-                console.warn('Using fallback Telegram user for Firebase operations.');
-            }
-
-            if (!userIdToUse) {
-                console.error("Cannot proceed: No valid user ID found for Firebase.");
-                loadingText.textContent = 'User ID not found!';
-                initReady.userData = true; // Allow app to open, but warn user
-                checkAndHideLoadingScreen();
-                return;
-            }
-
-            currentUser = {
-                uid: userIdToUse,
-                is_admin: (userIdToUse === ADMIN_TELEGRAM_ID)
-            };
-            console.log('Current App User (Firebase context):', currentUser);
-
-            const userRef = db.ref(`users/${userIdToUse}`);
-
-            // Fetch initial user data once to ensure we have it immediately
-            try {
-                const snapshot = await userRef.once('value');
-                const data = snapshot.val();
-
-                if (data) {
-                    userData = data;
-                    console.log('Initial user data loaded from Firebase:', userData);
-                } else {
-                    // New user or data not initialized, create default profile
-                    console.log('New user detected or data not found. Initializing profile.');
-                    const newUserProfile = {
-                        telegram_id: userIdToUse,
-                        username: currentTelegramUser.username || `${currentTelegramUser.first_name || ''} ${currentTelegramUser.last_name || ''}`.trim(),
-                        first_name: currentTelegramUser.first_name || '',
-                        last_name: currentTelegramUser.last_name || '',
-                        avatar_url: currentTelegramUser.photo_url || 'https://via.placeholder.com/40',
-                        coins: 0,
-                        usdt_balance: 0,
-                        bdt_balance: 0,
-                        rank: 'Newbie',
-                        last_daily_reward: 0, // Unix timestamp
-                        referral_code: generateReferralCode(userIdToUse),
-                        // Capture start_param from Telegram, if any, as referred_by
-                        referred_by: (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.start_param) ? WebApp.initDataUnsafe.start_param : '',
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        last_online: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    await userRef.set(newUserProfile);
-                    userData = newUserProfile; // Set for current session
-                    console.log('New user profile created successfully!');
-                }
-                initReady.userData = true; // Mark user data as ready
-                updateLoading('Ready!', 100);
-                checkAndHideLoadingScreen(); // Final check to hide loading screen
-
-                // Set up real-time listener for future user data updates
-                userRef.on('value', (snapshot) => {
-                    const latestData = snapshot.val();
-                    if (latestData) {
-                        userData = latestData;
-                        console.log('User data updated via Firebase listener:', userData);
-                        updateUI(); // Update UI with latest data
-                        // Cache to LocalStorage for quick access
-                        localStorage.setItem(`user_${userIdToUse}_data`, JSON.stringify(userData));
-                        localStorage.setItem(`user_${userIdToUse}_balance`, userData.coins || 0);
-                    }
-                });
-
-                // Update last_online status every minute
-                setInterval(() => {
-                    userRef.update({ last_online: firebase.database.ServerValue.TIMESTAMP });
-                }, 60 * 1000);
-
-            } catch (error) {
-                console.error('Error fetching/creating user profile in Firebase:', error);
-                loadingText.textContent = 'Failed to load user data!';
-                showToast('Failed to load user data. Please try again.', 'error');
-                // Even on error, we might want to proceed to show a basic app,
-                // but with a clear error message.
-                initReady.userData = true;
-                checkAndHideLoadingScreen();
-            }
-        }
-
-        function generateReferralCode(userId) {
-            // A simple referral code. Consider a more robust, unique generator for production.
-            return `REF-${userId.substring(0, 6).toUpperCase()}`;
-        }
-
-        // --- UI Update Functions ---
-        function updateUI() {
-            // Ensure all critical data is loaded before attempting UI updates
-            if (!userData || !telegramUser || !currentUser) {
-                console.warn('Skipping UI update: missing user data.', { userData, telegramUser, currentUser });
-                return;
-            }
-
-            // User Info Section
-            document.getElementById('user-avatar').src = userData.avatar_url || telegramUser.photo_url || 'https://via.placeholder.com/40';
-            document.getElementById('user-username').innerHTML = `${userData.username || telegramUser.username || telegramUser.first_name} ${currentUser.is_admin ? '<span class="admin-badge">ADMIN</span>' : ''}`;
-            document.getElementById('user-rank').textContent = userData.rank;
-
-            // Balances Display
-            animateCounter('user-balance-coins', userData.coins || 0);
-            animateCounter('user-balance-coins-large', userData.coins || 0);
-
-            // Fetch conversion rates and update USD/BDT values
-            db.ref('settings/conversion_rates').once('value', snapshot => {
-                const rates = snapshot.val();
-                if (rates) {
-                    const usdtValue = (userData.coins * (rates.coin_to_usdt || 0)).toFixed(2);
-                    const bdtValue = (userData.coins * (rates.coin_to_bdt || 0)).toFixed(2);
-                    animateCounter('user-balance-usd', parseFloat(usdtValue));
-                    animateCounter('user-balance-bdt', parseFloat(bdtValue));
-                } else {
-                    console.warn("Conversion rates not set in Firebase settings.");
-                    animateCounter('user-balance-usd', 0.00);
-                    animateCounter('user-balance-bdt', 0.00);
-                }
-            });
-
-            // Referral Link Display
-            if (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.bot && WebApp.initDataUnsafe.bot.username) {
-                document.getElementById('referral-link').textContent = `https://t.me/${WebApp.initDataUnsafe.bot.username}?start=${userData.referral_code}`;
-            } else {
-                 document.getElementById('referral-link').textContent = `https://t.me/YOUR_BOT_USERNAME_HERE?start=${userData.referral_code}`; // Fallback if bot username not available
-            }
-
-
-            // Daily Reward Section Update
-            const lastClaim = userData.last_daily_reward || 0;
-            const twentyFourHours = 24 * 60 * 60 * 1000;
-            const now = Date.now();
-            const canClaim = (now - lastClaim) > twentyFourHours;
-            const dailyRewardButton = document.getElementById('claim-daily-reward');
-
-            if (canClaim) {
-                dailyRewardButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                dailyRewardButton.classList.add('bg-black', 'hover:bg-gray-800');
-                dailyRewardButton.textContent = 'Claim';
-                dailyRewardButton.disabled = false;
-                // Clear any existing timer if reward is now claimable
-                if (dailyRewardTimer) clearInterval(dailyRewardTimer);
-            } else {
-                dailyRewardButton.classList.remove('bg-black', 'hover:bg-gray-800');
-                dailyRewardButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-                const nextClaimTime = new Date(lastClaim + twentyFourHours);
-                dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(nextClaimTime - now)}`;
-                dailyRewardButton.disabled = true;
-
-                // Set up/reset countdown timer
-                if (dailyRewardTimer) clearInterval(dailyRewardTimer); // Clear old timer
-                dailyRewardTimer = setInterval(() => {
-                    const remaining = nextClaimTime - Date.now();
-                    if (remaining <= 0) {
-                        clearInterval(dailyRewardTimer);
-                        dailyRewardTimer = null; // Reset timer ID
-                        updateUI(); // Re-evaluate and enable button
-                    } else {
-                        dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(remaining)}`;
-                    }
-                }, 1000);
-            }
-
-            // Admin nav item visibility in bottom navigation
-            const adminNavItem = document.getElementById('admin-nav-item');
-            if (currentUser.is_admin) {
-                adminNavItem.classList.remove('hidden');
-            } else {
-                adminNavItem.classList.add('hidden');
-            }
-        }
-
-        // Helper function to format time for countdowns
-        function formatTimeRemaining(ms) {
-            if (ms < 0) return '00h 00m 00s';
-            const seconds = Math.floor((ms / 1000) % 60);
-            const minutes = Math.floor((ms / (1000 * 60)) % 60);
-            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-            return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
-        }
-
-        // --- Event Listeners & Interactions ---
-
-        // Daily Reward Claim Handler
-        document.getElementById('claim-daily-reward').addEventListener('click', async () => {
-            if (!currentUser || document.getElementById('claim-daily-reward').disabled) return;
-
-            const userId = currentUser.uid;
-            const userRef = db.ref(`users/${userId}`);
-            const now = Date.now();
-            const dailyRewardAmount = 100; // Example amount
-
-            try {
-                // Use Firebase transaction for safe, atomic coin update
-                let transactionSuccessful = false;
-                await userRef.transaction(currentData => {
-                    if (currentData) {
-                        const lastClaim = currentData.last_daily_reward || 0;
-                        const twentyFourHours = 24 * 60 * 60 * 1000;
-                        if ((now - lastClaim) < twentyFourHours) {
-                            // If already claimed, abort transaction
-                            return undefined;
+                    // Apply Telegram theme
+                    document.documentElement.style.setProperty('--tg-theme-bg-color', window.Telegram.WebApp.themeParams.bg_color);
+                    document.documentElement.style.setProperty('--tg-theme-text-color', window.Telegram.WebApp.themeParams.text_color);
+                    // Update user info
+                    if (tgUser) {
+                        document.getElementById('user-name').textContent = tgUser.username || `${tgUser.first_name} ${tgUser.last_name || ''}`.trim();
+                        if (tgUser.photo_url) {
+                            document.getElementById('user-avatar').src = tgUser.photo_url;
                         }
-                        currentData.coins = (currentData.coins || 0) + dailyRewardAmount;
-                        currentData.last_daily_reward = now;
-                        transactionSuccessful = true;
                     }
-                    return currentData;
-                });
+                    // Handle BackButton
+                    window.Telegram.WebApp.BackButton.onClick(() => {
+                        const currentTab = document.querySelector('.tab-content.active');
+                        if (currentTab && currentTab.id !== 'dashboard-view') {
+                            showTab('dashboard-view');
+                        } else {
+                            window.Telegram.WebApp.close();
+                        }
+                    });
+                    window.Telegram.WebApp.BackButton.show();
+                    // Example MainButton
+                    window.Telegram.WebApp.MainButton.setText('Play a Quiz').show().onClick(() => showTab('quiz-view'));
 
-                if (transactionSuccessful) {
-                    showToast(`Claimed ${dailyRewardAmount} coins!`, 'success');
-                    triggerConfetti();
-                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('success');
-                } else {
-                    showToast('Daily bonus already claimed or an error occurred!', 'warning');
-                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
+                    // Admin check
+                    const ADMIN_TELEGRAM_ID = '8601120665'; // Your Admin Telegram User ID
+                    if (tgUser && tgUser.id == ADMIN_TELEGRAM_ID) {
+                        adminNavItem.classList.remove('hidden');
+                        console.log('Admin mode activated.');
+                    }
+
+                } catch (e) {
+                    console.error('Telegram WebApp initialization failed:', e);
+                    loadingStatus.textContent = 'Guest mode: Telegram SDK failed.';
                 }
-
-            } catch (error) {
-                console.error("Error claiming daily reward:", error);
-                showToast('Failed to claim daily reward.', 'error');
-                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
-            }
-        });
-
-        // Copy Referral Link to Clipboard
-        document.getElementById('copy-referral-link').addEventListener('click', () => {
-            const referralLink = document.getElementById('referral-link').textContent;
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showToast('Referral link copied!', 'success');
-                if (isTelegramEnv) WebApp.HapticFeedback.impactOccurred('light');
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                showToast('Failed to copy link.', 'error');
-                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
-            });
-        });
-
-        // --- Withdraw System Logic ---
-        const withdrawAmountInput = document.getElementById('withdraw-amount');
-        const withdrawMethodSelect = document.getElementById('withdraw-method');
-        const withdrawAddressInput = document.getElementById('withdraw-address');
-        const submitWithdrawButton = document.getElementById('submit-withdraw');
-
-        // Validate withdraw form inputs and enable/disable MainButton
-        const validateWithdrawForm = () => {
-            const amount = parseInt(withdrawAmountInput.value);
-            const method = withdrawMethodSelect.value;
-            const address = withdrawAddressInput.value.trim();
-
-            // Check if user data is loaded and has enough coins
-            const hasEnoughCoins = userData && (userData.coins || 0) >= amount;
-
-            if (isNaN(amount) || amount <= 0 || !method || !address || !hasEnoughCoins) {
-                if (isTelegramEnv) WebApp.MainButton.disable();
-                submitWithdrawButton.disabled = true;
-                submitWithdrawButton.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
-                if (isTelegramEnv) WebApp.MainButton.enable();
-                submitWithdrawButton.disabled = false;
-                submitWithdrawButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                loadingStatus.textContent = 'Guest mode: Telegram SDK not found.';
             }
+            updateLoadingProgress(60, 'Initializing Firebase...');
+
+            // 3. Initialize Firebase (in background)
+            try {
+                // Firebase config - REPLACE WITH YOUR ACTUAL CONFIG
+                const firebaseConfig = {
+                      apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+  authDomain: "ai-tools-9f9a3.firebaseapp.com",
+  projectId: "ai-tools-9f9a3",
+  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
+  messagingSenderId: "839431476061",
+  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
+  measurementId: "G-HKSB33QGW8"
+};
+                firebase.initializeApp(firebaseConfig);
+                firebase.auth().signInAnonymously().then(() => {
+                    console.log("Firebase Anonymous Auth successful!");
+                    // Initialize Firebase Realtime DB, Storage, Analytics here
+                    const db = firebase.database();
+                    const auth = firebase.auth();
+                    const storage = firebase.storage();
+                    const analytics = firebase.analytics();
+
+                    // Example: Sync user data with Firebase
+                    if (tgUser) {
+                        const userId = tgUser.id;
+                        db.ref(`users/${userId}`).on('value', (snapshot) => {
+                            const userData = snapshot.val();
+                            if (userData) {
+                                localStorage.setItem('user', JSON.stringify(userData));
+                                updateUIWithUserData(userData);
+                            } else {
+                                // New user, create entry
+                                db.ref(`users/${userId}`).set({
+                                    id: tgUser.id,
+                                    username: tgUser.username || 'N/A',
+                                    firstName: tgUser.first_name || 'N/A',
+                                    lastName: tgUser.last_name || '',
+                                    photoUrl: tgUser.photo_url || '',
+                                    coins: 0,
+                                    usdt: 0,
+                                    bdt: 0,
+                                    rank: 'Newbie',
+                                    joined: firebase.database.ServerValue.TIMESTAMP
+                                });
+                            }
+                        });
+                    }
+                }).catch((error) => {
+                    console.error("Firebase Anonymous Auth failed:", error);
+                    loadingStatus.textContent = 'Firebase failed. Using cached data.';
+                });
+                updateLoadingProgress(80, 'Loading ads...');
+
+                // 4. Load Ads (in background) - Skeletal
+                setTimeout(() => {
+                    console.log('Adsgram / Monetag loaded (simulated)');
+                    // Placeholder for actual ad loading logic
+                    document.getElementById('adsgram-banner-1').innerHTML = '<img src="https://via.placeholder.com/300x100/6EE7B7/000000?text=ADSGRAM+BANNER" class="rounded-lg">';
+                    document.getElementById('monetag-popup-1').innerHTML = '<img src="https://via.placeholder.com/300x100/FACC15/000000?text=MONETAG+POPUP" class="rounded-lg">';
+                    updateLoadingProgress(100, 'Ready!');
+                }, 500); // Simulate ad loading time
+
+            } catch (e) {
+                console.error('Firebase initialization failed:', e);
+                loadingStatus.textContent = 'Firebase failed. Using cached data.';
+                updateLoadingProgress(100, 'Ready!');
+            }
+
+            // Ensure minimum loading time
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
+
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                    // Initial UI setup (e.g., render dashboard content)
+                    showTab('dashboard-view');
+                }, 500); // Fade out duration
+            }, remainingTime);
         };
 
-        // Attach validation to input changes
-        withdrawAmountInput.addEventListener('input', validateWithdrawForm);
-        withdrawMethodSelect.addEventListener('change', validateWithdrawForm);
-        withdrawAddressInput.addEventListener('input', validateWithdrawForm);
-
-        // Handler for both local button and Telegram MainButton click
-        const handleSubmitWithdrawFromMainButton = async () => {
-            await handleSubmitWithdraw();
-        };
-        submitWithdrawButton.addEventListener('click', async () => {
-            await handleSubmitWithdraw();
-        });
-
-
-        async function handleSubmitWithdraw() {
-            if (!currentUser || (isTelegramEnv && WebApp.MainButton.isDisabled) || submitWithdrawButton.disabled) {
-                showToast('Please fill all withdrawal details correctly.', 'warning');
-                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
-                return;
-            }
-
-            const amount = parseInt(withdrawAmountInput.value);
-            const method = withdrawMethodSelect.value;
-            const address = withdrawAddressInput.value.trim();
-
-            if (isTelegramEnv) WebApp.MainButton.showProgress();
-            else submitWithdrawButton.textContent = 'Processing...';
-
-            try {
-                const userId = currentUser.uid;
-                const userRef = db.ref(`users/${userId}`);
-
-                // Get conversion rates for minimum withdrawal check
-                const ratesSnapshot = await db.ref('settings/conversion_rates').once('value');
-                const rates = ratesSnapshot.val();
-                const minWithdrawUSD = 5; // Example minimum withdrawal amount in USD
-                const equivalentUSD = (amount * (rates.coin_to_usdt || 0));
-
-                if (equivalentUSD < minWithdrawUSD) {
-                    showToast(`Minimum withdraw is $${minWithdrawUSD} USD (approx ${Math.ceil(minWithdrawUSD / (rates.coin_to_usdt || 0.0001))} coins).`, 'warning');
-                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
-                    return;
-                }
-
-                // Ensure user has enough coins using a transaction for atomicity
-                let transactionSuccessful = false;
-                await userRef.transaction(currentData => {
-                    if (currentData && (currentData.coins || 0) >= amount) {
-                        currentData.coins = currentData.coins - amount;
-                        transactionSuccessful = true;
-                        return currentData;
-                    }
-                    return undefined; // Abort transaction if insufficient funds
-                });
-
-                if (!transactionSuccessful) {
-                    showToast('Failed to deduct coins. Insufficient balance or concurrent update.', 'error');
-                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
-                    return;
-                }
-
-                // Record the withdrawal request
-                const withdrawRef = db.ref('withdraws').push();
-                await withdrawRef.set({
-                    userId: userId,
-                    username: userData.username || telegramUser.username,
-                    amount_coins: amount,
-                    amount_usd: equivalentUSD.toFixed(2),
-                    method: method,
-                    address: address,
-                    status: 'pending',
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-
-                showToast('Withdraw request submitted successfully!', 'success');
-                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('success');
-
-                // Clear form inputs
-                withdrawAmountInput.value = '';
-                withdrawMethodSelect.value = '';
-                withdrawAddressInput.value = '';
-                validateWithdrawForm(); // Update MainButton state
-
-                // --- Admin Bot Notification (Requires a Backend Server) ---
-                // This part demonstrates how you would call your backend API.
-                // The actual Telegram Bot API calls (e.g., `sendMessage`) cannot be made directly from client-side JavaScript.
-                /*
-                if (isTelegramEnv) {
-                    fetch('YOUR_BACKEND_API_ENDPOINT/notifyAdmin', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            adminChatId: ADMIN_TELEGRAM_ID,
-                            message: `New withdraw request from ${userData.username || telegramUser.username} (${userId}) for ${amount} coins ($${equivalentUSD.toFixed(2)}) via ${method} to ${address}.`
-                        })
-                    }).then(response => {
-                        if (!response.ok) console.error("Failed to send admin notification.");
-                    }).catch(err => console.error("Error sending admin notification:", err));
-                }
-                */
-
-            } catch (error) {
-                console.error("Error submitting withdraw request:", error);
-                showToast('Failed to submit withdraw request.', 'error');
-                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
-            } finally {
-                if (isTelegramEnv) WebApp.MainButton.hideProgress();
-                submitWithdrawButton.textContent = 'Request Withdraw'; // Reset button text
-            }
-        }
-
-        // --- Admin Panel Functions (Conditional Setup) ---
-        function setupAdminPanelListeners() {
-            if (!currentUser || !currentUser.is_admin) {
-                console.warn('Attempted to set up admin panel listeners for a non-admin user.');
-                return;
-            }
-            console.log('Setting up admin panel listeners.');
-
-            // Real-time updates for admin dashboard stats
-            db.ref('users').on('value', snapshot => {
-                const users = snapshot.val();
-                if (users) {
-                    const totalUsers = Object.keys(users).length;
-                    const onlineUsers = Object.values(users).filter(u => u.last_online && (Date.now() - u.last_online) < 5 * 60 * 1000).length; // Active within last 5 minutes
-                    animateCounter('admin-total-users', totalUsers);
-                    animateCounter('admin-online-users', onlineUsers);
-                }
-            });
-
-            db.ref('withdraws').on('value', snapshot => {
-                const withdraws = snapshot.val();
-                if (withdraws) {
-                    const totalWithdrawals = Object.keys(withdraws).length;
-                    const pendingWithdraws = Object.values(withdraws).filter(w => w.status === 'pending').length;
-                    animateCounter('admin-total-withdrawals', totalWithdrawals);
-                    animateCounter('admin-pending-withdraws', pendingWithdraws);
-
-                    // Dynamically populate withdraw requests
-                    const adminWithdrawRequestsDiv = document.getElementById('admin-withdraw-requests');
-                    adminWithdrawRequestsDiv.innerHTML = ''; // Clear previous requests
-
-                    Object.entries(withdraws).forEach(([withdrawId, request]) => {
-                        const statusClass = {
-                            'pending': 'bg-yellow-100 text-yellow-800',
-                            'approved': 'bg-green-100 text-green-800',
-                            'rejected': 'bg-red-100 text-red-800'
-                        };
-                        const requestHtml = `
-                            <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
-                                <div>
-                                    <p class="font-bold text-md">User ${request.userId.substring(0, 8)}: ${request.amount_coins} Coins ($${request.amount_usd})</p>
-                                    <p class="text-sm text-gray-500">Method: ${request.method} | Details: ${request.address}</p>
-                                    <p class="text-xs text-gray-400">${new Date(request.timestamp).toLocaleString()}</p>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full ${statusClass[request.status]}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
-                                    ${request.status === 'pending' ? `
-                                        <button data-id="${withdrawId}" class="admin-approve-btn ml-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm">Approve</button>
-                                        <button data-id="${withdrawId}" class="admin-reject-btn ml-2 px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Reject</button>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                        adminWithdrawRequestsDiv.innerHTML += requestHtml;
-                    });
-
-                    // Attach event listeners to newly created buttons
-                    adminWithdrawRequestsDiv.querySelectorAll('.admin-approve-btn').forEach(button => {
-                        button.onclick = (e) => handleWithdrawAction(e.target.dataset.id, 'approved');
-                    });
-                    adminWithdrawRequestsDiv.querySelectorAll('.admin-reject-btn').forEach(button => {
-                        button.onclick = (e) => handleWithdrawAction(e.target.dataset.id, 'rejected');
-                    });
-                }
-            });
-
-            // Load saved conversion rates into inputs
-            db.ref('settings/conversion_rates').once('value', snapshot => {
-                const rates = snapshot.val();
-                if (rates) {
-                    document.getElementById('coin-to-usdt').value = rates.coin_to_usdt || '0.0001';
-                    document.getElementById('coin-to-bdt').value = rates.coin_to_bdt || '0.01';
-                }
-            });
-
-            // Save Conversion Rates Handler
-            document.querySelector('#tab-admin button.bg-green-500').addEventListener('click', () => {
-                const coinToUsdt = parseFloat(document.getElementById('coin-to-usdt').value);
-                const coinToBdt = parseFloat(document.getElementById('coin-to-bdt').value);
-
-                if (isNaN(coinToUsdt) || isNaN(coinToBdt) || coinToUsdt <= 0 || coinToBdt <= 0) {
-                    showToast('Invalid conversion rates. Must be positive numbers.', 'warning');
-                    return;
-                }
-
-                db.ref('settings/conversion_rates').set({
-                    coin_to_usdt: coinToUsdt,
-                    coin_to_bdt: coinToBdt
-                }).then(() => {
-                    showToast('Conversion rates saved!', 'success');
-                }).catch(err => {
-                    console.error("Error saving conversion rates:", err);
-                    showToast('Failed to save rates.', 'error');
-                });
-            });
-
-            // Send Broadcast Message (via Bot - requires backend)
-            document.getElementById('send-broadcast').addEventListener('click', () => {
-                const message = document.getElementById('broadcast-message').value.trim();
-                if (!message) {
-                    showToast('Broadcast message cannot be empty.', 'warning');
-                    return;
-                }
-                showToast('Broadcast functionality requires a backend server to interact with Telegram Bot API.', 'info', 5000);
-                console.log('Simulating broadcast to all users:', message);
-                // In a real app, send this to your backend, which then uses the Bot API
-                /*
-                fetch('YOUR_BACKEND_API_ENDPOINT/broadcast', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
-                });
-                */
-            });
-
-            // User Search and Update (Simplified)
-            document.getElementById('search-user').addEventListener('click', async () => {
-                const searchId = document.getElementById('user-search-id').value.trim();
-                if (!searchId) { showToast('Please enter a user ID to search.', 'warning'); return; }
-
-                try {
-                    const snapshot = await db.ref(`users/${searchId}`).once('value');
-                    const user = snapshot.val();
-                    const userDetailsDisplay = document.getElementById('user-details-display');
-                    if (user) {
-                        document.getElementById('ud-username').textContent = user.username || user.first_name;
-                        document.getElementById('ud-id').textContent = user.telegram_id;
-                        document.getElementById('ud-coins').textContent = (user.coins || 0).toLocaleString();
-                        userDetailsDisplay.classList.remove('hidden');
-
-                        // Update coins functionality
-                        document.getElementById('ud-update-coins').onclick = async () => {
-                            const addCoins = parseInt(document.getElementById('ud-add-coins').value);
-                            if (isNaN(addCoins) || addCoins === 0) { showToast('Enter a valid number of coins to add/deduct.', 'warning'); return; }
-                            await db.ref(`users/${searchId}/coins`).transaction(currentCoins => {
-                                return (currentCoins || 0) + addCoins;
-                            });
-                            showToast(`Coins updated for ${user.username}`, 'success');
-                            document.getElementById('ud-add-coins').value = ''; // Clear input
-                        };
-                    } else {
-                        showToast('User not found.', 'error');
-                        userDetailsDisplay.classList.add('hidden');
-                    }
-                } catch (error) {
-                    console.error("Error searching user:", error);
-                    showToast('Error searching user.', 'error');
-                }
-            });
-        }
-
-        // Handle Admin Withdraw Actions (Approve/Reject)
-        async function handleWithdrawAction(withdrawId, status) {
-            if (!currentUser || !currentUser.is_admin) {
-                showToast('Access Denied: You are not an admin.', 'error');
-                return;
-            }
-            if (!confirm(`Are you sure you want to ${status} this withdrawal request?`)) return;
-
-            const withdrawRef = db.ref(`withdraws/${withdrawId}`);
-            try {
-                await withdrawRef.update({ status: status, processed_at: firebase.database.ServerValue.TIMESTAMP });
-                showToast(`Withdrawal request ${status}!`, 'success');
-                // Optional: Notify user via Telegram Bot (requires backend)
-            } catch (error) {
-                console.error(`Error updating withdrawal status to ${status}:`, error);
-                showToast(`Failed to ${status} request.`, 'error');
-            }
-        }
-
-        // --- Bottom Navigation Logic ---
-        const navItems = document.querySelectorAll('.bottom-nav-item');
+        // ==================================
+        // UI & NAVIGATION SYSTEM
+        // ==================================
         const tabContents = document.querySelectorAll('.tab-content');
+        const navItems = document.querySelectorAll('.nav-item');
 
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetTab = item.dataset.tab;
+        function showTab(tabId) {
+            tabContents.forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
 
-                // Admin access check for 'admin' tab
-                if (targetTab === 'admin' && (!currentUser || !currentUser.is_admin)) {
-                    showToast('Access Denied: You are not an admin.', 'error');
-                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
-                    return; // Stop navigation if not authorized
-                }
-
-                setActiveTab(targetTab);
-                if (isTelegramEnv) WebApp.HapticFeedback.impactOccurred('light');
-            });
-        });
-
-        // Function to set the currently active tab
-        function setActiveTab(targetTab) {
-            // Remove 'active' class from all nav items and hide all tab content
             navItems.forEach(item => item.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add 'active' class to the selected nav item
-            const activeNavItem = document.querySelector(`.bottom-nav-item[data-tab="${targetTab}"]`);
+            const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
             if (activeNavItem) {
                 activeNavItem.classList.add('active');
             }
 
-            // Show the corresponding tab content
-            const activeTabContent = document.getElementById(`tab-${targetTab}`);
-            if (activeTabContent) {
-                activeTabContent.classList.add('active');
-            }
-
-            // Manage Telegram MainButton visibility based on the active tab
-            if (isTelegramEnv) {
-                if (targetTab === 'cash') {
-                    WebApp.MainButton.show();
-                    validateWithdrawForm(); // Ensure MainButton state is correct
-                } else {
-                    WebApp.MainButton.hide();
+            // Update Telegram MainButton based on tab
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.MainButton) {
+                switch (tabId) {
+                    case 'dashboard-view':
+                        window.Telegram.WebApp.MainButton.setText('Play a Quiz').show().onClick(() => showTab('quiz-view'));
+                        window.Telegram.WebApp.BackButton.hide();
+                        break;
+                    case 'quiz-view':
+                        window.Telegram.WebApp.MainButton.setText('Start Daily Quiz').show().onClick(() => alert('Daily Quiz started! (Skeletal)'));
+                        window.Telegram.WebApp.BackButton.show();
+                        break;
+                    case 'spin-view':
+                        window.Telegram.WebApp.MainButton.setText('Spin for Rewards').show().onClick(() => handleSpin());
+                        window.Telegram.WebApp.BackButton.show();
+                        break;
+                    case 'refer-view':
+                        window.Telegram.WebApp.MainButton.setText('Share Referral Link').show().onClick(() => copyReferralLink());
+                        window.Telegram.WebApp.BackButton.show();
+                        break;
+                    case 'cash-view':
+                        window.Telegram.WebApp.MainButton.setText('Request Withdrawal').show().onClick(() => alert('Withdrawal request (Skeletal)'));
+                        window.Telegram.WebApp.BackButton.show();
+                        break;
+                    case 'admin-view':
+                        window.Telegram.WebApp.MainButton.setText('Save Admin Changes').show().onClick(() => alert('Admin changes saved (Skeletal)'));
+                        window.Telegram.WebApp.BackButton.show();
+                        break;
+                    default:
+                        window.Telegram.WebApp.MainButton.hide();
+                        window.Telegram.WebApp.BackButton.hide();
+                        break;
                 }
-            }
-
-            // If admin tab is activated, set up its listeners
-            if (targetTab === 'admin' && currentUser && currentUser.is_admin) {
-                setupAdminPanelListeners();
             }
         }
 
-        // --- Toast Notification System ---
-        function showToast(message, type = 'info', duration = 3000) {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            // Using glassmorphism effect for toasts too
-            toast.className = `premium-card !shadow-none glass-effect p-3 rounded-xl shadow-lg text-sm font-semibold flex items-center transform translate-y-full opacity-0 transition-all duration-300 ease-out`;
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.dataset.tab;
+                showTab(tabId);
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            });
+        });
 
-            let icon = '';
-            let textColor = '';
-            // Tailwind background classes for icon to stand out slightly
-            let iconBgClass = '';
+        // ==================================
+        // USER DATA & BALANCE SYSTEM (Skeletal)
+        // ==================================
+        let currentUser = {
+            id: 'guest',
+            username: 'Guest User',
+            photoUrl: 'https://via.placeholder.com/60/6EE7B7/000000?text=TG',
+            coins: 0,
+            usdt: 0,
+            bdt: 0,
+            rank: 'Newbie',
+            referralLink: 'https://t.me/your_bot?start=refer_guest'
+        };
 
-            switch (type) {
-                case 'success':
-                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle text-green-500 mr-2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>`;
-                    textColor = 'text-green-800';
-                    iconBgClass = 'bg-green-50'; // Light green background for icon area
-                    break;
-                case 'error':
-                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-circle text-red-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`;
-                    textColor = 'text-red-800';
-                    iconBgClass = 'bg-red-50';
-                    break;
-                case 'warning':
-                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucude-alert-circle text-yellow-500 mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`;
-                    textColor = 'text-yellow-800';
-                    iconBgClass = 'bg-yellow-50';
-                    break;
-                case 'info':
-                default:
-                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info text-blue-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
-                    textColor = 'text-blue-800';
-                    iconBgClass = 'bg-blue-50';
+        const COIN_TO_USDT_RATE = 0.00001; // 100,000 coins = 1 USDT
+        const USDT_TO_BDT_RATE = 110; // 1 USDT = 110 BDT
+
+        function updateUIWithUserData(data) {
+            currentUser = { ...currentUser, ...data };
+            document.getElementById('user-name').textContent = currentUser.username;
+            document.getElementById('user-avatar').src = currentUser.photoUrl;
+            document.getElementById('user-rank').textContent = `Rank: ${currentUser.rank}`;
+
+            document.getElementById('user-coins').textContent = formatNumber(currentUser.coins);
+            document.getElementById('cash-coins').textContent = formatNumber(currentUser.coins);
+
+            currentUser.usdt = (currentUser.coins * COIN_TO_USDT_RATE).toFixed(2);
+            currentUser.bdt = (currentUser.usdt * USDT_TO_BDT_RATE).toFixed(2);
+
+            document.getElementById('user-usdt').textContent = `${currentUser.usdt} USDT`;
+            document.getElementById('user-bdt').textContent = `${currentUser.bdt} BDT`;
+            document.getElementById('cash-usdt').textContent = `${currentUser.usdt} USDT`;
+            document.getElementById('cash-bdt').textContent = `${currentUser.bdt} BDT`;
+
+            document.getElementById('referral-link').textContent = currentUser.referralLink; // For real app, generate based on user ID
+            localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // Add coins function (Skeletal - in real app, this would be backend validated)
+        function addCoins(amount) {
+            currentUser.coins += amount;
+            updateUIWithUserData(currentUser);
+            // Flash a notification
+            showToast(`+${amount} Coins!`, 'success');
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+            }
+            // Update Firebase in background
+            if (firebase.database().ref(`users/${currentUser.id}`)) {
+                 firebase.database().ref(`users/${currentUser.id}`).update({ coins: currentUser.coins });
+            }
+        }
+
+
+        // ==================================
+        // SPIN SYSTEM (Skeletal)
+        // ==================================
+        const spinWheel = document.getElementById('spin-wheel');
+        const spinButton = document.getElementById('spin-button');
+        const spinsLeftElement = document.getElementById('spins-left');
+        const spinCooldownElement = document.getElementById('spin-cooldown');
+        let spinsToday = 0;
+        const MAX_SPINS_DAILY = 3;
+        const SPIN_COOLDOWN_SECONDS = 60; // 1 minute cooldown for demonstration
+        let lastSpinTime = 0;
+
+        function getSpinsRemaining() {
+            const today = new Date().toDateString();
+            const storedSpins = JSON.parse(localStorage.getItem('spins')) || {};
+            if (storedSpins.date !== today) {
+                storedSpins.date = today;
+                storedSpins.count = 0;
+            }
+            spinsToday = storedSpins.count;
+            lastSpinTime = storedSpins.lastSpinTime || 0;
+            spinsLeftElement.textContent = MAX_SPINS_DAILY - spinsToday;
+            localStorage.setItem('spins', JSON.stringify(storedSpins));
+        }
+
+        function handleSpin() {
+            getSpinsRemaining(); // Refresh spin count
+
+            const now = Date.now();
+            const timeSinceLastSpin = (now - lastSpinTime) / 1000;
+
+            if (spinsToday >= MAX_SPINS_DAILY) {
+                showToast('No spins left today! Come back tomorrow.', 'info');
+                return;
             }
 
-            toast.innerHTML = `<div class="p-1 rounded-full ${iconBgClass}">${icon}</div> <span class="${textColor}">${message}</span>`;
-            toastContainer.appendChild(toast);
+            if (timeSinceLastSpin < SPIN_COOLDOWN_SECONDS) {
+                const remaining = Math.ceil(SPIN_COOLDOWN_SECONDS - timeSinceLastSpin);
+                showToast(`Cooldown: ${remaining} seconds left.`, 'info');
+                return;
+            }
+
+            spinButton.disabled = true;
+            spinButton.textContent = 'Spinning...';
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            }
+
+            // Simulate spin animation
+            const randomDegree = Math.floor(Math.random() * 360) + (360 * 5); // Spin at least 5 full rotations
+            spinWheel.style.transform = `rotate(${randomDegree}deg)`;
+
+            setTimeout(() => {
+                const prizeOptions = [50, 100, 150, 'Try Again', 'Bonus Spin', 200];
+                const wonPrize = prizeOptions[Math.floor(Math.random() * prizeOptions.length)];
+
+                spinWheel.style.transform = `rotate(${randomDegree % 360}deg)`; // Reset for next spin
+
+                if (typeof wonPrize === 'number') {
+                    addCoins(wonPrize);
+                    showToast(`You won ${wonPrize} Coins!`, 'success');
+                } else {
+                    showToast(`You landed on: ${wonPrize}!`, 'info');
+                }
+
+                spinsToday++;
+                lastSpinTime = now;
+                const storedSpins = JSON.parse(localStorage.getItem('spins')) || {};
+                storedSpins.count = spinsToday;
+                storedSpins.lastSpinTime = lastSpinTime;
+                storedSpins.date = new Date().toDateString(); // Ensure date is updated
+                localStorage.setItem('spins', JSON.stringify(storedSpins));
+
+                getSpinsRemaining(); // Update display
+                spinButton.disabled = false;
+                spinButton.textContent = 'Spin Now!';
+                startSpinCooldownTimer();
+                showConfetti(); // Play confetti!
+            }, 5000); // Animation duration
+        }
+
+        function startSpinCooldownTimer() {
+            spinCooldownElement.classList.remove('hidden');
+            const now = Date.now();
+            const timeElapsed = (now - lastSpinTime) / 1000;
+            let remainingSeconds = Math.max(0, SPIN_COOLDOWN_SECONDS - timeElapsed);
+
+            const timerInterval = setInterval(() => {
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    spinCooldownElement.classList.add('hidden');
+                    spinButton.disabled = false; // Enable button after cooldown
+                    return;
+                }
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = Math.floor(remainingSeconds % 60);
+                spinCooldownElement.querySelector('span').textContent =
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                remainingSeconds--;
+            }, 1000);
+        }
+
+        spinButton.addEventListener('click', handleSpin);
+
+
+        // ==================================
+        // REFERRAL SYSTEM (Skeletal)
+        // ==================================
+        const copyReferralLinkBtn = document.getElementById('copy-referral-link-btn');
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referral-link').textContent;
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showToast('Referral link copied!', 'success');
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                }
+            }).catch(err => {
+                console.error('Failed to copy referral link:', err);
+                showToast('Failed to copy link.', 'error');
+            });
+        }
+        copyReferralLinkBtn.addEventListener('click', copyReferralLink);
+
+        // ==================================
+        // NOTIFICATION SYSTEM
+        // ==================================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.classList.add('fixed', 'bottom-24', 'left-1/2', '-translate-x-1/2', 'px-4', 'py-2', 'rounded-lg', 'shadow-lg', 'text-white', 'font-bold', 'z-[1000]', 'transition-all', 'duration-300', 'ease-in-out', 'transform', 'opacity-0', 'scale-90');
+
+            if (type === 'success') toast.classList.add('bg-green-500');
+            else if (type === 'error') toast.classList.add('bg-red-500');
+            else toast.classList.add('bg-blue-500');
+
+            toast.textContent = message;
+            document.body.appendChild(toast);
 
             // Animate in
             setTimeout(() => {
-                toast.style.transform = 'translateY(0)';
-                toast.style.opacity = '1';
-            }, 10);
+                toast.classList.remove('opacity-0', 'scale-90');
+                toast.classList.add('opacity-100', 'scale-100');
+            }, 100);
 
             // Animate out and remove
             setTimeout(() => {
-                toast.style.transform = 'translateY(100%)';
-                toast.style.opacity = '0';
+                toast.classList.remove('opacity-100', 'scale-100');
+                toast.classList.add('opacity-0', 'scale-90');
                 toast.addEventListener('transitionend', () => toast.remove());
-            }, duration);
+            }, 3000);
         }
 
-        // --- Confetti Animation (Basic CSS/JS) ---
-        function triggerConfetti() {
+        // ==================================
+        // ANIMATIONS: Confetti
+        // ==================================
+        function showConfetti() {
+            // Very basic CSS confetti for demonstration
             const confettiContainer = document.createElement('div');
-            confettiContainer.style.position = 'fixed';
-            confettiContainer.style.top = '0';
-            confettiContainer.style.left = '0';
-            confettiContainer.style.width = '100%';
-            confettiContainer.style.height = '100%';
-            confettiContainer.style.pointerEvents = 'none';
-            confettiContainer.style.overflow = 'hidden';
-            confettiContainer.style.zIndex = '9998';
+            confettiContainer.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'h-full', 'pointer-events-none', 'z-[999]');
             document.body.appendChild(confettiContainer);
 
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
-                confetti.style.position = 'absolute';
-                confetti.style.width = '10px';
-                confetti.style.height = '10px';
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
-                confetti.style.borderRadius = '50%';
-                confetti.style.left = `${Math.random() * 100}vw`;
-                confetti.style.top = `${Math.random() * -50}px`; // Start above screen
-                confetti.style.opacity = Math.random();
-                confetti.style.transform = `scale(${Math.random() * 0.8 + 0.2}) rotate(${Math.random() * 360}deg)`;
-                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s ease-out forwards`;
+                const colors = ['var(--primary-cyan)', 'var(--primary-yellow)', 'var(--primary-pink)', 'var(--primary-purple)'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 10 + 5; // 5-15px
+
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background-color: ${randomColor};
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    left: ${Math.random() * 100}vw;
+                    top: ${Math.random() * -20}vh; /* Start above viewport */
+                    opacity: ${Math.random() + 0.5};
+                    transform: rotate(${Math.random() * 360}deg);
+                    animation: fall ${Math.random() * 3 + 2}s ease-in forwards;
+                    animation-delay: ${Math.random() * 0.5}s;
+                `;
                 confettiContainer.appendChild(confetti);
             }
 
             const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes confetti-fall {
-                    0% { transform: translateY(0vh) rotate(0deg) opacity(1); }
-                    100% { transform: translateY(100vh) rotate(720deg) opacity(0); }
+            style.textContent = `
+                @keyframes fall {
+                    0% { transform: translateY(0vh) rotate(0deg); opacity: 1; }
+                    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
                 }
             `;
             document.head.appendChild(style);
 
+
+            // Remove confetti after animation
             setTimeout(() => {
                 confettiContainer.remove();
                 style.remove();
             }, 5000);
         }
 
-        // --- Counter Animation for Numbers ---
-        function animateCounter(elementId, targetValue) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            // Get current value from textContent, remove commas for parsing
-            const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
+        // ==================================
+        // PARTICLE EFFECT GENERATION
+        // ==================================
+        function createParticles(containerClass, count) {
+            const container = document.querySelector(`.${containerClass}`);
+            if (!container) return;
 
-            const duration = 800; // Animation duration in ms
-            let startTime;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 10 + 5; // 5-15px
+                const duration = Math.random() * 10 + 10; // 10-20s
+                const delay = Math.random() * duration;
 
-            function step(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const progress = (currentTime - startTime) / duration;
-
-                if (progress < 1) {
-                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
-                    const currentValue = startValue + (targetValue - startValue) * easedProgress;
-                    element.textContent = currentValue.toFixed(elementId.includes('usd') || elementId.includes('bdt') ? 2 : 0).toLocaleString();
-                    requestAnimationFrame(step);
-                } else {
-                    element.textContent = targetValue.toFixed(elementId.includes('usd') || elementId.includes('bdt') ? 2 : 0).toLocaleString();
-                }
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `-${delay}s`; // Start at random point in animation
+                container.appendChild(particle);
             }
-            requestAnimationFrame(step);
         }
+
+        // ==================================
+        // APP INITIALIZATION
+        // ==================================
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles('particles', 30); // Create particles for the app background
+            initApp();
+            getSpinsRemaining(); // Load spin count on startup
+            if (lastSpinTime > 0) {
+                startSpinCooldownTimer(); // Resume cooldown if necessary
+            }
+            updateUIWithUserData(currentUser); // Initial UI render with default/cached data
+        });
 
     </script>
 </body>
