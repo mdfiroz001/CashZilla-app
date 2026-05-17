@@ -321,7 +321,7 @@
         /* Ad Frame */
         .ad-frame {
             border: 3px dashed #FFD700; /* Yellow dashed border */
-            border-radius: 1.5rem;
+            border-radius: 1.75rem; /* Match app-card radius */
             background-color: #fcfcfc; /* White background */
             padding: 1rem;
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
@@ -354,9 +354,6 @@
         .nav-item.active {
             color: #A020F0; /* Purple */
             transform: translateY(-5px);
-            /* box-shadow: 0 -5px 15px rgba(160, 32, 240, 0.3); */
-            /* border-top: 2px solid #A020F0; */
-            /* padding-top: 5px; */
         }
         .nav-item.active::before {
             content: '';
@@ -486,6 +483,7 @@
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             color: #000;
+            white-space: nowrap; /* Prevent text wrapping */
         }
         .large-button:hover {
             transform: translateY(-2px);
@@ -506,6 +504,10 @@
         .large-button.gray {
              background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
              color: #666;
+        }
+        .large-button.red {
+            background: linear-gradient(135deg, #FF8888, #FF6666);
+            color: #880000;
         }
 
 
@@ -532,13 +534,13 @@
             color: #fff;
             font-weight: 600;
             border: 2px solid rgba(255,255,255,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .spin-wheel-card .top-info span {
             display: flex;
             align-items: center;
             font-size: 0.9rem;
             padding: 0 0.5rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .spin-wheel-card .top-info i {
             margin-right: 0.4rem;
@@ -790,7 +792,7 @@
         <div class="sticky top-0 z-20 bg-white dark:bg-gray-800 p-4 flex items-center justify-between border-b-2 border-black rounded-b-xl app-card shadow-lg" style="border-bottom-left-radius: 1.75rem; border-bottom-right-radius: 1.75rem;">
             <div class="flex items-center">
                 <div class="loading-logo w-10 h-10 border-2 border-green-500 text-green-500 mr-2 shadow-none text-2xl" style="position: static; animation: none;">CZ</div>
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">CASHZILLA</h1>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">CASHZILLA <span class="text-green-500 text-sm italic">Quiz to Earn <i data-lucide="leaf" class="w-3 h-3 inline-block"></i></span></h1>
             </div>
             <button id="profile-button" class="p-2 rounded-full border-2 border-black bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:scale-105 transition-transform shadow-md">
                 <i data-lucide="settings" class="w-5 h-5"></i>
@@ -850,19 +852,19 @@
                 <div id="featured-quizzes-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div class="app-card p-4 bg-gradient-pink flex items-center justify-between">
                         <div>
-                            <h4 class="font-bold text-lg">Ultimate Donghua Trivia</h4>
-                            <p class="text-sm flex items-center text-black opacity-80"><i data-lucide="gem" class="w-4 h-4 mr-1 text-yellow-500"></i> 5 COINS</p>
+                            <h4 class="font-bold text-lg text-white">Ultimate Donghua Trivia</h4>
+                            <p class="text-sm flex items-center text-white opacity-80"><i data-lucide="gem" class="w-4 h-4 mr-1 text-yellow-300"></i> 5 COINS</p>
                         </div>
-                        <button class="w-8 h-8 rounded-full bg-white text-pink-600 flex items-center justify-center border-2 border-black">
+                        <button class="w-8 h-8 rounded-full bg-white text-pink-600 flex items-center justify-center border-2 border-black" onclick="showToast('Starting quiz...', 'info');">
                             <i data-lucide="check" class="w-4 h-4"></i>
                         </button>
                     </div>
                     <div class="app-card p-4 bg-gradient-green flex items-center justify-between">
                         <div>
-                            <h4 class="font-bold text-lg">Chinese Mythology in...</h4>
-                            <p class="text-sm flex items-center text-black opacity-80"><i data-lucide="gem" class="w-4 h-4 mr-1 text-yellow-500"></i> 3 COINS</p>
+                            <h4 class="font-bold text-lg text-white">Chinese Mythology in...</h4>
+                            <p class="text-sm flex items-center text-white opacity-80"><i data-lucide="gem" class="w-4 h-4 mr-1 text-yellow-300"></i> 3 COINS</p>
                         </div>
-                        <button class="w-8 h-8 rounded-full bg-white text-green-600 flex items-center justify-center border-2 border-black">
+                        <button class="w-8 h-8 rounded-full bg-white text-green-600 flex items-center justify-center border-2 border-black" onclick="showToast('Starting quiz...', 'info');">
                             <i data-lucide="check" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -915,19 +917,19 @@
                     <div id="quiz-categories-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <!-- Categories will be injected here -->
                         <button class="category-card app-card p-4 bg-gradient-purple flex flex-col items-center glass-effect" data-category="Crypto">
-                            <i data-lucide="bitcoin" class="w-10 h-10 mb-2 text-purple-600"></i>
+                            <i data-lucide="bitcoin" class="w-10 h-10 mb-2 text-white"></i>
                             <span class="font-semibold text-lg text-white">Crypto</span>
                         </button>
                         <button class="category-card app-card p-4 bg-gradient-green flex flex-col items-center glass-effect" data-category="Technology">
-                            <i data-lucide="laptop" class="w-10 h-10 mb-2 text-green-600"></i>
+                            <i data-lucide="laptop" class="w-10 h-10 mb-2 text-white"></i>
                             <span class="font-semibold text-lg text-white">Technology</span>
                         </button>
                         <button class="category-card app-card p-4 bg-gradient-yellow flex flex-col items-center glass-effect" data-category="Gaming">
-                            <i data-lucide="gamepad" class="w-10 h-10 mb-2 text-yellow-600"></i>
+                            <i data-lucide="gamepad" class="w-10 h-10 mb-2 text-white"></i>
                             <span class="font-semibold text-lg text-white">Gaming</span>
                         </button>
                         <button class="category-card app-card p-4 bg-gradient-pink flex flex-col items-center glass-effect" data-category="General Knowledge">
-                            <i data-lucide="lightbulb" class="w-10 h-10 mb-2 text-pink-600"></i>
+                            <i data-lucide="lightbulb" class="w-10 h-10 mb-2 text-white"></i>
                             <span class="font-semibold text-lg text-white">General Knowledge</span>
                         </button>
                     </div>
@@ -946,10 +948,10 @@
                         <p id="quiz-question" class="text-xl font-semibold mb-6 dark:text-white">Loading question...</p>
                         <div id="quiz-options" class="grid grid-cols-1 gap-4">
                             <!-- Options will be injected here -->
-                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-cyan-100 dark:hover:bg-cyan-700 hover:border-cyan-500 transition-all font-medium dark:text-white glass-effect">Option A</button>
-                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-cyan-100 dark:hover:bg-cyan-700 hover:border-cyan-500 transition-all font-medium dark:text-white glass-effect">Option B</button>
-                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-cyan-100 dark:hover:bg-cyan-700 hover:border-cyan-500 transition-all font-medium dark:text-white glass-effect">Option C</button>
-                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-cyan-100 dark:hover:bg-cyan-700 hover:border-cyan-500 transition-all font-medium dark:text-white glass-effect">Option D</button>
+                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-purple-100 dark:hover:bg-purple-700 hover:border-purple-500 transition-all font-medium dark:text-white glass-effect">Option A</button>
+                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-purple-100 dark:hover:bg-purple-700 hover:border-purple-500 transition-all font-medium dark:text-white glass-effect">Option B</button>
+                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-purple-100 dark:hover:bg-purple-700 hover:border-purple-500 transition-all font-medium dark:text-white glass-effect">Option C</button>
+                            <button class="quiz-option-button app-card p-4 bg-gray-100 dark:bg-gray-600 text-left hover:bg-purple-100 dark:hover:bg-purple-700 hover:border-purple-500 transition-all font-medium dark:text-white glass-effect">Option D</button>
                         </div>
                         <button id="next-quiz-button" class="mt-6 w-full py-3 bg-blue-500 text-white font-bold rounded-xl border-2 border-black hover:bg-blue-600 transition-colors hidden">Next Question</button>
                     </div>
@@ -1113,27 +1115,29 @@
                 </h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">Top players win cash prizes weekly!</p>
 
-                <div id="leaderboard-countdown" class="app-card bg-gradient-purple text-white">
-                    <div class="time-box">
-                        <div class="value" id="lb-days">20</div>
-                        <div class="label">Days</div>
+                <div class="app-card bg-gradient-purple text-white">
+                    <div id="leaderboard-countdown">
+                        <div class="time-box">
+                            <div class="value" id="lb-days">00</div>
+                            <div class="label">Days</div>
+                        </div>
+                        <div class="time-box">
+                            <div class="value" id="lb-hours">00</div>
+                            <div class="label">Hours</div>
+                        </div>
+                        <div class="time-box">
+                            <div class="value" id="lb-minutes">00</div>
+                            <div class="label">Mins</div>
+                        </div>
+                        <div class="time-box">
+                            <div class="value" id="lb-seconds">00</div>
+                            <div class="label">Secs</div>
+                        </div>
                     </div>
-                    <div class="time-box">
-                        <div class="value" id="lb-hours">6</div>
-                        <div class="label">Hours</div>
-                    </div>
-                    <div class="time-box">
-                        <div class="value" id="lb-minutes">58</div>
-                        <div class="label">Mins</div>
-                    </div>
-                    <div class="time-box">
-                        <div class="value" id="lb-seconds">20</div>
-                        <div class="label">Secs</div>
-                    </div>
-                    <span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs flex items-center"><span class="relative flex h-2 w-2 mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> LIVE NOW</span>
+                    <span class="mt-2 text-xs flex items-center justify-center"><span class="relative flex h-2 w-2 mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> LIVE NOW</span>
                 </div>
 
-                <h3 class="text-xl font-bold mb-3 dark:text-white flex items-center"><i data-lucide="award" class="w-6 h-6 mr-2 text-yellow-500"></i> Prize Tiers</h3>
+                <h3 class="text-xl font-bold mb-3 mt-6 dark:text-white flex items-center"><i data-lucide="award" class="w-6 h-6 mr-2 text-yellow-500"></i> Prize Tiers</h3>
                 <div class="prize-tier-grid mb-6">
                     <div class="prize-card silver">
                         <img src="https://i.imgur.com/vH9j2fB.png" alt="Silver Medal" class="medal-icon">
@@ -1282,7 +1286,7 @@
                 </h2>
 
                 <div class="app-card bg-gradient-pink dark:from-pink-900 dark:to-red-900 shadow-xl glass-effect mb-6">
-                    <h3 class="text-xl font-bold dark:text-white mb-4">Admin Overview</h3>
+                    <h3 class="text-xl font-bold text-black mb-4">Admin Overview</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col items-center p-3 rounded-lg bg-red-50 dark:bg-red-800 border-red-200 dark:border-red-700 border">
                             <i data-lucide="users" class="w-6 h-6 text-red-600 mb-1"></i>
@@ -1320,7 +1324,7 @@
                     <div id="admin-tab-withdraw-requests" class="admin-tab-content active-tab">
                         <h4 class="text-lg font-bold mb-3 dark:text-white flex items-center"><i data-lucide="hand-coins" class="w-5 h-5 mr-2"></i> Pending Withdrawals</h4>
                         <div id="admin-withdraw-requests-container" class="min-h-[100px] max-h-80 overflow-y-auto custom-scrollbar">
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">No pending requests.</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm p-4">No pending requests.</p>
                         </div>
                     </div>
 
@@ -1369,7 +1373,7 @@
 
                         <div class="mb-6 app-card p-4 bg-gray-50 dark:bg-gray-800">
                             <h5 class="font-bold text-md mb-3 dark:text-white">Adsgram Configuration</h5>
-                            <label for="adsgram-banner-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Banner Block ID</label>
+                            <label for="adsgram-banner-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Banner Block ID (adsgram-banner-home)</label>
                             <input type="text" id="adsgram-banner-id" class="w-full p-2 border-2 border-black rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-2" placeholder="e.g., AB12345">
 
                             <label for="adsgram-rewarded-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rewarded Zone ID</label>
@@ -1388,10 +1392,10 @@
 
                         <div class="app-card p-4 bg-gray-50 dark:bg-gray-800">
                             <h5 class="font-bold text-md mb-3 dark:text-white">Monetag Configuration</h5>
-                            <label for="monetag-zone-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monetag Zone ID</label>
+                            <label for="monetag-zone-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monetag Zone ID (for direct script injection)</label>
                             <input type="text" id="monetag-zone-id" class="w-full p-2 border-2 border-black rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-2" placeholder="e.g., 1234567">
 
-                            <label for="monetag-smartlink" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monetag Smartlink</label>
+                            <label for="monetag-smartlink" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monetag Smartlink (for 1-Click Ad)</label>
                             <input type="text" id="monetag-smartlink" class="w-full p-2 border-2 border-black rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-2" placeholder="https://example.com/smartlink">
 
                             <div class="flex items-center justify-between mb-4">
@@ -1402,7 +1406,7 @@
                                 </label>
                             </div>
                             <button id="save-monetag-settings" class="w-full py-2 bg-blue-500 text-white font-bold rounded-xl border-2 border-black hover:bg-blue-600 transition-colors">Save Monetag Settings</button>
-                            <button id="test-monetag-ads" class="w-full py-2 mt-2 bg-purple-500 text-white font-bold rounded-xl border-2 border-black hover:bg-purple-600 transition-colors">Test Monetag Ads</button>
+                            <button id="test-monetag-ads" class="w-full py-2 mt-2 bg-purple-500 text-white font-bold rounded-xl border-2 border-black hover:bg-purple-600 transition-colors">Test Monetag Ads (Opens Smartlink)</button>
                         </div>
                     </div>
 
@@ -1415,7 +1419,7 @@
                             <label for="usdt-conversion-rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">1 USDT = ? Coins</label>
                             <input type="number" id="usdt-conversion-rate" class="w-full p-2 border-2 border-black rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-2" placeholder="e.g., 1000">
 
-                            <label for="bdt-conversion-rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">1 BDT = ? Coins</label>
+                            <label for="bdt-conversion-rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">1 BDT = ? Coins (if applicable)</label>
                             <input type="number" id="bdt-conversion-rate" class="w-full p-2 border-2 border-black rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-4" placeholder="e.g., 10">
                             
                             <label for="min-withdraw-coins" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Minimum Withdraw Coins</label>
@@ -1458,23 +1462,23 @@
             <div class="flex justify-around items-center h-16 max-w-xl mx-auto">
                 <button class="nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 transition-all active" onclick="navigate('home-page', this)">
                     <i data-lucide="home" class="w-6 h-6 mb-1"></i>
-                    <span class="text-xs font-medium">Home</span>
+                    <span class="text-xs font-medium">HOME</span>
                 </button>
                 <button class="nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-pink-500 dark:hover:text-pink-400 transition-all" onclick="navigate('quiz-page', this)">
                     <span class="icon-quiz w-6 h-6 mb-1"></span>
-                    <span class="text-xs font-medium">Quiz</span>
+                    <span class="text-xs font-medium">QUIZ</span>
                 </button>
                 <button class="nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-all" onclick="navigate('spin-page', this)">
                     <span class="icon-spin w-6 h-6 mb-1"></span>
-                    <span class="text-xs font-medium">Spin</span>
+                    <span class="text-xs font-medium">SPIN</span>
                 </button>
                 <button class="nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 transition-all" onclick="navigate('referral-page', this)">
                     <span class="icon-refer w-6 h-6 mb-1"></span>
-                    <span class="text-xs font-medium">Refer</span>
+                    <span class="text-xs font-medium">REFER</span>
                 </button>
                 <button class="nav-item flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 transition-all" onclick="navigate('withdraw-page', this)">
                     <span class="icon-cash w-6 h-6 mb-1"></span>
-                    <span class="text-xs font-medium">Cash</span>
+                    <span class="text-xs font-medium">CASH</span>
                 </button>
             </div>
         </nav>
@@ -1524,6 +1528,7 @@
 
         // Initialize Firebase
         let app, auth, db, storage;
+        let isFirebaseReady = false; // Moved here for better scope
         try {
             app = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
@@ -1541,7 +1546,6 @@
         // Global state
         let currentUser = null;
         let isTelegramReady = false;
-        let isFirebaseReady = false;
         let userData = {};
         let currentQuiz = {};
         let quizScore = 0;
@@ -1704,8 +1708,9 @@
 
             Object.values(statusElements).forEach(el => {
                 el.classList.remove('active');
-                if (el.querySelector('.loading-icon')) {
-                    el.querySelector('.loading-icon').classList.remove('spin-rotate');
+                const iconEl = el.querySelector('.icon');
+                if (iconEl && iconEl.classList.contains('loading-icon')) {
+                    iconEl.classList.remove('spin-rotate');
                 }
             });
             if (statusId) {
@@ -1721,7 +1726,6 @@
         let loadingInterval;
 
         function startLoadingSequence() {
-            let initialProgress = 0;
             const targetProgress = {
                 'init': 30,
                 'telegram': 60,
@@ -1757,7 +1761,6 @@
                             appContainer.classList.remove('hidden');
                             lucide.createIcons(); // Initialize Lucide Icons after content is visible
                             loadUserData(); // Load user data after the app is visible
-                            // Trigger Ad if enabled after initial load
                             // triggerAutoAd(); // Consider enabling auto ads after user data loads
                         }, 500); // Wait for fade-out transition
                     }, 500); // Small delay after 100%
@@ -1803,14 +1806,14 @@
                     lastName: telegramUser.last_name || '',
                     photoUrl: telegramUser.photo_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${userId}`,
                     coins: 0,
-                    usdt: 0,
+                    usdt: 0, // This will be calculated from coins dynamically
                     level: 1,
                     totalQuizzes: 0,
                     totalSpins: 0,
                     totalReferrals: 0,
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
                     lastSeen: firebase.database.ServerValue.TIMESTAMP,
-                    dailySpinAvailable: true,
+                    dailySpinAvailable: true, // Legacy, actual check is on count
                     dailySpinCount: 0,
                     lastDailySpin: null,
                     lastDailyBonusClaim: null,
@@ -1865,17 +1868,17 @@
                     lastSeen: firebase.database.ServerValue.TIMESTAMP
                 });
                 console.log("Existing user logged in:", userData);
-                checkDailyBonus();
+                // checkDailyBonus(); // Not used in current design
                 checkDailySpin();
             }
 
             currentUser = userData;
             listenToUserDataChanges(userId);
             updateUIWithUserData(currentUser);
-            checkAdminStatus(userId);
+            checkAdminStatus(userId); // Admin panel visibility
             startRealtimeStatsListeners();
-            loadGlobalSettings();
-            loadAdsSettings();
+            await loadGlobalSettings(); // Await global settings to ensure conversion rates are ready
+            await loadAdsSettings(); // Await ads settings
         }
 
         function getReferralParam() {
@@ -1891,10 +1894,10 @@
 
         async function loadUserData() {
             if (!isTelegramReady || !window.Telegram.WebApp.initDataUnsafe.user) {
-                console.warn("Telegram user data not available. Cannot load user data.");
+                console.warn("Telegram user data not available. Cannot load user data. Using mock user.");
                 // Fallback for standalone mode testing
                 await registerOrLoginUser({
-                    id: 12345,
+                    id: 12345, // Use a test ID
                     first_name: "Test",
                     last_name: "User",
                     username: "testuser",
@@ -1925,17 +1928,20 @@
         function updateUIWithUserData(user) {
             const coins = user.coins || 0;
             const usdtRate = globalSettings.usdtConversionRate;
-            const bdtRate = globalSettings.bdtConversionRate;
             const usdtValue = coins / usdtRate;
-            const bdtValue = coins / bdtRate;
 
             document.getElementById('usdt-balance').textContent = `$${usdtValue.toFixed(3)}`;
             document.getElementById('coins-balance').textContent = coins;
             document.getElementById('usdt-value-display').textContent = usdtValue.toFixed(3);
-            document.getElementById('bdt-balance') && (document.getElementById('bdt-balance').textContent = bdtValue.toFixed(2)); // Only if BDT is on UI
-            document.getElementById('daily-spins-count').textContent = (globalSettings.dailySpinLimit - (user.dailySpinCount || 0));
+            // document.getElementById('bdt-balance') && (document.getElementById('bdt-balance').textContent = bdtValue.toFixed(2)); // BDT not in current home design
+            
+            // Update remaining spins display
+            const dailyLimit = globalSettings.dailySpinLimit;
+            const remainingSpins = dailyLimit - (user.dailySpinCount || 0);
+            document.getElementById('daily-spins-count').textContent = remainingSpins > 0 ? remainingSpins : 0;
 
-            // Profile page elements (for the gear icon)
+
+            // Profile page elements (for the gear icon page)
             document.getElementById('profile-avatar') && (document.getElementById('profile-avatar').src = user.photoUrl);
             document.getElementById('profile-username') && (document.getElementById('profile-username').textContent = user.username || user.firstName);
             document.getElementById('profile-userid') && (document.getElementById('profile-userid').textContent = `ID: ${user.id}`);
@@ -1949,12 +1955,19 @@
         function checkAdminStatus(userId) {
             if (userId == ADMIN_TELEGRAM_USER_ID) {
                 document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('admin-panel-container').classList.remove('hidden'); // Also show the container for admin panel
+                // Ensure the dynamic page container for admin is also visible
+                const adminPanelContainer = document.getElementById('admin-panel-container');
+                if (adminPanelContainer) {
+                    adminPanelContainer.classList.remove('hidden');
+                }
                 console.log("Admin panel enabled for user:", userId);
                 loadAdminData();
             } else {
                 document.getElementById('admin-panel').classList.add('hidden');
-                document.getElementById('admin-panel-container').classList.add('hidden');
+                const adminPanelContainer = document.getElementById('admin-panel-container');
+                if (adminPanelContainer) {
+                    adminPanelContainer.classList.add('hidden');
+                }
                 console.log("Admin panel hidden for user:", userId);
             }
         }
@@ -1984,7 +1997,7 @@
         let currentPage = 'home-page';
 
         function navigate(pageId, navButton = null) {
-            if (globalSettings.maintenanceMode && pageId !== 'home-page' && !document.getElementById('admin-panel').classList.contains('active')) {
+            if (globalSettings.maintenanceMode && pageId !== 'home-page' && currentUser.id != ADMIN_TELEGRAM_USER_ID) { // Admin can bypass maintenance
                 showUniversalModal('Maintenance Mode', 'The app is currently under maintenance. Please try again later!', 'warning');
                 return;
             }
@@ -2010,24 +2023,25 @@
                     // If navigated via code (e.g., from quiz, spin), find and activate the correct nav item
                     const navItems = document.querySelectorAll('.nav-item');
                     navItems.forEach(item => {
-                        if (item.onclick && item.onclick.toString().includes(`navigate('${pageId}'`)) {
-                            item.classList.add('active');
+                        // Check for direct data-page attribute for convenience
+                        if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`navigate('${pageId}'`)) {
+                             item.classList.add('active');
                         }
                     });
                 }
             } else {
                 // Handle navigation to dynamic pages (notifications, profile, admin)
-                const dynamicPageContainer = document.getElementById('dynamic-pages');
-                dynamicPageContainer.classList.remove('hidden');
-                document.querySelectorAll('#dynamic-pages .page').forEach(page => {
-                    page.classList.remove('active');
-                    page.classList.add('hidden');
-                });
-                const dynamicPage = document.getElementById(pageId + '-container');
+                // These pages are rendered once inside #app-container, but their visibility is controlled.
+                // We show the specific page content directly if it's within the main flow.
+                // For admin panel, we need to ensure its wrapper is visible.
+                const dynamicPage = document.getElementById(pageId); // These are directly under main, no separate container element
                 if (dynamicPage) {
                     dynamicPage.classList.remove('hidden');
                     dynamicPage.classList.add('active');
                     window.Telegram.WebApp.BackButton.show(); // Show back button for dynamic pages
+                    currentPage = pageId;
+                    // Ensure nav items are not active if navigating to non-bottom-nav pages
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
                 }
             }
 
@@ -2037,28 +2051,13 @@
 
         function handleBackButton() {
             // Logic to go back to previous page
-            // For now, simply go back to home or hide dynamic page
-            if (document.getElementById('dynamic-pages').classList.contains('hidden')) {
-                // If not in a dynamic page, hide the BackButton and stay on current main page (or navigate home)
-                window.Telegram.WebApp.BackButton.hide();
-                // Optionally navigate to home if user is deep in a main page section
-                if (currentPage !== 'home-page') {
-                    navigate('home-page', document.querySelector('.nav-item.active'));
-                }
-            } else {
-                // If in a dynamic page, hide it and return to the main content area
-                document.getElementById('dynamic-pages').classList.add('hidden');
-                document.querySelectorAll('#dynamic-pages .page').forEach(page => {
-                    page.classList.remove('active');
-                    page.classList.add('hidden');
-                });
-                window.Telegram.WebApp.BackButton.hide();
-            }
-            lucide.createIcons();
+            // This simple logic always goes to home. For more complex apps, use a history stack.
+            window.Telegram.WebApp.BackButton.hide();
+            navigate('home-page', document.querySelector('.nav-item[onclick*="home-page"]')); // Activate home nav button
         }
 
         // Initial navigation
-        navigate('home-page', document.querySelector('.nav-item.active'));
+        // navigate('home-page', document.querySelector('.nav-item.active')); // This is called after loading screen
 
         // --- Toast Notifications ---
         function showToast(message, type = 'info', duration = 3000) {
@@ -2189,7 +2188,7 @@
                 options: {
                     particles: {
                         number: { value: 80, density: { enable: true, value_area: 800 } },
-                        color: { value: ["#ffffff", "#FFD700", "#FF69B4", "#A020F0", "#4CAF50"] }, // Yellow, Pink, Purple, Green
+                        color: { value: ["#ffffff", "#FFD700", "#FF69B4", "#A020F0", "#4CAF50"] }, // Yellow, Pink, Purple, Green, White
                         shape: { type: "circle" },
                         opacity: { value: 0.5, random: true },
                         size: { value: 3, random: true },
@@ -2220,22 +2219,6 @@
                 }
             });
         }
-
-        // --- Daily Bonus System (Removed as per image design, but kept for potential future use) ---
-        // As per the provided images, the explicit "Daily Bonus Card" and "Claim Now" button are not present.
-        // The concept of a daily bonus might be integrated into the spin wheel or other mechanics.
-        // The existing `checkDailyBonus` and `claimDailyBonus` functions will not be called in the UI anymore,
-        // but could be reinstated or adapted if a "Daily Bonus" feature is added back.
-        async function checkDailyBonus() {
-            // Function no longer called directly from UI
-        }
-        function updateDailyBonusTimer(nextClaimTime) {
-            // Function no longer called directly from UI
-        }
-        async function claimDailyBonus() {
-            // Function no longer called directly from UI
-        }
-
 
         // --- Quiz System ---
         const quizCategoriesContainer = document.getElementById('quiz-categories-container');
@@ -2269,8 +2252,8 @@
                 { name: 'Technology', icon: 'laptop', color: 'green' },
                 { name: 'Gaming', icon: 'gamepad', color: 'yellow' },
                 { name: 'Finance', icon: 'dollar-sign', color: 'blue' },
-                { name: 'Telegram', icon: 'send', color: 'cyan' },
-                { name: 'General Knowledge', icon: 'lightbulb', color: 'pink' }
+                { name: 'Telegram', icon: 'send', color: 'pink' },
+                { name: 'General Knowledge', icon: 'lightbulb', color: 'red' }
             ];
 
             predefinedCategories.forEach(predefCat => {
@@ -2484,10 +2467,10 @@
                 // Draw text (rotated)
                 ctx.save();
                 ctx.translate(centerX, centerY);
-                ctx.rotate(startAngle + anglePerSegment / 2);
+                ctx.rotate(startAngle + anglePerSegment / 2); // Rotate to center of segment
                 ctx.textAlign = 'right';
-                ctx.fillStyle = (reward.color === '#FFD700' || reward.color === '#A0F088') ? 'black' : 'white'; // Adjust text color for light backgrounds
-                ctx.font = '700 16px Poppins';
+                ctx.fillStyle = (reward.color === '#FFD700' || reward.color === '#4CAF50') ? 'black' : 'white'; // Adjust text color for light backgrounds
+                ctx.font = '800 16px Poppins'; // Increased font weight
                 ctx.fillText(reward.label, radius * 0.8, 0); // Position text
                 ctx.restore();
             });
@@ -2622,22 +2605,28 @@
 
             const randomReward = getWeightedRandomReward();
             const segments = spinRewards.length;
-            const segmentAngle = 360 / segments;
+            const segmentAngle = (2 * Math.PI) / segments; // Angle in radians
             const rewardIndex = spinRewards.findIndex(r => r.id === randomReward.id);
 
             // Calculate rotation to land precisely on the center of the segment
-            // Start from 0 degrees (top), segments are drawn clockwise
-            // (segments - rewardIndex - 1) is to align index 0 with the first segment (top-right)
-            // + 0.5 to land in the middle of the segment
-            const targetRotation = (segments - rewardIndex - 0.5) * segmentAngle * (180 / Math.PI); // Convert to degrees
-            const finalAngle = 360 * 5 + targetRotation; // 5 full rotations + to the target
+            // Wheel starts at 0 (top). Segments are drawn clockwise.
+            // Adjust to land on the center of the target segment.
+            // (segments - rewardIndex - 1) * segmentAngle: rotation to the start of the segment
+            // + segmentAngle / 2: move to the center of the segment
+            const targetRotationRadians = (segments - rewardIndex - 1) * segmentAngle + segmentAngle / 2;
+            const targetRotationDegrees = targetRotationRadians * (180 / Math.PI); // Convert to degrees
+
+            // Add multiple full rotations for a satisfying spin effect
+            const fullRotations = 5;
+            const finalAngle = (fullRotations * 360) + targetRotationDegrees;
 
             spinWheelCanvas.style.transition = `transform ${spinDuration / 1000}s cubic-bezier(0.25, 0.1, 0.25, 1)`; // Ease-out cubic-bezier
             spinWheelCanvas.style.transform = `rotate(${finalAngle}deg)`;
 
             setTimeout(async () => {
-                spinWheelCanvas.style.transition = 'none'; // Reset transition
-                spinWheelCanvas.style.transform = `rotate(${finalAngle % 360}deg)`; // Set to final position without animation
+                // Reset transition and set final rotation to avoid glitches on next spin
+                spinWheelCanvas.style.transition = 'none';
+                spinWheelCanvas.style.transform = `rotate(${finalAngle % 360}deg)`;
 
                 showConfetti();
                 // playRewardSound(); // Optional: sound effect
@@ -2718,7 +2707,7 @@
                     const date = new Date(item.timestamp).toLocaleString();
                     const icon = item.type === 'spin_reward' && item.amount > 0 ? `<i data-lucide="gem" class="w-4 h-4 text-yellow-500 mr-2"></i>` : `<i data-lucide="x" class="w-4 h-4 text-gray-500 mr-2"></i>`;
                     spinHistoryContainer.innerHTML += `
-                        <div class="flex items-center justify-between py-2 border-b last:border-b-0 border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center justify-between py-2 px-3 border-b last:border-b-0 border-gray-200 dark:border-gray-600">
                             <div class="flex items-center">
                                 ${icon}
                                 <span class="font-medium dark:text-white">${item.reward}</span>
@@ -2729,7 +2718,7 @@
                 });
                 lucide.createIcons();
             } else {
-                spinHistoryContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No spins yet.</p>';
+                spinHistoryContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm p-4">No spins yet.</p>';
             }
         }
 
@@ -2781,7 +2770,7 @@
                 });
                 lucide.createIcons();
             } else {
-                referralListContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No referred friends yet.</p>';
+                referralListContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm p-4">No referred friends yet.</p>';
             }
         }
 
@@ -2943,7 +2932,7 @@
                 });
                 lucide.createIcons();
             } else {
-                withdrawHistoryContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No withdrawal requests yet.</p>';
+                withdrawHistoryContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm p-4">No withdrawal requests yet.</p>';
             }
         }
 
@@ -2959,6 +2948,23 @@
         const myLeaderboardScore = document.getElementById('my-leaderboard-score');
 
         let leaderboardCountdownInterval;
+
+        // No tabs visible in the image, so no listeners for leaderboardTabs.
+        // If tabs are added back, re-enable this.
+        /*
+        leaderboardTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                leaderboardTabs.forEach(t => t.classList.remove('active-tab', 'bg-purple-200', 'text-purple-800', 'dark:bg-purple-800', 'dark:text-purple-200'));
+                leaderboardTabs.forEach(t => t.classList.add('bg-gray-100', 'text-gray-700', 'dark:bg-gray-600', 'dark:text-gray-300'));
+
+                tab.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-600', 'dark:text-gray-300');
+                tab.classList.add('active-tab', 'bg-purple-200', 'text-purple-800', 'dark:bg-purple-800', 'dark:text-purple-200');
+
+                const tabId = tab.id.replace('tab-leaderboard-', '');
+                loadLeaderboard(tabId);
+            });
+        });
+        */
 
         function updateLeaderboardCountdown() {
             clearInterval(leaderboardCountdownInterval);
@@ -3001,9 +3007,8 @@
             leaderboardContent.innerHTML = `<p class="text-gray-500 dark:text-gray-400 text-sm p-4">Loading leaderboard...</p>`;
 
             // For simplicity, fetching all users and filtering/sorting client-side for now
-            // For large datasets, server-side aggregation or Firebase Functions would be needed
             // The image implies a weekly quiz champion. This would ideally be based on quiz scores *this week*.
-            // For MVP, we'll sort by totalQuizCoins as a proxy. A true weekly LB needs specific tracking.
+            // For MVP, we'll sort by totalQuizCoins as a proxy.
             const usersSnapshot = await usersRef.orderByChild('totalQuizCoins').limitToLast(100).once('value'); // Fetch top 100 by quiz coins
             const allUsers = usersSnapshot.val() || {};
 
@@ -3011,19 +3016,19 @@
                 .sort((a, b) => (b.totalQuizCoins || 0) - (a.totalQuizCoins || 0));
 
             // Determine my rank and score
-            let myRank = "N/A";
-            let myScore = (currentUser && currentUser.totalQuizCoins) || 0;
+            let myRankText = "#N/A";
+            let myScoreValue = (currentUser && currentUser.totalQuizCoins) || 0;
             if (currentUser) {
-                const userIndex = leaderboardEntries.findIndex(u => u.id === currentUser.id);
+                const userIndex = leaderboardEntries.findIndex(u => u.id == currentUser.id); // Use == for comparison
                 if (userIndex !== -1) {
-                    myRank = `#${userIndex + 1}`;
+                    myRankText = `#${userIndex + 1}`;
                 } else {
-                    // If user is not in top 100, estimate rank as higher
-                    myRank = `#${leaderboardEntries.length + 1}`;
+                    // If user is not in top 100, estimate rank as higher (or just N/A)
+                    myRankText = `#${leaderboardEntries.length + 1}`;
                 }
             }
-            myLeaderboardRank.textContent = myRank;
-            myLeaderboardScore.textContent = myScore;
+            myLeaderboardRank.textContent = myRankText;
+            myLeaderboardScore.textContent = myScoreValue;
 
 
             leaderboardContent.innerHTML = '';
@@ -3074,11 +3079,11 @@
 
 
         // --- Notifications System ---
-        const notificationButton = document.getElementById('notification-button'); // This is the settings icon in the new design
+        const notificationButton = document.getElementById('profile-button'); // This is the settings icon in the new design
         const notificationBadge = document.getElementById('notification-badge'); // Not present in the new design's header
 
         // The "gear" icon in the top right now navigates to the Profile/Settings page
-        document.getElementById('profile-button').addEventListener('click', () => {
+        notificationButton.addEventListener('click', () => {
             if (currentUser) {
                 navigate('profile-page');
             }
@@ -3119,22 +3124,21 @@
             } else {
                 notificationListContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 p-4">No new notifications.</p>';
             }
-            updateNotificationBadge(notifications); // Still update badge if it were present
+            // updateNotificationBadge(notifications); // No notification badge in current header design
         }
 
-        function updateNotificationBadge(notifications) {
-            // As per design, notification badge is not on header. Can be re-added if desired.
-            // const unreadCount = notifications.filter(n => !n.read).length;
-            // if (unreadCount > 0) {
-            //     notificationBadge.textContent = unreadCount;
-            //     notificationBadge.classList.remove('hidden');
-            //     if (window.Telegram.WebApp.HapticFeedback) {
-            //         window.Telegram.WebApp.HapticFeedback.notificationOccurred('light');
-            //     }
-            // } else {
-            //     notificationBadge.classList.add('hidden');
-            // }
-        }
+        // function updateNotificationBadge(notifications) { // Not used in current design
+        //     const unreadCount = notifications.filter(n => !n.read).length;
+        //     if (unreadCount > 0) {
+        //         notificationBadge.textContent = unreadCount;
+        //         notificationBadge.classList.remove('hidden');
+        //         if (window.Telegram.WebApp.HapticFeedback) {
+        //             window.Telegram.WebApp.HapticFeedback.notificationOccurred('light');
+        //         }
+        //     } else {
+        //         notificationBadge.classList.add('hidden');
+        //     }
+        // }
 
         async function markAllNotificationsAsRead(userId) {
             if (!usersRef || !currentUser) return;
@@ -3186,10 +3190,11 @@
 
         // --- Realtime Global Stats ---
         // These stats are primarily for the Admin Panel, but could be adapted for a "Global Stats" section on Home
-        const onlineUsersCount = document.getElementById('online-users-count'); // These elements are no longer in Home
-        const totalUsersCount = document.getElementById('total-users-count'); //
-        const totalQuizzesCompleted = document.getElementById('total-quizzes-completed'); //
-        const totalWithdrawals = document.getElementById('total-withdrawals'); //
+        // The elements for these stats are now in the Admin Panel
+        const adminTotalUsers = document.getElementById('admin-total-users');
+        const adminTotalWithdrawals = document.getElementById('admin-total-withdrawals');
+        const adminTotalCoinsAwarded = document.getElementById('admin-total-coins-awarded');
+        const adminTotalSpinsUsed = document.getElementById('admin-total-spins-used');
 
         function startRealtimeStatsListeners() {
             if (!statsRef || !usersRef || !withdrawsRef) return;
@@ -3202,95 +3207,30 @@
                         const lastSeen = user.lastSeen;
                         return lastSeen && (Date.now() - lastSeen < 5 * 60 * 1000); // Last 5 minutes
                     }).length;
-                    // If these were on the home page, uncomment
-                    // onlineUsersCount.textContent = online;
-                    // totalUsersCount.textContent = Object.keys(users).length;
-                }
-            });
+                    // Update admin panel stats
+                    if (adminTotalUsers) adminTotalUsers.textContent = Object.keys(users).length;
 
-            // Total Quizzes Completed (aggregate from users)
-            usersRef.on('child_changed', (snapshot) => {
-                const user = snapshot.val();
-                if (user && user.totalQuizzes !== undefined) {
-                    usersRef.once('value').then(allUsersSnapshot => {
-                        let total = 0;
-                        allUsersSnapshot.forEach(userSnap => {
-                            total += (userSnap.val().totalQuizzes || 0);
-                        });
-                        // totalQuizzesCompleted.textContent = total;
+                    let totalCoins = 0;
+                    let totalSpins = 0;
+                    Object.values(users).forEach(u => {
+                        totalCoins += (u.coins || 0);
+                        totalSpins += (u.totalSpins || 0);
                     });
+                    if (adminTotalCoinsAwarded) adminTotalCoinsAwarded.textContent = totalCoins;
+                    if (adminTotalSpinsUsed) adminTotalSpinsUsed.textContent = totalSpins;
                 }
             });
-            // Initial load for total quizzes
-            usersRef.once('value').then(allUsersSnapshot => {
-                let total = 0;
-                allUsersSnapshot.forEach(userSnap => {
-                    total += (userSnap.val().totalQuizzes || 0);
-                });
-                // totalQuizzesCompleted.textContent = total;
-            });
 
-
-            // Total Withdrawals (count approved/pending)
             withdrawsRef.on('value', (snapshot) => {
                 const withdraws = snapshot.val();
                 if (withdraws) {
-                    // totalWithdrawals.textContent = Object.keys(withdraws).length;
+                    if (adminTotalWithdrawals) adminTotalWithdrawals.textContent = Object.keys(withdraws).length;
                 }
             });
         }
 
         // --- Admin Panel Functions ---
-        const adminPanel = document.getElementById('admin-panel');
-        const adminTabButtons = document.querySelectorAll('.admin-tab-button');
-        const adminTabContents = document.querySelectorAll('.admin-tab-content');
-
-        const adminTotalUsers = document.getElementById('admin-total-users');
-        const adminTotalWithdrawals = document.getElementById('admin-total-withdrawals');
-        const adminTotalCoinsAwarded = document.getElementById('admin-total-coins-awarded');
-        const adminTotalSpinsUsed = document.getElementById('admin-total-spins-used');
-
-        // Withdraw Tab Elements
-        const adminWithdrawRequestsContainer = document.getElementById('admin-withdraw-requests-container');
-
-        // Quiz Management Elements
-        const addQuizButton = document.getElementById('add-quiz-button');
-        const quizFormContainer = document.getElementById('quiz-form-container');
-        const quizFormTitle = document.getElementById('quiz-form-title');
-        const quizForm = document.getElementById('quiz-form');
-        const quizIdInput = document.getElementById('quiz-id');
-        const quizCategoryInput = document.getElementById('quiz-category');
-        const quizQuestionTextInput = document.getElementById('quiz-question-text');
-        const quizOptionsTextInput = document.getElementById('quiz-options-text');
-        const quizCorrectAnswerInput = document.getElementById('quiz-correct-answer');
-        const quizRewardInput = document.getElementById('quiz-reward');
-        const cancelQuizEditButton = document.getElementById('cancel-quiz-edit');
-        const adminQuizListContainer = document.getElementById('admin-quiz-list-container');
-
-        // Ad Management Elements
-        const adsgramBannerIdInput = document.getElementById('adsgram-banner-id');
-        const adsgramRewardedIdInput = document.getElementById('adsgram-rewarded-id');
-        const toggleAdsgram = document.getElementById('toggle-adsgram');
-        const saveAdsgramSettingsButton = document.getElementById('save-adsgram-settings');
-        const testAdsgramAdsButton = document.getElementById('test-adsgram-ads');
-
-        const monetagZoneIdInput = document.getElementById('monetag-zone-id');
-        const monetagSmartlinkInput = document.getElementById('monetag-smartlink');
-        const toggleMonetag = document.getElementById('toggle-monetag');
-        const saveMonetagSettingsButton = document.getElementById('save-monetag-settings');
-        const testMonetagAdsButton = document.getElementById('test-monetag-ads');
-
-        // Global Settings Elements
-        const usdtConversionRateInput = document.getElementById('usdt-conversion-rate');
-        const bdtConversionRateInput = document.getElementById('bdt-conversion-rate');
-        const minWithdrawCoinsInput = document.getElementById('min-withdraw-coins');
-        const dailySpinLimitInput = document.getElementById('daily-spin-limit');
-        const saveConversionSettingsButton = document.getElementById('save-conversion-settings');
-        const broadcastMessageTextarea = document.getElementById('broadcast-message');
-        const sendBroadcastButton = document.getElementById('send-broadcast');
-        const toggleMaintenanceMode = document.getElementById('toggle-maintenance-mode');
-        const saveMaintenanceSettingsButton = document.getElementById('save-maintenance-settings');
-
+        // (Elements declared above)
 
         adminTabButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -3314,30 +3254,31 @@
             if (!currentUser || currentUser.id != ADMIN_TELEGRAM_USER_ID) return;
             console.log("Loading admin data...");
 
-            // Admin overview stats
-            usersRef.on('value', (snapshot) => {
-                const users = snapshot.val();
+            // Admin overview stats (Realtime listeners are in startRealtimeStatsListeners)
+            // Just update display from current state on load
+            if (usersRef) {
+                const usersSnapshot = await usersRef.once('value');
+                const users = usersSnapshot.val();
                 if (users) {
-                    const totalUsers = Object.keys(users).length;
-                    adminTotalUsers.textContent = totalUsers;
-
+                    adminTotalUsers.textContent = Object.keys(users).length;
                     let totalCoinsAwarded = 0;
                     let totalSpinsUsed = 0;
                     Object.values(users).forEach(user => {
-                        totalCoinsAwarded += (user.coins || 0); // Approx. total coins in circulation
+                        totalCoinsAwarded += (user.coins || 0);
                         totalSpinsUsed += (user.totalSpins || 0);
                     });
                     adminTotalCoinsAwarded.textContent = totalCoinsAwarded;
                     adminTotalSpinsUsed.textContent = totalSpinsUsed;
                 }
-            });
-
-            withdrawsRef.on('value', (snapshot) => {
-                const withdraws = snapshot.val();
+            }
+            if (withdrawsRef) {
+                const withdrawsSnapshot = await withdrawsRef.once('value');
+                const withdraws = withdrawsSnapshot.val();
                 if (withdraws) {
                     adminTotalWithdrawals.textContent = Object.keys(withdraws).length;
                 }
-            });
+            }
+
 
             // Initial load of first tab
             loadAdminWithdrawRequests();
@@ -3368,12 +3309,12 @@
                     adminWithdrawRequestsContainer.innerHTML += `
                         <div class="flex flex-col md:flex-row items-start md:items-center justify-between py-3 px-4 rounded-xl mb-2 bg-yellow-50 dark:bg-yellow-900 border-2 border-yellow-300 dark:border-yellow-700">
                             <div class="mb-2 md:mb-0">
-                                <p class="font-semibold dark:text-white">User: ${req.username} (ID: ${req.userId})</p>
+                                <p class="font-semibold dark:text-black">User: ${req.username} (ID: ${req.userId})</p>
                                 <p class="text-md dark:text-gray-200"><i data-lucide="gem" class="w-4 h-4 mr-1 text-yellow-500 inline-block"></i> ${req.amount} Coins via ${req.method}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Address: <code>${req.address}</code></p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Requested: ${date}</p>
                             </div>
-                            <div class="flex space-x-2">
+                            <div class="flex space-x-2 mt-2 md:mt-0">
                                 <button class="py-1 px-3 bg-green-500 text-white text-sm font-semibold rounded-lg border-2 border-black hover:bg-green-600 transition-colors" onclick="processWithdrawRequest('${key}', 'approved', '${req.userId}', ${req.amount}, '${req.method}')">Approve</button>
                                 <button class="py-1 px-3 bg-red-500 text-white text-sm font-semibold rounded-lg border-2 border-black hover:bg-red-600 transition-colors" onclick="processWithdrawRequest('${key}', 'rejected', '${req.userId}', ${req.amount}, '${req.method}')">Reject</button>
                             </div>
@@ -3495,7 +3436,7 @@
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Category: ${quiz.category} | Reward: ${quiz.reward} Coins</p>
                                 <p class="text-xs text-green-600 dark:text-green-400">Correct: ${quiz.correctAnswer}</p>
                             </div>
-                            <div class="flex space-x-2">
+                            <div class="flex space-x-2 mt-2 md:mt-0">
                                 <button class="py-1 px-3 bg-blue-500 text-white text-sm font-semibold rounded-lg border-2 border-black hover:bg-blue-600 transition-colors" onclick="editQuiz('${key}')">Edit</button>
                                 <button class="py-1 px-3 bg-red-500 text-white text-sm font-semibold rounded-lg border-2 border-black hover:bg-red-600 transition-colors" onclick="deleteQuiz('${key}')">Delete</button>
                             </div>
@@ -3555,11 +3496,14 @@
                 // Initialize Adsgram if enabled
                 if (adsgramConfig.enabled && adsgramConfig.bannerId) {
                     initAdsgramBanner(adsgramConfig.bannerId, 'adsgram-banner-home');
+                } else {
+                    document.getElementById('adsgram-banner-home').innerHTML = 'Adsgram Banner Disabled (Configure in Admin)';
                 }
             } else {
                 console.log("No ads settings found, using defaults.");
                 localStorage.removeItem('adsgramConfig');
                 localStorage.removeItem('monetagConfig');
+                document.getElementById('adsgram-banner-home').innerHTML = 'Adsgram Banner Disabled (Configure in Admin)';
             }
         }
 
@@ -3590,7 +3534,7 @@
             if (adsgramConfig.enabled && adsgramConfig.bannerId) {
                 initAdsgramBanner(adsgramConfig.bannerId, 'adsgram-banner-home');
             } else {
-                document.getElementById('adsgram-banner-home').innerHTML = 'Adsgram Banner Disabled';
+                document.getElementById('adsgram-banner-home').innerHTML = 'Adsgram Banner Disabled (Configure in Admin)';
             }
         });
 
@@ -3903,9 +3847,9 @@
                 checkAdminStatus(currentUser.id); // For local testing, ensure admin panel shows
             }
 
-            // Bind click listeners
-            // document.getElementById('profile-button').addEventListener('click', () => navigate('profile-page')); // Already bound to settings.
-            // document.getElementById('notification-button').addEventListener('click', () => navigate('notifications-page')); // Not present as per new design
+            // Initial navigation after content is loaded
+            navigate('home-page', document.querySelector('.nav-item[onclick*="home-page"]'));
+
 
             // Initial load for pages not linked via bottom nav
             if (currentUser) {
