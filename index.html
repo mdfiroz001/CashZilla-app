@@ -590,16 +590,20 @@
         const WebApp = window.Telegram && window.Telegram.WebApp;
         let isTelegramEnv = !!WebApp; // True if WebApp object exists
 
-        // Firebase Configuration (REPLACE WITH YOUR ACTUAL CONFIG)
-        // IMPORTANT: Go to Firebase Console -> Project Settings -> General -> Your apps -> Web app -> Config
+        // Firebase Configuration
+        // IMPORTANT: Please make sure these values are correct from your Firebase Console.
         const firebaseConfig = {
-              apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
-  authDomain: "ai-tools-9f9a3.firebaseapp.com",
-  projectId: "ai-tools-9f9a3",
-  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
-  messagingSenderId: "839431476061",
-  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
-};
+            apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+            authDomain: "ai-tools-9f9a3.firebaseapp.com",
+            projectId: "ai-tools-9f9a3",
+            storageBucket: "ai-tools-9f9a3.firebasestorage.app",
+            messagingSenderId: "839431476061",
+            appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
+            // For Realtime Database, it's usually: https://<projectId>-default-rtdb.firebaseio.com
+            databaseURL: "https://ai-tools-9f9a3-default-rtdb.firebaseio.com",
+            // Measurement ID for analytics is usually also needed:
+            // measurementId: "G-HKSB33QGW8" 
+        };
 
         // Initialize Firebase variables
         let firebaseApp;
@@ -746,7 +750,7 @@
             updateLoading('Connecting to Firebase...', 60);
             try {
                 // Check if Firebase config placeholders are updated
-                if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE") {
+                if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE") { // This check should now pass
                     throw new Error("Firebase configuration not updated. Please replace placeholder values.");
                 }
 
