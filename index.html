@@ -585,10 +585,13 @@
     <!-- <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-storage-compat.js"></script> -->
 
     <script>
-        // Initialize Telegram WebApp SDK
-        const WebApp = window.Telegram.WebApp;
+        // Check if Telegram WebApp SDK is available
+        // This is crucial to prevent errors when running outside Telegram environment.
+        const WebApp = window.Telegram && window.Telegram.WebApp;
+        let isTelegramEnv = !!WebApp; // True if WebApp object exists
 
         // Firebase Configuration (REPLACE WITH YOUR ACTUAL CONFIG)
+        // IMPORTANT: Go to Firebase Console -> Project Settings -> General -> Your apps -> Web app -> Config
         const firebaseConfig = {
               apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
   authDomain: "ai-tools-9f9a3.firebaseapp.com",
@@ -598,7 +601,7 @@
   appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
 };
 
-        // Initialize Firebase
+        // Initialize Firebase variables
         let firebaseApp;
         let auth;
         let db;
@@ -606,43 +609,58 @@
         // let storage; // For Firebase Storage
 
         // Admin Telegram User ID
-        const ADMIN_TELEGRAM_ID = '8601120665'; // Your Telegram User ID
+        const ADMIN_TELEGRAM_ID = '8601120665'; // Your Telegram User ID. For local testing outside Telegram, you might temporarily set this to the test_user_id (e.g., 'test_user_standalonemode_1')
 
-        // --- Loading Screen Logic ---
+        // --- Loading Screen DOM Elements ---
         const loadingScreen = document.getElementById('loading-screen');
         const loadingProgressBar = document.getElementById('loading-progress-bar');
         const loadingText = document.getElementById('loading-text');
         const appContent = document.getElementById('app-content');
 
+        // --- Loading State Management ---
         let progress = 0;
         let initReady = {
-            telegram: false,
+            // If not in Telegram environment, consider Telegram part as "ready" immediately
+            telegram: !isTelegramEnv,
             firebase: false,
             userData: false,
-            minTimeElapsed: false // Ensures it stays for at least 3 seconds
+            minTimeElapsed: false // Ensures the loading screen stays for at least MIN_LOADING_TIME_MS
         };
-        const MIN_LOADING_TIME_MS = 3000;
+        const MIN_LOADING_TIME_MS = 3000; // Minimum 3 seconds loading screen
         let loadingStartTime = Date.now();
+        let dailyRewardTimer = null; // To store setInterval ID
 
+        // Function to update loading text and progress bar
         const updateLoading = (text, newProgress) => {
             loadingText.textContent = text;
-            progress = Math.min(newProgress, 100);
+            progress = Math.min(newProgress, 100); // Cap progress at 100%
             loadingProgressBar.style.width = `${progress}%`;
         };
 
+        // Function to check all readiness conditions and hide loading screen
         const checkAndHideLoadingScreen = () => {
+            // Check if all core components are ready AND minimum loading time has passed
             if (initReady.telegram && initReady.firebase && initReady.userData && initReady.minTimeElapsed) {
                 console.log('All readiness conditions met. Hiding loading screen.');
-                loadingScreen.style.opacity = '0';
+                loadingScreen.style.opacity = '0'; // Start fade out
                 setTimeout(() => {
-                    loadingScreen.classList.add('hidden');
-                    appContent.classList.remove('hidden');
-                    appContent.style.opacity = '1';
-                    WebApp.expand(); // Expand the Mini App to full screen
-                    // Make admin nav item visible if user is admin
+                    loadingScreen.classList.add('hidden'); // Hide completely after fade
+                    appContent.classList.remove('hidden'); // Show app content
+                    appContent.style.opacity = '1'; // Fade in app content
+
+                    // Expand Telegram Mini App to full screen if in Telegram environment
+                    if (isTelegramEnv) {
+                        WebApp.expand();
+                    }
+
+                    // Update UI and set initial tab to home
+                    updateUI(); // Initial UI update after all data is loaded
+                    setActiveTab('home');
+
+                    // Make admin nav item visible if the user is an admin
                     if (currentUser && currentUser.is_admin) {
                         document.getElementById('admin-nav-item').classList.remove('hidden');
-                        document.getElementById('admin-id-display').textContent = currentUser.uid; // Display admin ID
+                        document.getElementById('admin-id-display').textContent = currentUser.uid;
                     }
                 }, 700); // Matches opacity transition duration
             } else {
@@ -650,180 +668,233 @@
             }
         };
 
-        // --- Core App Logic ---
-        let currentUser = null; // Stores Firebase user object
-        let telegramUser = null; // Stores Telegram user data
-        let userData = {}; // Stores user data from Firebase Realtime DB
+        // --- Core App State Variables ---
+        let currentUser = null; // Stores Telegram user ID and admin status
+        let telegramUser = null; // Stores full Telegram user data from WebApp.initDataUnsafe
+        let userData = {}; // Stores user profile data from Firebase Realtime Database
 
+        // --- DOMContentLoaded - Main App Initialization Flow ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded: Initializing app...');
+            console.log('DOMContentLoaded: Starting app initialization...');
 
-            // Start min loading time timer
+            // Start timer for minimum loading screen display time
             setTimeout(() => {
                 initReady.minTimeElapsed = true;
-                console.log('Minimum loading time elapsed.');
-                checkAndHideLoadingScreen();
-            }, MIN_LOADING_TIME_MS - (Date.now() - loadingStartTime)); // Adjust if DOMContentLoaded took time
+                console.log('Minimum loading time of 3 seconds elapsed.');
+                checkAndHideLoadingScreen(); // Re-check if all conditions are met
+            }, MIN_LOADING_TIME_MS - (Date.now() - loadingStartTime));
 
-            // 1. Telegram WebApp Initialization
-            try {
-                WebApp.ready(); // Inform Telegram that the app is ready
+            // 1. Telegram WebApp SDK Initialization (Conditional)
+            if (isTelegramEnv) {
+                try {
+                    WebApp.ready(); // Inform Telegram that the app is ready
 
-                if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
-                    telegramUser = WebApp.initDataUnsafe.user;
-                    console.log('Telegram User:', telegramUser);
-                    updateLoading('Telegram connected...', 30);
-                } else {
-                    // Fallback for testing outside Telegram
-                    console.warn('Telegram user data not available. Running in standalone/test mode.');
-                    telegramUser = { id: 'test_user_12345', first_name: 'Test', last_name: 'User', username: 'testuser', photo_url: 'https://via.placeholder.com/40' };
-                    // If running locally, set ADMIN_TELEGRAM_ID to 'test_user_12345' to test admin panel
-                    // const ADMIN_TELEGRAM_ID = 'test_user_12345'; // Temporarily for local testing
-                    updateLoading('Running in test mode (no Telegram user)...', 30);
+                    // Safely get Telegram user data
+                    if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
+                        telegramUser = WebApp.initDataUnsafe.user;
+                        console.log('Telegram User data received:', telegramUser);
+                        updateLoading('Telegram connected...', 30);
+                    } else {
+                        // This might happen if initDataUnsafe is not immediately populated or on certain platforms
+                        console.warn('Telegram user data not immediately available via initDataUnsafe. Will re-check later if needed.');
+                        // Provide a placeholder user to avoid null errors during Firebase setup if telegramUser is delayed
+                        telegramUser = { id: 'fallback_telegram_user_id', first_name: 'Unknown', username: 'telegram_user' };
+                    }
+                    initReady.telegram = true; // Mark Telegram part as ready
+                    checkAndHideLoadingScreen(); // Re-check
+
+                    // Set up Telegram UI components
+                    WebApp.onEvent('themeChanged', () => {
+                        console.log('Telegram theme changed:', WebApp.themeParams);
+                        WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8');
+                        WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8');
+                    });
+
+                    WebApp.BackButton.onClick(() => {
+                        console.log('Telegram BackButton clicked!');
+                        showToast('Back button clicked! (Navigation not fully implemented)', 'info');
+                        // In a real app, you'd manage history and navigate back, or close the app if no history.
+                        // WebApp.close();
+                    });
+                    WebApp.BackButton.show();
+
+                    // Setup Telegram MainButton for the 'Cash' tab
+                    WebApp.MainButton.setText('Submit Withdraw Request');
+                    WebApp.MainButton.setParams({
+                        text_color: '#FFFFFF',
+                        color: '#EF4444' // red-500 from Tailwind
+                    });
+                    WebApp.MainButton.onClick(handleSubmitWithdrawFromMainButton); // Attach the withdraw function
+                    // Initially hide the MainButton, it will be shown when 'Cash' tab is active
+                    WebApp.MainButton.hide();
+
+                } catch (error) {
+                    console.error("Error initializing Telegram WebApp SDK:", error);
+                    loadingText.textContent = 'Telegram connection failed!';
+                    showToast('Telegram connection failed! Please restart the bot.', 'error');
                 }
-                initReady.telegram = true;
+            } else {
+                // Not in Telegram environment (e.g., direct browser access)
+                console.warn('Running outside Telegram environment. Telegram SDK functions will be skipped.');
+                telegramUser = { id: 'test_user_standalonemode_1', first_name: 'Test', last_name: 'User', username: 'testuser', photo_url: 'https://via.placeholder.com/40' };
+                updateLoading('Running in test mode (no Telegram user)...', 30);
+                initReady.telegram = true; // Force Telegram ready in test mode
                 checkAndHideLoadingScreen();
+            }
 
-                WebApp.onEvent('themeChanged', () => {
-                    console.log('Telegram theme changed:', WebApp.themeParams);
-                    // Dynamically update app theme if desired
-                    WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8');
-                    WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8');
-                });
+            // 2. Firebase Initialization
+            updateLoading('Connecting to Firebase...', 60);
+            try {
+                // Check if Firebase config placeholders are updated
+                if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE") {
+                    throw new Error("Firebase configuration not updated. Please replace placeholder values.");
+                }
 
-                WebApp.BackButton.onClick(() => {
-                    console.log('Telegram BackButton clicked!');
-                    showToast('Back button clicked! (Not fully implemented)', 'info');
-                    // Ideal implementation: navigate back in app history, or close if at root
-                    // For now, let's just make it close the app as a default if no history
-                    // WebApp.close();
-                });
-                WebApp.BackButton.show(); // Show BackButton always for this example, adjust as needed
-
-                // Initialize Telegram MainButton, keep hidden initially
-                WebApp.MainButton.setText('Submit Withdraw Request');
-                WebApp.MainButton.setParams({
-                    text_color: '#FFFFFF',
-                    color: '#EF4444' // red-500
-                });
-                WebApp.MainButton.onClick(handleSubmitWithdrawFromMainButton); // Attach event listener
-
-                updateLoading('Connecting to Firebase...', 60);
-                // 2. Firebase Initialization
                 firebaseApp = firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
                 db = firebase.database();
                 analytics = firebase.analytics();
-                // storage = firebase.storage(); // if using storage
+                // storage = firebase.storage(); // if using storage for images
 
                 auth.signInAnonymously().then(() => {
                     console.log('Firebase Anonymous user signed in.');
                     updateLoading('Firebase connected...', 80);
-                    initReady.firebase = true;
-                    handleUserLogin(); // This will trigger user data load and final screen check
+                    initReady.firebase = true; // Mark Firebase part as ready
+                    handleUserLogin(); // Proceed with user data loading
                 }).catch((error) => {
                     console.error("Firebase Auth Error:", error);
                     loadingText.textContent = 'Firebase connection failed!';
                     showToast('Firebase connection failed! Check console for details.', 'error');
-                    // In a real app, you might want to show a retry button here
                 });
-
             } catch (error) {
-                console.error("Critical initialization error:", error);
-                loadingText.textContent = 'Critical error during initialization! See console.';
-                showToast('Critical error: ' + error.message, 'error');
+                console.error("Firebase Initialization Error:", error);
+                loadingText.textContent = `Firebase config error: ${error.message}`;
+                showToast(`Firebase Init Error: ${error.message}`, 'error');
             }
-        });
+        }); // End of DOMContentLoaded
 
-        // Function to handle user login and data loading
+        // --- User Login and Data Handling ---
         async function handleUserLogin() {
-            if (!telegramUser || !telegramUser.id) {
-                console.error("No Telegram user ID to process user data.");
-                loadingText.textContent = 'User ID not found. App might not function fully.';
-                initReady.userData = true; // Still allow app to open, but with limited features
+            // Determine the user ID based on Telegram data or test mode
+            let userIdToUse;
+            let currentTelegramUser;
+
+            if (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
+                userIdToUse = WebApp.initDataUnsafe.user.id.toString();
+                currentTelegramUser = WebApp.initDataUnsafe.user;
+                // If telegramUser was a fallback, update it with real data now
+                telegramUser = currentTelegramUser;
+            } else {
+                // Use fallback test user ID
+                userIdToUse = telegramUser.id.toString();
+                currentTelegramUser = telegramUser;
+                console.warn('Using fallback Telegram user for Firebase operations.');
+            }
+
+            if (!userIdToUse) {
+                console.error("Cannot proceed: No valid user ID found for Firebase.");
+                loadingText.textContent = 'User ID not found!';
+                initReady.userData = true; // Allow app to open, but warn user
                 checkAndHideLoadingScreen();
                 return;
             }
 
-            const userId = telegramUser.id.toString(); // Ensure ID is string for Firebase keys
             currentUser = {
-                uid: userId, // Using Telegram ID as unique identifier for our app
-                is_admin: (userId === ADMIN_TELEGRAM_ID)
+                uid: userIdToUse,
+                is_admin: (userIdToUse === ADMIN_TELEGRAM_ID)
             };
-            console.log('Current User (after Firebase login):', currentUser);
+            console.log('Current App User (Firebase context):', currentUser);
 
-            const userRef = db.ref(`users/${userId}`);
+            const userRef = db.ref(`users/${userIdToUse}`);
 
-            // Fetch initial user data once to ensure we have it before setting up listener
+            // Fetch initial user data once to ensure we have it immediately
             try {
                 const snapshot = await userRef.once('value');
                 const data = snapshot.val();
 
                 if (data) {
                     userData = data;
-                    console.log('Initial user data loaded:', userData);
+                    console.log('Initial user data loaded from Firebase:', userData);
                 } else {
-                    console.log('New user or data not found. Initializing profile.');
+                    // New user or data not initialized, create default profile
+                    console.log('New user detected or data not found. Initializing profile.');
                     const newUserProfile = {
-                        telegram_id: userId,
-                        username: telegramUser.username || `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
-                        first_name: telegramUser.first_name || '',
-                        last_name: telegramUser.last_name || '',
-                        avatar_url: telegramUser.photo_url || 'https://via.placeholder.com/40',
+                        telegram_id: userIdToUse,
+                        username: currentTelegramUser.username || `${currentTelegramUser.first_name || ''} ${currentTelegramUser.last_name || ''}`.trim(),
+                        first_name: currentTelegramUser.first_name || '',
+                        last_name: currentTelegramUser.last_name || '',
+                        avatar_url: currentTelegramUser.photo_url || 'https://via.placeholder.com/40',
                         coins: 0,
                         usdt_balance: 0,
                         bdt_balance: 0,
                         rank: 'Newbie',
-                        last_daily_reward: 0,
-                        referral_code: generateReferralCode(userId),
-                        referred_by: WebApp.initDataUnsafe.start_param || '', // Capture referral param if present
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                        last_daily_reward: 0, // Unix timestamp
+                        referral_code: generateReferralCode(userIdToUse),
+                        // Capture start_param from Telegram, if any, as referred_by
+                        referred_by: (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.start_param) ? WebApp.initDataUnsafe.start_param : '',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP,
+                        last_online: firebase.database.ServerValue.TIMESTAMP
                     };
                     await userRef.set(newUserProfile);
-                    userData = newUserProfile; // Set initial data for current session
-                    console.log('New user profile created!');
+                    userData = newUserProfile; // Set for current session
+                    console.log('New user profile created successfully!');
                 }
-                initReady.userData = true; // User data is now available
+                initReady.userData = true; // Mark user data as ready
                 updateLoading('Ready!', 100);
-                checkAndHideLoadingScreen(); // Check if all conditions are met
+                checkAndHideLoadingScreen(); // Final check to hide loading screen
+
+                // Set up real-time listener for future user data updates
+                userRef.on('value', (snapshot) => {
+                    const latestData = snapshot.val();
+                    if (latestData) {
+                        userData = latestData;
+                        console.log('User data updated via Firebase listener:', userData);
+                        updateUI(); // Update UI with latest data
+                        // Cache to LocalStorage for quick access
+                        localStorage.setItem(`user_${userIdToUse}_data`, JSON.stringify(userData));
+                        localStorage.setItem(`user_${userIdToUse}_balance`, userData.coins || 0);
+                    }
+                });
+
+                // Update last_online status every minute
+                setInterval(() => {
+                    userRef.update({ last_online: firebase.database.ServerValue.TIMESTAMP });
+                }, 60 * 1000);
+
             } catch (error) {
-                console.error('Error fetching/creating user profile:', error);
+                console.error('Error fetching/creating user profile in Firebase:', error);
                 loadingText.textContent = 'Failed to load user data!';
                 showToast('Failed to load user data. Please try again.', 'error');
+                // Even on error, we might want to proceed to show a basic app,
+                // but with a clear error message.
+                initReady.userData = true;
+                checkAndHideLoadingScreen();
             }
-
-            // Set up real-time listener for future updates
-            userRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    userData = data;
-                    console.log('User data updated via listener:', userData);
-                    updateUI(); // Update UI with latest data
-                    // Cache to LocalStorage
-                    localStorage.setItem(`user_${userId}_data`, JSON.stringify(userData));
-                    localStorage.setItem(`user_${userId}_balance`, userData.coins || 0);
-                }
-            });
         }
 
         function generateReferralCode(userId) {
-            return `REF-${userId.substring(0, 6).toUpperCase()}`; // Simple code
+            // A simple referral code. Consider a more robust, unique generator for production.
+            return `REF-${userId.substring(0, 6).toUpperCase()}`;
         }
 
         // --- UI Update Functions ---
         function updateUI() {
-            if (!userData || !telegramUser || !currentUser) return; // Ensure all data is present
+            // Ensure all critical data is loaded before attempting UI updates
+            if (!userData || !telegramUser || !currentUser) {
+                console.warn('Skipping UI update: missing user data.', { userData, telegramUser, currentUser });
+                return;
+            }
 
-            // User Info
+            // User Info Section
             document.getElementById('user-avatar').src = userData.avatar_url || telegramUser.photo_url || 'https://via.placeholder.com/40';
             document.getElementById('user-username').innerHTML = `${userData.username || telegramUser.username || telegramUser.first_name} ${currentUser.is_admin ? '<span class="admin-badge">ADMIN</span>' : ''}`;
             document.getElementById('user-rank').textContent = userData.rank;
 
-            // Balances
-            document.getElementById('user-balance-coins').textContent = userData.coins.toLocaleString();
-            document.getElementById('user-balance-coins-large').textContent = userData.coins.toLocaleString();
+            // Balances Display
+            animateCounter('user-balance-coins', userData.coins || 0);
+            animateCounter('user-balance-coins-large', userData.coins || 0);
 
-            // Calculate USDT/BDT based on admin settings
+            // Fetch conversion rates and update USD/BDT values
             db.ref('settings/conversion_rates').once('value', snapshot => {
                 const rates = snapshot.val();
                 if (rates) {
@@ -831,41 +902,49 @@
                     const bdtValue = (userData.coins * (rates.coin_to_bdt || 0)).toFixed(2);
                     animateCounter('user-balance-usd', parseFloat(usdtValue));
                     animateCounter('user-balance-bdt', parseFloat(bdtValue));
+                } else {
+                    console.warn("Conversion rates not set in Firebase settings.");
+                    animateCounter('user-balance-usd', 0.00);
+                    animateCounter('user-balance-bdt', 0.00);
                 }
             });
 
-            // Referral Link
-            // Ensure WebApp.initDataUnsafe.bot is available before creating link
-            if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.bot && WebApp.initDataUnsafe.bot.username) {
+            // Referral Link Display
+            if (isTelegramEnv && WebApp.initDataUnsafe && WebApp.initDataUnsafe.bot && WebApp.initDataUnsafe.bot.username) {
                 document.getElementById('referral-link').textContent = `https://t.me/${WebApp.initDataUnsafe.bot.username}?start=${userData.referral_code}`;
             } else {
-                 document.getElementById('referral-link').textContent = `https://t.me/YOUR_BOT_USERNAME?start=${userData.referral_code}`; // Fallback if bot username not available
+                 document.getElementById('referral-link').textContent = `https://t.me/YOUR_BOT_USERNAME_HERE?start=${userData.referral_code}`; // Fallback if bot username not available
             }
 
 
-            // Check for Daily Reward
+            // Daily Reward Section Update
             const lastClaim = userData.last_daily_reward || 0;
             const twentyFourHours = 24 * 60 * 60 * 1000;
             const now = Date.now();
             const canClaim = (now - lastClaim) > twentyFourHours;
             const dailyRewardButton = document.getElementById('claim-daily-reward');
+
             if (canClaim) {
                 dailyRewardButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
                 dailyRewardButton.classList.add('bg-black', 'hover:bg-gray-800');
                 dailyRewardButton.textContent = 'Claim';
                 dailyRewardButton.disabled = false;
+                // Clear any existing timer if reward is now claimable
+                if (dailyRewardTimer) clearInterval(dailyRewardTimer);
             } else {
                 dailyRewardButton.classList.remove('bg-black', 'hover:bg-gray-800');
                 dailyRewardButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                 const nextClaimTime = new Date(lastClaim + twentyFourHours);
                 dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(nextClaimTime - now)}`;
                 dailyRewardButton.disabled = true;
-                // Update timer every second if active
-                if (window.dailyRewardTimer) clearInterval(window.dailyRewardTimer);
-                window.dailyRewardTimer = setInterval(() => {
+
+                // Set up/reset countdown timer
+                if (dailyRewardTimer) clearInterval(dailyRewardTimer); // Clear old timer
+                dailyRewardTimer = setInterval(() => {
                     const remaining = nextClaimTime - Date.now();
                     if (remaining <= 0) {
-                        clearInterval(window.dailyRewardTimer);
+                        clearInterval(dailyRewardTimer);
+                        dailyRewardTimer = null; // Reset timer ID
                         updateUI(); // Re-evaluate and enable button
                     } else {
                         dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(remaining)}`;
@@ -873,7 +952,7 @@
                 }, 1000);
             }
 
-            // Admin panel visibility in nav
+            // Admin nav item visibility in bottom navigation
             const adminNavItem = document.getElementById('admin-nav-item');
             if (currentUser.is_admin) {
                 adminNavItem.classList.remove('hidden');
@@ -882,6 +961,7 @@
             }
         }
 
+        // Helper function to format time for countdowns
         function formatTimeRemaining(ms) {
             if (ms < 0) return '00h 00m 00s';
             const seconds = Math.floor((ms / 1000) % 60);
@@ -892,7 +972,7 @@
 
         // --- Event Listeners & Interactions ---
 
-        // Daily Reward Claim
+        // Daily Reward Claim Handler
         document.getElementById('claim-daily-reward').addEventListener('click', async () => {
             if (!currentUser || document.getElementById('claim-daily-reward').disabled) return;
 
@@ -902,146 +982,144 @@
             const dailyRewardAmount = 100; // Example amount
 
             try {
-                const snapshot = await userRef.once('value');
-                const user = snapshot.val();
-
-                if (!user) {
-                    showToast('User data not found.', 'error');
-                    return;
-                }
-
-                const lastClaim = user.last_daily_reward || 0;
-                const twentyFourHours = 24 * 60 * 60 * 1000;
-
-                if ((now - lastClaim) < twentyFourHours) {
-                    showToast('Daily bonus already claimed!', 'warning');
-                    return;
-                }
-
-                // Use transaction to safely update coins
+                // Use Firebase transaction for safe, atomic coin update
+                let transactionSuccessful = false;
                 await userRef.transaction(currentData => {
                     if (currentData) {
+                        const lastClaim = currentData.last_daily_reward || 0;
+                        const twentyFourHours = 24 * 60 * 60 * 1000;
+                        if ((now - lastClaim) < twentyFourHours) {
+                            // If already claimed, abort transaction
+                            return undefined;
+                        }
                         currentData.coins = (currentData.coins || 0) + dailyRewardAmount;
                         currentData.last_daily_reward = now;
+                        transactionSuccessful = true;
                     }
                     return currentData;
                 });
 
-                showToast(`Claimed ${dailyRewardAmount} coins!`, 'success');
-                // Trigger confetti animation
-                triggerConfetti();
-                WebApp.HapticFeedback.notificationOccurred('success');
+                if (transactionSuccessful) {
+                    showToast(`Claimed ${dailyRewardAmount} coins!`, 'success');
+                    triggerConfetti();
+                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('success');
+                } else {
+                    showToast('Daily bonus already claimed or an error occurred!', 'warning');
+                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
+                }
 
             } catch (error) {
                 console.error("Error claiming daily reward:", error);
                 showToast('Failed to claim daily reward.', 'error');
-                WebApp.HapticFeedback.notificationOccurred('error');
+                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
             }
         });
 
-        // Copy Referral Link
+        // Copy Referral Link to Clipboard
         document.getElementById('copy-referral-link').addEventListener('click', () => {
             const referralLink = document.getElementById('referral-link').textContent;
             navigator.clipboard.writeText(referralLink).then(() => {
                 showToast('Referral link copied!', 'success');
-                WebApp.HapticFeedback.impactOccurred('light');
+                if (isTelegramEnv) WebApp.HapticFeedback.impactOccurred('light');
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
                 showToast('Failed to copy link.', 'error');
-                WebApp.HapticFeedback.notificationOccurred('error');
+                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
             });
         });
 
-        // Withdraw form validation and MainButton enablement
+        // --- Withdraw System Logic ---
         const withdrawAmountInput = document.getElementById('withdraw-amount');
         const withdrawMethodSelect = document.getElementById('withdraw-method');
         const withdrawAddressInput = document.getElementById('withdraw-address');
+        const submitWithdrawButton = document.getElementById('submit-withdraw');
 
+        // Validate withdraw form inputs and enable/disable MainButton
         const validateWithdrawForm = () => {
             const amount = parseInt(withdrawAmountInput.value);
             const method = withdrawMethodSelect.value;
             const address = withdrawAddressInput.value.trim();
 
-            if (isNaN(amount) || amount <= 0 || !method || !address || userData.coins < amount) {
-                WebApp.MainButton.disable();
+            // Check if user data is loaded and has enough coins
+            const hasEnoughCoins = userData && (userData.coins || 0) >= amount;
+
+            if (isNaN(amount) || amount <= 0 || !method || !address || !hasEnoughCoins) {
+                if (isTelegramEnv) WebApp.MainButton.disable();
+                submitWithdrawButton.disabled = true;
+                submitWithdrawButton.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
-                WebApp.MainButton.enable();
+                if (isTelegramEnv) WebApp.MainButton.enable();
+                submitWithdrawButton.disabled = false;
+                submitWithdrawButton.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         };
 
+        // Attach validation to input changes
         withdrawAmountInput.addEventListener('input', validateWithdrawForm);
         withdrawMethodSelect.addEventListener('change', validateWithdrawForm);
         withdrawAddressInput.addEventListener('input', validateWithdrawForm);
 
-        // Submit Withdraw Request (local button)
-        document.getElementById('submit-withdraw').addEventListener('click', async () => {
+        // Handler for both local button and Telegram MainButton click
+        const handleSubmitWithdrawFromMainButton = async () => {
+            await handleSubmitWithdraw();
+        };
+        submitWithdrawButton.addEventListener('click', async () => {
             await handleSubmitWithdraw();
         });
 
-        // Submit Withdraw Request (Telegram MainButton)
-        async function handleSubmitWithdrawFromMainButton() {
-            await handleSubmitWithdraw();
-        }
 
         async function handleSubmitWithdraw() {
-            if (!currentUser || WebApp.MainButton.isDisabled) return;
+            if (!currentUser || (isTelegramEnv && WebApp.MainButton.isDisabled) || submitWithdrawButton.disabled) {
+                showToast('Please fill all withdrawal details correctly.', 'warning');
+                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
+                return;
+            }
 
             const amount = parseInt(withdrawAmountInput.value);
             const method = withdrawMethodSelect.value;
             const address = withdrawAddressInput.value.trim();
 
-            // Re-validate just in case
-            if (isNaN(amount) || amount <= 0 || !method || !address) {
-                showToast('Please fill all withdrawal details correctly.', 'warning');
-                WebApp.HapticFeedback.notificationOccurred('warning');
-                return;
-            }
-
-            WebApp.MainButton.setText('Processing Withdraw...');
-            WebApp.MainButton.showProgress();
+            if (isTelegramEnv) WebApp.MainButton.showProgress();
+            else submitWithdrawButton.textContent = 'Processing...';
 
             try {
                 const userId = currentUser.uid;
                 const userRef = db.ref(`users/${userId}`);
 
+                // Get conversion rates for minimum withdrawal check
                 const ratesSnapshot = await db.ref('settings/conversion_rates').once('value');
                 const rates = ratesSnapshot.val();
-                const minWithdrawUSD = 5; // Example minimum
+                const minWithdrawUSD = 5; // Example minimum withdrawal amount in USD
                 const equivalentUSD = (amount * (rates.coin_to_usdt || 0));
 
                 if (equivalentUSD < minWithdrawUSD) {
                     showToast(`Minimum withdraw is $${minWithdrawUSD} USD (approx ${Math.ceil(minWithdrawUSD / (rates.coin_to_usdt || 0.0001))} coins).`, 'warning');
-                    WebApp.HapticFeedback.notificationOccurred('warning');
+                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('warning');
                     return;
                 }
 
-                if (userData.coins < amount) {
-                    showToast('Insufficient coins for withdrawal.', 'error');
-                    WebApp.HapticFeedback.notificationOccurred('error');
-                    return;
-                }
-
-                // Use transaction to safely deduct coins
-                let transactionSuccess = false;
+                // Ensure user has enough coins using a transaction for atomicity
+                let transactionSuccessful = false;
                 await userRef.transaction(currentData => {
                     if (currentData && (currentData.coins || 0) >= amount) {
                         currentData.coins = currentData.coins - amount;
-                        transactionSuccess = true;
+                        transactionSuccessful = true;
                         return currentData;
                     }
                     return undefined; // Abort transaction if insufficient funds
                 });
 
-                if (!transactionSuccess) {
+                if (!transactionSuccessful) {
                     showToast('Failed to deduct coins. Insufficient balance or concurrent update.', 'error');
-                    WebApp.HapticFeedback.notificationOccurred('error');
+                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
                     return;
                 }
 
-                const withdrawRef = db.ref('withdraws').push(); // Generate new unique key
+                // Record the withdrawal request
+                const withdrawRef = db.ref('withdraws').push();
                 await withdrawRef.set({
                     userId: userId,
-                    username: userData.username,
+                    username: userData.username || telegramUser.username,
                     amount_coins: amount,
                     amount_usd: equivalentUSD.toFixed(2),
                     method: method,
@@ -1051,48 +1129,58 @@
                 });
 
                 showToast('Withdraw request submitted successfully!', 'success');
-                withdrawAmountInput.value = '';
-                withdrawAddressInput.value = '';
-                validateWithdrawForm(); // Re-validate and disable MainButton if needed
-                WebApp.HapticFeedback.notificationOccurred('success');
+                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('success');
 
-                // Send notification to admin bot (this would be an API call to your backend)
-                // fetch('/api/bot/notifyAdmin', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         adminChatId: ADMIN_TELEGRAM_ID,
-                //         message: `New withdraw request from ${userData.username} (${userId}) for ${amount} coins ($${equivalentUSD.toFixed(2)}) via ${method} to ${address}.`
-                //     })
-                // });
+                // Clear form inputs
+                withdrawAmountInput.value = '';
+                withdrawMethodSelect.value = '';
+                withdrawAddressInput.value = '';
+                validateWithdrawForm(); // Update MainButton state
+
+                // --- Admin Bot Notification (Requires a Backend Server) ---
+                // This part demonstrates how you would call your backend API.
+                // The actual Telegram Bot API calls (e.g., `sendMessage`) cannot be made directly from client-side JavaScript.
+                /*
+                if (isTelegramEnv) {
+                    fetch('YOUR_BACKEND_API_ENDPOINT/notifyAdmin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            adminChatId: ADMIN_TELEGRAM_ID,
+                            message: `New withdraw request from ${userData.username || telegramUser.username} (${userId}) for ${amount} coins ($${equivalentUSD.toFixed(2)}) via ${method} to ${address}.`
+                        })
+                    }).then(response => {
+                        if (!response.ok) console.error("Failed to send admin notification.");
+                    }).catch(err => console.error("Error sending admin notification:", err));
+                }
+                */
 
             } catch (error) {
                 console.error("Error submitting withdraw request:", error);
                 showToast('Failed to submit withdraw request.', 'error');
-                WebApp.HapticFeedback.notificationOccurred('error');
-                // Revert coins if transaction failed after initial check (complex for client-side)
+                if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
             } finally {
-                WebApp.MainButton.hideProgress();
-                // MainButton visibility is managed by setActiveTab or validateWithdrawForm
+                if (isTelegramEnv) WebApp.MainButton.hideProgress();
+                submitWithdrawButton.textContent = 'Request Withdraw'; // Reset button text
             }
         }
 
-
-        // Admin Panel Functions (Placeholders)
-        // These will only run if currentUser.is_admin is true
-        // And are attached AFTER currentUser is determined
+        // --- Admin Panel Functions (Conditional Setup) ---
         function setupAdminPanelListeners() {
-            if (!currentUser || !currentUser.is_admin) return;
+            if (!currentUser || !currentUser.is_admin) {
+                console.warn('Attempted to set up admin panel listeners for a non-admin user.');
+                return;
+            }
+            console.log('Setting up admin panel listeners.');
 
-            // Load admin stats
+            // Real-time updates for admin dashboard stats
             db.ref('users').on('value', snapshot => {
                 const users = snapshot.val();
                 if (users) {
                     const totalUsers = Object.keys(users).length;
-                    // Example: last online within 5 mins
-                    const onlineUsers = Object.values(users).filter(u => u.last_online && (Date.now() - u.last_online) < 5 * 60 * 1000).length;
-                    document.getElementById('admin-total-users').textContent = totalUsers;
-                    document.getElementById('admin-online-users').textContent = onlineUsers;
+                    const onlineUsers = Object.values(users).filter(u => u.last_online && (Date.now() - u.last_online) < 5 * 60 * 1000).length; // Active within last 5 minutes
+                    animateCounter('admin-total-users', totalUsers);
+                    animateCounter('admin-online-users', onlineUsers);
                 }
             });
 
@@ -1101,27 +1189,64 @@
                 if (withdraws) {
                     const totalWithdrawals = Object.keys(withdraws).length;
                     const pendingWithdraws = Object.values(withdraws).filter(w => w.status === 'pending').length;
-                    document.getElementById('admin-total-withdrawals').textContent = totalWithdrawals;
-                    document.getElementById('admin-pending-withdraws').textContent = pendingWithdraws;
+                    animateCounter('admin-total-withdrawals', totalWithdrawals);
+                    animateCounter('admin-pending-withdraws', pendingWithdraws);
+
+                    // Dynamically populate withdraw requests
+                    const adminWithdrawRequestsDiv = document.getElementById('admin-withdraw-requests');
+                    adminWithdrawRequestsDiv.innerHTML = ''; // Clear previous requests
+
+                    Object.entries(withdraws).forEach(([withdrawId, request]) => {
+                        const statusClass = {
+                            'pending': 'bg-yellow-100 text-yellow-800',
+                            'approved': 'bg-green-100 text-green-800',
+                            'rejected': 'bg-red-100 text-red-800'
+                        };
+                        const requestHtml = `
+                            <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-md">User ${request.userId.substring(0, 8)}: ${request.amount_coins} Coins ($${request.amount_usd})</p>
+                                    <p class="text-sm text-gray-500">Method: ${request.method} | Details: ${request.address}</p>
+                                    <p class="text-xs text-gray-400">${new Date(request.timestamp).toLocaleString()}</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full ${statusClass[request.status]}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                                    ${request.status === 'pending' ? `
+                                        <button data-id="${withdrawId}" class="admin-approve-btn ml-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm">Approve</button>
+                                        <button data-id="${withdrawId}" class="admin-reject-btn ml-2 px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Reject</button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                        adminWithdrawRequestsDiv.innerHTML += requestHtml;
+                    });
+
+                    // Attach event listeners to newly created buttons
+                    adminWithdrawRequestsDiv.querySelectorAll('.admin-approve-btn').forEach(button => {
+                        button.onclick = (e) => handleWithdrawAction(e.target.dataset.id, 'approved');
+                    });
+                    adminWithdrawRequestsDiv.querySelectorAll('.admin-reject-btn').forEach(button => {
+                        button.onclick = (e) => handleWithdrawAction(e.target.dataset.id, 'rejected');
+                    });
                 }
             });
 
-            // Load saved conversion rates
+            // Load saved conversion rates into inputs
             db.ref('settings/conversion_rates').once('value', snapshot => {
                 const rates = snapshot.val();
                 if (rates) {
-                    document.getElementById('coin-to-usdt').value = rates.coin_to_usdt;
-                    document.getElementById('coin-to-bdt').value = rates.coin_to_bdt;
+                    document.getElementById('coin-to-usdt').value = rates.coin_to_usdt || '0.0001';
+                    document.getElementById('coin-to-bdt').value = rates.coin_to_bdt || '0.01';
                 }
             });
 
-            // Save Conversion Rates
+            // Save Conversion Rates Handler
             document.querySelector('#tab-admin button.bg-green-500').addEventListener('click', () => {
                 const coinToUsdt = parseFloat(document.getElementById('coin-to-usdt').value);
                 const coinToBdt = parseFloat(document.getElementById('coin-to-bdt').value);
 
                 if (isNaN(coinToUsdt) || isNaN(coinToBdt) || coinToUsdt <= 0 || coinToBdt <= 0) {
-                    showToast('Invalid conversion rates.', 'warning');
+                    showToast('Invalid conversion rates. Must be positive numbers.', 'warning');
                     return;
                 }
 
@@ -1136,27 +1261,81 @@
                 });
             });
 
-            // Send Broadcast (requires backend for Telegram Bot API)
+            // Send Broadcast Message (via Bot - requires backend)
             document.getElementById('send-broadcast').addEventListener('click', () => {
                 const message = document.getElementById('broadcast-message').value.trim();
                 if (!message) {
                     showToast('Broadcast message cannot be empty.', 'warning');
                     return;
                 }
-                showToast('Broadcast functionality requires a backend server to interact with Telegram Bot API.', 'info');
-                console.log('Simulating broadcast:', message);
-                // In a real app, you would send this to your backend, which then uses the Bot API
-                // fetch('/api/bot/broadcast', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ message: message })
-                // });
+                showToast('Broadcast functionality requires a backend server to interact with Telegram Bot API.', 'info', 5000);
+                console.log('Simulating broadcast to all users:', message);
+                // In a real app, send this to your backend, which then uses the Bot API
+                /*
+                fetch('YOUR_BACKEND_API_ENDPOINT/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                */
             });
-             // Add event listeners for other admin functions here (e.g., user search, withdraw approval)
+
+            // User Search and Update (Simplified)
+            document.getElementById('search-user').addEventListener('click', async () => {
+                const searchId = document.getElementById('user-search-id').value.trim();
+                if (!searchId) { showToast('Please enter a user ID to search.', 'warning'); return; }
+
+                try {
+                    const snapshot = await db.ref(`users/${searchId}`).once('value');
+                    const user = snapshot.val();
+                    const userDetailsDisplay = document.getElementById('user-details-display');
+                    if (user) {
+                        document.getElementById('ud-username').textContent = user.username || user.first_name;
+                        document.getElementById('ud-id').textContent = user.telegram_id;
+                        document.getElementById('ud-coins').textContent = (user.coins || 0).toLocaleString();
+                        userDetailsDisplay.classList.remove('hidden');
+
+                        // Update coins functionality
+                        document.getElementById('ud-update-coins').onclick = async () => {
+                            const addCoins = parseInt(document.getElementById('ud-add-coins').value);
+                            if (isNaN(addCoins) || addCoins === 0) { showToast('Enter a valid number of coins to add/deduct.', 'warning'); return; }
+                            await db.ref(`users/${searchId}/coins`).transaction(currentCoins => {
+                                return (currentCoins || 0) + addCoins;
+                            });
+                            showToast(`Coins updated for ${user.username}`, 'success');
+                            document.getElementById('ud-add-coins').value = ''; // Clear input
+                        };
+                    } else {
+                        showToast('User not found.', 'error');
+                        userDetailsDisplay.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error("Error searching user:", error);
+                    showToast('Error searching user.', 'error');
+                }
+            });
         }
 
+        // Handle Admin Withdraw Actions (Approve/Reject)
+        async function handleWithdrawAction(withdrawId, status) {
+            if (!currentUser || !currentUser.is_admin) {
+                showToast('Access Denied: You are not an admin.', 'error');
+                return;
+            }
+            if (!confirm(`Are you sure you want to ${status} this withdrawal request?`)) return;
 
-        // --- Navigation Logic ---
+            const withdrawRef = db.ref(`withdraws/${withdrawId}`);
+            try {
+                await withdrawRef.update({ status: status, processed_at: firebase.database.ServerValue.TIMESTAMP });
+                showToast(`Withdrawal request ${status}!`, 'success');
+                // Optional: Notify user via Telegram Bot (requires backend)
+            } catch (error) {
+                console.error(`Error updating withdrawal status to ${status}:`, error);
+                showToast(`Failed to ${status} request.`, 'error');
+            }
+        }
+
+        // --- Bottom Navigation Logic ---
         const navItems = document.querySelectorAll('.bottom-nav-item');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -1165,44 +1344,47 @@
                 e.preventDefault();
                 const targetTab = item.dataset.tab;
 
-                // Prevent non-admins from accessing admin tab
+                // Admin access check for 'admin' tab
                 if (targetTab === 'admin' && (!currentUser || !currentUser.is_admin)) {
                     showToast('Access Denied: You are not an admin.', 'error');
-                    WebApp.HapticFeedback.notificationOccurred('error');
-                    return; // Stop here if not admin
+                    if (isTelegramEnv) WebApp.HapticFeedback.notificationOccurred('error');
+                    return; // Stop navigation if not authorized
                 }
 
                 setActiveTab(targetTab);
-                WebApp.HapticFeedback.impactOccurred('light');
+                if (isTelegramEnv) WebApp.HapticFeedback.impactOccurred('light');
             });
         });
 
+        // Function to set the currently active tab
         function setActiveTab(targetTab) {
-            // Remove active from all nav items and hide all tab content
+            // Remove 'active' class from all nav items and hide all tab content
             navItems.forEach(item => item.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
 
-            // Add active to clicked nav item
+            // Add 'active' class to the selected nav item
             const activeNavItem = document.querySelector(`.bottom-nav-item[data-tab="${targetTab}"]`);
             if (activeNavItem) {
                 activeNavItem.classList.add('active');
             }
 
-            // Show corresponding tab content
+            // Show the corresponding tab content
             const activeTabContent = document.getElementById(`tab-${targetTab}`);
             if (activeTabContent) {
                 activeTabContent.classList.add('active');
             }
 
-            // Manage Telegram MainButton visibility based on tab
-            if (targetTab === 'cash') {
-                WebApp.MainButton.show();
-                validateWithdrawForm(); // Ensure button state is correct on tab switch
-            } else {
-                WebApp.MainButton.hide();
+            // Manage Telegram MainButton visibility based on the active tab
+            if (isTelegramEnv) {
+                if (targetTab === 'cash') {
+                    WebApp.MainButton.show();
+                    validateWithdrawForm(); // Ensure MainButton state is correct
+                } else {
+                    WebApp.MainButton.hide();
+                }
             }
 
-            // Setup admin panel listeners when admin tab is activated
+            // If admin tab is activated, set up its listeners
             if (targetTab === 'admin' && currentUser && currentUser.is_admin) {
                 setupAdminPanelListeners();
             }
@@ -1212,36 +1394,38 @@
         function showToast(message, type = 'info', duration = 3000) {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `premium-card !shadow-none !border-gray-300 glass-effect p-3 rounded-xl shadow-lg text-sm font-semibold flex items-center transform translate-y-full opacity-0 transition-all duration-300 ease-out`;
+            // Using glassmorphism effect for toasts too
+            toast.className = `premium-card !shadow-none glass-effect p-3 rounded-xl shadow-lg text-sm font-semibold flex items-center transform translate-y-full opacity-0 transition-all duration-300 ease-out`;
 
             let icon = '';
             let textColor = '';
-            let bgColor = '';
+            // Tailwind background classes for icon to stand out slightly
+            let iconBgClass = '';
 
             switch (type) {
                 case 'success':
                     icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle text-green-500 mr-2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>`;
                     textColor = 'text-green-800';
-                    bgColor = 'bg-green-100';
+                    iconBgClass = 'bg-green-50'; // Light green background for icon area
                     break;
                 case 'error':
                     icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-circle text-red-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`;
                     textColor = 'text-red-800';
-                    bgColor = 'bg-red-100';
+                    iconBgClass = 'bg-red-50';
                     break;
                 case 'warning':
-                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle text-yellow-500 mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`;
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucude-alert-circle text-yellow-500 mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`;
                     textColor = 'text-yellow-800';
-                    bgColor = 'bg-yellow-100';
+                    iconBgClass = 'bg-yellow-50';
                     break;
                 case 'info':
                 default:
                     icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info text-blue-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
                     textColor = 'text-blue-800';
-                    bgColor = 'bg-blue-100';
+                    iconBgClass = 'bg-blue-50';
             }
 
-            toast.innerHTML = `${icon} <span class="${textColor}">${message}</span>`;
+            toast.innerHTML = `<div class="p-1 rounded-full ${iconBgClass}">${icon}</div> <span class="${textColor}">${message}</span>`;
             toastContainer.appendChild(toast);
 
             // Animate in
@@ -1301,7 +1485,7 @@
             }, 5000);
         }
 
-        // --- Counter Animation for Numbers (simplified) ---
+        // --- Counter Animation for Numbers ---
         function animateCounter(elementId, targetValue) {
             const element = document.getElementById(elementId);
             if (!element) return;
@@ -1326,20 +1510,6 @@
             }
             requestAnimationFrame(step);
         }
-
-        // Initialize active tab AFTER the app is fully loaded and UI updated
-        // This ensures updateUI has run at least once before setActiveTab is called.
-        const originalCheckAndHideLoadingScreen = checkAndHideLoadingScreen;
-        checkAndHideLoadingScreen = () => {
-            originalCheckAndHideLoadingScreen();
-            if (initReady.telegram && initReady.firebase && initReady.userData && initReady.minTimeElapsed) {
-                setActiveTab('home'); // Set initial tab to home
-            }
-        };
-
-        // Initialize theme for Telegram WebApp
-        WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8'); // Set header color to app background
-        WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8'); // Set background color to app background
 
     </script>
 </body>
