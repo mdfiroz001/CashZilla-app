@@ -1,1874 +1,1216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>CashZilla – Quiz & Earn</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
-<style>
-  :root{
-    --bg:#f7f8ff;--card:#fff;--border:#111;--cyan:#00d4e8;--yellow:#ffe94a;
-    --purple:#a855f7;--pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;
-    --shadow:4px 4px 0 #111;--shadow-lg:6px 6px 0 #111;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
-  body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
-  .fredoka{font-family:'Fredoka One',cursive;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuizEarn Pro - Telegram Mini App</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
 
-  /* CARDS */
-  .card{background:var(--card);border:3px solid var(--border);border-radius:20px;box-shadow:var(--shadow);}
-  .card-lg{background:var(--card);border:3px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);}
-  .btn{border:3px solid var(--border);border-radius:14px;font-weight:800;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;active:scale(.97);}
-  .btn:active{transform:translate(3px,3px);box-shadow:none;}
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff; /* White background for track */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Darker thumb */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Even darker on hover */
+        }
 
-  /* NAV */
-  #bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;safe-area-inset-bottom:env(safe-area-inset-bottom);}
-  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;transition:background .15s;gap:3px;}
-  .nav-item.active{background:var(--yellow);}
-  .nav-icon{font-size:22px;line-height:1;}
-  .nav-label{font-size:10px;font-weight:800;color:#111;}
+        /* Base Styles */
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f0f4f8; /* Clean white-ish background */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
 
-  /* BALANCE CARD */
-  .balance-card{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;color:#fff;padding:20px;}
+        /* Custom Class for Thick Border & Shadow */
+        .premium-card {
+            border: 3px solid #000;
+            box-shadow: 8px 8px 0px #000; /* Premium Shadow */
+            transition: all 0.2s ease-in-out;
+        }
+        .premium-card:hover {
+            transform: translateY(-4px) translateX(-4px);
+            box-shadow: 12px 12px 0px #000;
+        }
 
-  /* SPIN WHEEL */
-  #spin-canvas{border:4px solid #111;border-radius:50%;box-shadow:6px 6px 0 #111;}
+        /* Glassmorphism Effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
 
-  /* QUIZ */
-  .answer-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;transition:all .15s;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;}
-  .answer-btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #111;}
-  .answer-btn.correct{background:#bbf7d0;border-color:#16a34a;}
-  .answer-btn.wrong{background:#fecaca;border-color:#dc2626;}
+        /* Animated Gradient Background for Loading */
+        .animated-gradient-bg {
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2, #00BFFF, #FFD700);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-  /* CONFETTI */
-  .confetti-piece{position:fixed;width:10px;height:10px;top:-10px;border-radius:2px;animation:confetti-fall 2.5s linear forwards;pointer-events:none;z-index:9999;}
-  @keyframes confetti-fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+        /* Floating Particles (Simplified) */
+        .floating-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+            opacity: 0; /* Initially hidden */
+        }
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+            50% { transform: translateY(-50px) translateX(20px) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) translateX(-40px) scale(0); opacity: 0; }
+        }
 
-  /* COUNTER */
-  @keyframes countUp{from{transform:scale(1.4);color:#ff6eb4;}to{transform:scale(1);}}
-  .count-anim{animation:countUp .4s ease;}
+        /* Shimmer Loading Effect */
+        .shimmer {
+            background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s infinite linear;
+        }
+        @keyframes shimmer-animation {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
 
-  /* TOAST */
-  #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 24px;border-radius:14px;font-weight:700;z-index:9999;transition:transform .3s;white-space:nowrap;}
-  #toast.show{transform:translateX(-50%) translateY(0);}
+        /* Custom Icons - Lucide Icons replacement or pure CSS */
+        /* Example: A simple coin icon using pure CSS */
+        .icon-coin {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            border-radius: 50%;
+            background-color: gold;
+            border: 2px solid orange;
+            position: relative;
+            vertical-align: middle;
+            margin-right: 0.2em;
+        }
+        .icon-coin::before {
+            content: 'C';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #8B4513; /* SaddleBrown */
+        }
 
-  /* LOADER */
-  .spinner{width:40px;height:40px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
+        /* Admin Tag CSS Badge */
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px; /* Pill shape */
+            background-color: #8B5CF6; /* Purple-500 */
+            color: white;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            margin-left: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: pulse-admin 2s infinite ease-in-out;
+        }
 
-  /* SLIDE */
-  .page{display:none;animation:slideIn .25s ease;}
-  .page.active{display:block;}
-  @keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes pulse-admin {
+            0% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+            100% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        }
 
-  /* AD FRAME */
-  .ad-frame{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:4px 4px 0 #111;cursor:pointer;overflow:hidden;position:relative;}
-  .ad-frame:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111;transition:.15s;}
+        /* Sticky Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: #fff;
+            border-top: 3px solid #000;
+            box-shadow: 0 -8px 0 #000, 0 -8px 15px rgba(0,0,0,0.1);
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 0.5rem;
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+        .bottom-nav-item.active {
+            color: #00BFFF; /* Cyan for active */
+            transform: translateY(-5px);
+            text-shadow: 0 2px 4px rgba(0,191,255,0.4);
+        }
+        .bottom-nav-item:hover {
+            color: #FFD700; /* Yellow on hover */
+        }
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
 
-  /* LEADERBOARD */
-  .rank-1{background:linear-gradient(135deg,#ffe94a,#fbbf24);}
-  .rank-2{background:linear-gradient(135deg,#e5e7eb,#9ca3af);}
-  .rank-3{background:linear-gradient(135deg,#fdba74,#f97316);}
+        /* Ad Frame Design */
+        .ad-frame {
+            border: 3px dashed #000; /* Dashed border option */
+            background-color: #fff;
+            border-radius: 1rem;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100px; /* Minimum height for ad slot */
+            overflow: hidden; /* Ensure ad content fits */
+            position: relative;
+            margin-top: 1rem;
+        }
+        .ad-frame:before {
+            content: 'Advertisement';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFD700; /* Yellow */
+            color: #000;
+            padding: 0.2rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border: 2px solid #000;
+            z-index: 1;
+        }
 
-  /* SKELETON */
-  .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:skeleton-load 1.2s infinite;}
-  @keyframes skeleton-load{to{background-position:-200% 0;}}
-
-  /* WHEEL ANIMATION */
-  @keyframes wheelSpin{from{transform:rotate(0deg);}to{transform:rotate(var(--angle));}}
-
-  /* POPUP */
-  .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;}
-  .popup-box{background:#fff;border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;padding:24px;margin:20px;max-width:380px;width:100%;animation:popIn .3s ease;}
-  @keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
-
-  /* FLOATING COINS */
-  .floating-coin{position:fixed;font-size:20px;pointer-events:none;animation:floatUp 1.2s ease-out forwards;z-index:999;}
-  @keyframes floatUp{from{transform:translateY(0);opacity:1;}to{transform:translateY(-120px);opacity:0;}}
-
-  /* ADMIN */
-  #admin-panel{display:none;}
-  .admin-stat-card{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;padding:16px;}
-  .admin-tab{padding:10px 18px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;}
-  .admin-tab.active{background:var(--yellow);}
-
-  /* PROGRESS BAR */
-  .progress-bar{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden;}
-  .progress-fill{height:100%;border-radius:6px;transition:width .5s ease;}
-
-  /* CATEGORY PILLS */
-  .cat-pill{padding:8px 16px;border:2px solid #111;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap;}
-  .cat-pill.active{background:#111;color:#fff;}
-
-  /* WITHDRAW METHODS */
-  .method-card{border:3px solid #e5e7eb;border-radius:16px;padding:14px;cursor:pointer;transition:.15s;background:#fff;}
-  .method-card.selected{border-color:#111;background:var(--yellow);box-shadow:3px 3px 0 #111;}
-
-  ::-webkit-scrollbar{width:0;}
-</style>
+        /* Specific tab content hidden by default */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-[#f0f4f8] text-gray-800 overflow-x-hidden">
 
-<!-- TOAST -->
-<div id="toast"></div>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 animated-gradient-bg flex flex-col items-center justify-center z-[9999] transition-opacity duration-700 ease-in-out">
+        <!-- Floating Particles -->
+        <div class="floating-particle" style="top: 10%; left: 20%; width: 20px; height: 20px; animation-delay: 0s;"></div>
+        <div class="floating-particle" style="top: 50%; left: 70%; width: 30px; height: 30px; animation-delay: 2s;"></div>
+        <div class="floating-particle" style="top: 80%; left: 10%; width: 25px; height: 25px; animation-delay: 4s;"></div>
+        <div class="floating-particle" style="top: 30%; left: 40%; width: 15px; height: 15px; animation-delay: 1s;"></div>
+        <div class="floating-particle" style="top: 60%; left: 85%; width: 35px; height: 35px; animation-delay: 3s;"></div>
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen" style="position:fixed;inset:0;background:#ffe94a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;border:none;">
-  <div style="font-size:60px;margin-bottom:12px;">💰</div>
-  <div class="fredoka" style="font-size:36px;color:#111;">CashZilla</div>
-  <div style="color:#555;font-weight:600;margin-bottom:30px;">Quiz & Earn Platform</div>
-  <div class="spinner"></div>
-</div>
-
-<!-- POPUP OVERLAY -->
-<div id="popup-overlay" class="popup-overlay" style="display:none;">
-  <div id="popup-box" class="popup-box"></div>
-</div>
-
-<!-- =================== ADMIN PANEL =================== -->
-<div id="admin-panel">
-  <div style="background:linear-gradient(135deg,#111,#1f2937);padding:20px;color:#fff;position:sticky;top:0;z-index:50;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="font-size:32px;">👑</div>
-      <div>
-        <div class="fredoka" style="font-size:22px;">Admin Panel</div>
-        <div style="font-size:12px;opacity:.7;">CashZilla Control Center</div>
-      </div>
-      <button onclick="adminLogout()" class="btn" style="margin-left:auto;background:#ef4444;color:#fff;padding:8px 14px;font-size:13px;">Logout</button>
-    </div>
-    <!-- Admin Tabs -->
-    <div style="display:flex;gap:8px;margin-top:14px;overflow-x:auto;padding-bottom:4px;">
-      <button class="admin-tab active" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
-      <button class="admin-tab" onclick="showAdminTab('users')">👥 Users</button>
-      <button class="admin-tab" onclick="showAdminTab('quizzes')">❓ Quizzes</button>
-      <button class="admin-tab" onclick="showAdminTab('withdrawals')">💸 Withdrawals</button>
-      <button class="admin-tab" onclick="showAdminTab('ads')">📢 Ads</button>
-      <button class="admin-tab" onclick="showAdminTab('settings')">⚙️ Settings</button>
-    </div>
-  </div>
-
-  <div style="padding:16px;">
-    <!-- DASHBOARD -->
-    <div id="admin-tab-dashboard">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#00d4e8,#22d3ee);">
-          <div style="font-size:11px;font-weight:700;color:#0e7490;">TOTAL USERS</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-total-users">0</div>
+        <!-- Cartoon Logo Animation -->
+        <div class="relative w-32 h-32 mb-8 animate-bounce">
+            <svg class="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/>
+                <circle cx="12" cy="7.5" r="1.5"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center text-4xl font-extrabold text-[#FFD700] drop-shadow-lg" style="text-shadow: 2px 2px 0 #000;">
+                Q
+            </div>
+            <div class="absolute inset-0 border-4 border-[#000] rounded-full animate-ping opacity-75"></div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#ffe94a,#fbbf24);">
-          <div style="font-size:11px;font-weight:700;color:#92400e;">ONLINE NOW</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-online-users">0</div>
+
+        <h1 class="text-3xl font-extrabold text-white mb-4 drop-shadow-lg" style="text-shadow: 2px 2px 0 #000;">QuizEarn Pro</h1>
+        <div class="w-64 h-2 bg-white rounded-full overflow-hidden mb-4 shimmer">
+            <div id="loading-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 to-purple-500 w-0 transition-all duration-300 ease-linear"></div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#a855f7,#9333ea);">
-          <div style="font-size:11px;font-weight:700;color:#fff;opacity:.8;">TOTAL COINS</div>
-          <div class="fredoka" style="font-size:28px;color:#fff;" id="admin-total-coins">0</div>
-        </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#ff6eb4,#ec4899);">
-          <div style="font-size:11px;font-weight:700;color:#fff;opacity:.8;">WITHDRAWALS</div>
-          <div class="fredoka" style="font-size:28px;color:#fff;" id="admin-total-withdrawals">0</div>
-        </div>
-      </div>
-      <div class="card" style="padding:16px;margin-bottom:14px;">
-        <div style="font-weight:800;margin-bottom:10px;">📢 Send Notification</div>
-        <input id="notif-title" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
-        <textarea id="notif-msg" placeholder="Message" rows="3" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;"></textarea>
-        <button class="btn" onclick="adminSendNotification()" style="background:var(--cyan);width:100%;padding:12px;margin-top:8px;font-size:15px;">Send to All Users</button>
-      </div>
+        <p id="loading-text" class="text-white text-lg font-semibold drop-shadow-md">Connecting to Telegram...</p>
     </div>
 
-    <!-- USERS -->
-    <div id="admin-tab-users" style="display:none;">
-      <div style="margin-bottom:12px;display:flex;gap:8px;">
-        <input id="user-search" type="text" placeholder="Search user..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;"/>
-        <button class="btn" style="background:var(--yellow);padding:10px 14px;" onclick="adminSearchUser()">🔍</button>
-      </div>
-      <div id="admin-users-list"></div>
+    <!-- Main App Content -->
+    <div id="app-content" class="min-h-screen pb-20 p-4 transition-opacity duration-500 ease-in-out opacity-0 hidden">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-4 bg-[#f0f4f8]">
+            <div class="flex items-center">
+                <img id="user-avatar" src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-black shadow-md">
+                <div class="ml-3">
+                    <p id="user-username" class="font-bold text-lg flex items-center">Guest</p>
+                    <p class="text-sm text-gray-500">Rank: <span id="user-rank" class="font-semibold text-purple-600">Bronze</span></p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center premium-card !shadow-none !border-gray-300 bg-white p-2 rounded-xl">
+                    <span class="icon-coin"></span>
+                    <span id="user-balance-coins" class="font-bold text-lg ml-1">0</span>
+                </div>
+                <div class="relative premium-card !shadow-none !border-gray-300 bg-white p-2 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell text-yellow-500"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                    <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">3</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-4 space-y-6 max-w-lg mx-auto">
+            <!-- Balance Card -->
+            <div class="premium-card bg-gradient-to-r from-cyan-400 to-blue-500 p-6 rounded-2xl text-white flex flex-col justify-center items-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20 floating-particle" style="width: 80px; height: 80px; top: -20px; left: -20px; animation-delay: 0s;"></div>
+                <div class="absolute inset-0 opacity-20 floating-particle" style="width: 60px; height: 60px; bottom: -20px; right: -20px; animation-delay: 2s;"></div>
+                <p class="text-lg font-semibold mb-2">Total Earnings</p>
+                <div class="flex items-baseline mb-4">
+                    <span class="text-5xl font-extrabold mr-2">$</span>
+                    <span id="user-balance-usd" class="text-5xl font-extrabold counter-animation">0.00</span>
+                    <span class="text-lg font-bold ml-2">USD</span>
+                </div>
+                <div class="flex justify-around w-full text-sm font-medium">
+                    <div class="text-center">
+                        <p>BDT</p>
+                        <p id="user-balance-bdt" class="font-bold counter-animation">0.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p>Coins</p>
+                        <p id="user-balance-coins-large" class="font-bold counter-animation">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Reward Section -->
+            <div class="premium-card bg-yellow-400 p-4 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift text-yellow-800 mr-3 animate-pulse"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13H7a2 2 0 0 1-2-2V8z"/><path d="M12 8v13h5a2 2 0 0 0 2-2V8z"/><path d="M7 8a5 5 0 0 1 10 0"/></svg>
+                    <p class="font-bold text-lg text-yellow-800">Daily Bonus Available!</p>
+                </div>
+                <button id="claim-daily-reward" class="px-4 py-2 bg-black text-white rounded-xl font-bold shadow-md hover:bg-gray-800 transition transform hover:scale-105">Claim</button>
+            </div>
+
+            <!-- Ad Frame Placeholder -->
+            <div class="ad-frame">
+                <p class="text-gray-600">Ad content from Adsgram/Monetag will appear here.</p>
+                <!-- This is where the actual ad network SDKs would inject their ads -->
+            </div>
+
+            <!-- Featured Quizzes / Quick Actions -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Quiz Card -->
+                <div class="premium-card bg-pink-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-pink-500 transition-colors cursor-pointer" onclick="setActiveTab('quiz')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle mb-2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <p class="font-bold text-lg">Play Quiz</p>
+                    <p class="text-sm">Earn coins</p>
+                </div>
+                <!-- Spin Card -->
+                <div class="premium-card bg-purple-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-purple-500 transition-colors cursor-pointer" onclick="setActiveTab('spin')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw mb-2 animate-spin-slow"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                    <p class="font-bold text-lg">Spin & Win</p>
+                    <p class="text-sm">Daily chances</p>
+                </div>
+                <!-- Refer Card -->
+                <div class="premium-card bg-cyan-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-cyan-500 transition-colors cursor-pointer" onclick="setActiveTab('refer')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mb-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <p class="font-bold text-lg">Refer Friends</p>
+                    <p class="text-sm">Earn more</p>
+                </div>
+                <!-- Leaderboard Card -->
+                <div class="premium-card bg-green-400 text-white p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-green-500 transition-colors cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy mb-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 11.4L12 17l2-5.6"/><path d="M12 2c3.27 0 6 4 6 9v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3c0-5 2.73-9 6-9z"/></svg>
+                    <p class="font-bold text-lg">Leaderboard</p>
+                    <p class="text-sm">Top earners</p>
+                </div>
+            </div>
+
+            <!-- More Ads (In-feed banner) -->
+            <div class="ad-frame">
+                <p class="text-gray-600">Another ad slot here.</p>
+            </div>
+        </main>
+
+        <!-- Tab Content Sections -->
+        <div id="tab-home" class="tab-content active mt-4 px-4 max-w-lg mx-auto">
+            <!-- Content for Home is already in main -->
+        </div>
+
+        <div id="tab-quiz" class="tab-content mt-4 px-4 max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-pink-400 to-purple-500 text-white p-3 rounded-xl text-center">Quiz Categories</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Quiz Category Card -->
+                <div class="premium-card bg-white p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div>
+                        <p class="font-bold text-lg">General Knowledge</p>
+                        <p class="text-sm text-gray-500">10 Questions, 50 Coins</p>
+                    </div>
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded-xl font-bold shadow-md hover:bg-blue-600 transition transform hover:scale-105">Start</button>
+                </div>
+                <!-- ... more quiz categories -->
+                <div class="premium-card bg-white p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div>
+                        <p class="font-bold text-lg">Science & Tech</p>
+                        <p class="text-sm text-gray-500">12 Questions, 60 Coins</p>
+                    </div>
+                    <button class="px-4 py-2 bg-green-500 text-white rounded-xl font-bold shadow-md hover:bg-green-600 transition transform hover:scale-105">Start</button>
+                </div>
+            </div>
+            <div class="ad-frame mt-4">
+                <p class="text-gray-600">Quiz page ad.</p>
+            </div>
+        </div>
+
+        <div id="tab-spin" class="tab-content mt-4 px-4 max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-3 rounded-xl text-center">Spin & Win</h2>
+            <div class="premium-card bg-white p-6 rounded-2xl flex flex-col items-center justify-center relative">
+                <!-- Spin Wheel Placeholder -->
+                <div class="w-64 h-64 border-4 border-black rounded-full bg-gradient-to-br from-red-400 to-purple-400 flex items-center justify-center relative mb-4">
+                    <span class="text-xl font-extrabold text-white text-shadow-md">Spin Wheel</span>
+                    <div class="absolute w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-black -top-4"></div>
+                </div>
+                <p id="spin-status" class="text-lg font-semibold mb-4">Spins Left: <span class="text-green-600">3</span></p>
+                <button id="do-spin" class="px-8 py-3 bg-black text-white rounded-full font-extrabold text-xl shadow-lg hover:bg-gray-800 transition transform hover:scale-105 active:scale-95">SPIN NOW!</button>
+            </div>
+            <div class="ad-frame mt-4">
+                <p class="text-gray-600">Spin page ad.</p>
+            </div>
+        </div>
+
+        <div id="tab-refer" class="tab-content mt-4 px-4 max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-cyan-400 to-blue-500 text-white p-3 rounded-xl text-center">Refer & Earn</h2>
+            <div class="premium-card bg-white p-6 rounded-2xl text-center">
+                <p class="text-lg font-semibold mb-4">Share your unique link and earn when friends join!</p>
+                <div class="bg-gray-100 p-4 rounded-xl border-2 border-dashed border-gray-300 mb-4 break-all">
+                    <p id="referral-link" class="font-mono text-gray-700">Loading referral link...</p>
+                </div>
+                <button id="copy-referral-link" class="px-6 py-3 bg-green-500 text-white rounded-full font-bold text-lg shadow-lg hover:bg-green-600 transition transform hover:scale-105">Copy Link</button>
+                <p class="mt-4 text-sm text-gray-600">You and your friend will get 50 coins!</p>
+            </div>
+            <div class="ad-frame mt-4">
+                <p class="text-gray-600">Refer page ad.</p>
+            </div>
+        </div>
+
+        <div id="tab-cash" class="tab-content mt-4 px-4 max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-purple-400 to-pink-500 text-white p-3 rounded-xl text-center">Withdraw Earnings</h2>
+            <div class="premium-card bg-white p-6 rounded-2xl">
+                <p class="text-lg font-semibold mb-4">Minimum withdraw: <span class="font-bold text-green-600">$5 USDT</span></p>
+                <div class="mb-4">
+                    <label for="withdraw-amount" class="block text-gray-700 font-bold mb-2">Amount (Coins)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter coins to withdraw" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                </div>
+                <div class="mb-4">
+                    <label for="withdraw-method" class="block text-gray-700 font-bold mb-2">Withdraw Method</label>
+                    <select id="withdraw-method" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                        <option value="">Select Method</option>
+                        <option value="binance-uid">Binance UID</option>
+                        <option value="faucetpay">FaucetPay (Email)</option>
+                        <option value="usdt-trc20">USDT TRC20 (Address)</option>
+                        <option value="bkash">Bkash (Number)</option>
+                        <option value="nagad">Nagad (Number)</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="withdraw-address" class="block text-gray-700 font-bold mb-2">Account Details (UID/Email/Address/Number)</label>
+                    <input type="text" id="withdraw-address" placeholder="Enter account details" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                </div>
+                <button id="submit-withdraw" class="w-full px-6 py-3 bg-red-500 text-white rounded-full font-bold text-lg shadow-lg hover:bg-red-600 transition transform hover:scale-105">Request Withdraw</button>
+            </div>
+            <h3 class="text-xl font-bold mt-6 mb-4 premium-card !shadow-none !border-transparent bg-gradient-to-r from-gray-400 to-gray-500 text-white p-3 rounded-xl text-center">Withdrawal History</h3>
+            <div id="withdraw-history" class="space-y-3">
+                <!-- History items will be dynamically loaded here -->
+                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-md">1000 Coins via USDT</p>
+                        <p class="text-sm text-gray-500">Address: 0x...abc</p>
+                    </div>
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Pending</span>
+                </div>
+                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-md">500 Coins via Bkash</p>
+                        <p class="text-sm text-gray-500">Number: 017xxxxxx</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Approved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel (Hidden by default) -->
+        <div id="admin-panel" class="tab-content mt-4 px-4 max-w-lg mx-auto bg-red-100 border-2 border-red-500 rounded-xl p-6 hidden">
+            <h2 class="text-2xl font-bold mb-4 text-red-700 text-center">ADMIN PANEL</h2>
+            <p class="text-red-600 mb-4">Access granted for Telegram ID: <span id="admin-id-display" class="font-bold"></span></p>
+
+            <!-- Admin Stats Card -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="premium-card bg-white p-4 rounded-xl">
+                    <p class="text-sm text-gray-500">Total Users</p>
+                    <p id="admin-total-users" class="font-bold text-2xl counter-animation">0</p>
+                </div>
+                <div class="premium-card bg-white p-4 rounded-xl">
+                    <p class="text-sm text-gray-500">Online Users</p>
+                    <p id="admin-online-users" class="font-bold text-2xl text-green-500 counter-animation">0</p>
+                </div>
+                <div class="premium-card bg-white p-4 rounded-xl">
+                    <p class="text-sm text-gray-500">Total Withdrawals</p>
+                    <p id="admin-total-withdrawals" class="font-bold text-2xl text-red-500 counter-animation">0</p>
+                </div>
+                <div class="premium-card bg-white p-4 rounded-xl">
+                    <p class="text-sm text-gray-500">Pending Withdraws</p>
+                    <p id="admin-pending-withdraws" class="font-bold text-2xl text-yellow-500 counter-animation">0</p>
+                </div>
+            </div>
+
+            <!-- Ad Management -->
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Ad Network Management</h3>
+            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
+                <h4 class="font-bold text-lg mb-2">Adsgram Settings</h4>
+                <div class="mb-3">
+                    <label for="adsgram-block-id" class="block text-sm font-medium text-gray-700">Block ID</label>
+                    <input type="text" id="adsgram-block-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Adsgram Block ID">
+                </div>
+                <div class="mb-3">
+                    <label for="adsgram-zone-id" class="block text-sm font-medium text-gray-700">Zone ID</label>
+                    <input type="text" id="adsgram-zone-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Adsgram Zone ID">
+                </div>
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold mr-2">Save Adsgram</button>
+                <button class="px-4 py-2 bg-gray-500 text-white rounded-lg font-bold">Test Adsgram</button>
+            </div>
+
+            <!-- Coin Conversion Settings -->
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Coin Conversion Rates</h3>
+            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
+                <div class="mb-3">
+                    <label for="coin-to-usdt" class="block text-sm font-medium text-gray-700">1 Coin = ? USDT</label>
+                    <input type="number" id="coin-to-usdt" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="e.g., 0.0001">
+                </div>
+                <div class="mb-3">
+                    <label for="coin-to-bdt" class="block text-sm font-medium text-gray-700">1 Coin = ? BDT</label>
+                    <input type="number" id="coin-to-bdt" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="e.g., 0.01">
+                </div>
+                <button class="px-4 py-2 bg-green-500 text-white rounded-lg font-bold">Save Conversions</button>
+            </div>
+
+            <!-- Broadcast Message -->
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Broadcast Message (via Bot)</h3>
+            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
+                <textarea id="broadcast-message" class="premium-card !shadow-none !border-gray-300 w-full p-3 rounded-lg h-24" placeholder="Enter message to broadcast to all users..."></textarea>
+                <button id="send-broadcast" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-bold">Send Broadcast</button>
+            </div>
+
+            <!-- User Management (Simplified) -->
+            <h3 class="text-xl font-bold mb-3 text-gray-800">User Management</h3>
+            <div class="premium-card bg-white p-5 rounded-2xl mb-6">
+                <div class="mb-3">
+                    <label for="user-search-id" class="block text-sm font-medium text-gray-700">Search User by Telegram ID</label>
+                    <input type="text" id="user-search-id" class="premium-card !shadow-none !border-gray-300 w-full p-2 rounded-lg" placeholder="Enter Telegram User ID">
+                </div>
+                <button id="search-user" class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-bold mb-4">Search</button>
+                <div id="user-details-display" class="border border-gray-200 p-3 rounded-lg bg-gray-50 hidden">
+                    <p class="font-bold mb-1">User: <span id="ud-username"></span> (ID: <span id="ud-id"></span>)</p>
+                    <p>Balance: <span id="ud-coins" class="font-bold"></span> coins</p>
+                    <input type="number" id="ud-add-coins" placeholder="Add coins" class="premium-card !shadow-none !border-gray-300 w-24 p-1 rounded-lg mt-2">
+                    <button id="ud-update-coins" class="ml-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm">Update</button>
+                </div>
+            </div>
+
+            <!-- Withdraw Requests (Simplified) -->
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Withdraw Requests</h3>
+            <div id="admin-withdraw-requests" class="space-y-3">
+                <!-- Example Request -->
+                <div class="premium-card bg-white p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-md">User 12345: 2000 Coins via USDT</p>
+                        <p class="text-sm text-gray-500">Address: 0x...def</p>
+                    </div>
+                    <div>
+                        <button class="px-3 py-1 bg-green-500 text-white rounded-lg text-sm mr-2">Approve</button>
+                        <button class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Reject</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="flex justify-around items-center h-full">
+                <a href="#" class="bottom-nav-item active" data-tab="home">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="quiz">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-question"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/><path d="M12 10h.01"/><path d="M12 7a2 2 0 0 0-2 2c0 1 .5 2 2 2s2-1 2-2a2 2 0 0 0-2-2Z"/></svg>
+                    <span>Quiz</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="spin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dices"><rect width="8" height="8" x="2" y="2" rx="2"/><path d="M14 2h8v8h-8z"/><path d="M14 14h8v8h-8z"/><path d="M2 14h8v8h-8z"/><circle cx="18" cy="18" r="1.5"/><circle cx="6" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="18" r="1.5"/></svg>
+                    <span>Spin</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="refer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                    <span>Refer</span>
+                </a>
+                <a href="#" class="bottom-nav-item" data-tab="cash">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4v-3"/><path d="M22 7V4a1 1 0 0 0-1-1H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4v-3"/></svg>
+                    <span>Cash</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Toast Notification Container -->
+        <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2">
+            <!-- Toasts will be appended here -->
+        </div>
+
     </div>
 
-    <!-- QUIZZES -->
-    <div id="admin-tab-quizzes" style="display:none;">
-      <button class="btn" onclick="showCreateQuizForm()" style="background:var(--green);color:#fff;padding:12px 20px;width:100%;margin-bottom:14px;font-size:15px;">+ Create New Quiz</button>
-      <div id="admin-quizzes-list"></div>
-    </div>
-
-    <!-- WITHDRAWALS -->
-    <div id="admin-tab-withdrawals" style="display:none;">
-      <div id="admin-withdrawals-list"></div>
-    </div>
-
-    <!-- ADS -->
-    <div id="admin-tab-ads" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;margin-bottom:12px;">🎯 Adsgram Config</div>
-        <input id="adsgram-block-id" type="text" placeholder="Block ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <input id="adsgram-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <button class="btn" onclick="saveAdsgramConfig()" style="background:var(--cyan);width:100%;padding:11px;">Save Adsgram</button>
-      </div>
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;margin-bottom:12px;">💰 Monetag Config</div>
-        <input id="monetag-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <input id="monetag-smartlink" type="text" placeholder="Smartlink URL" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <textarea id="monetag-banner" placeholder="Banner code" rows="3" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;margin-bottom:8px;"></textarea>
-        <button class="btn" onclick="saveMonetag()" style="background:var(--purple);color:#fff;width:100%;padding:11px;">Save Monetag</button>
-      </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:12px;">⚙️ Ad Controls</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-weight:700;">Enable Adsgram</span>
-          <label style="position:relative;display:inline-block;width:50px;height:26px;">
-            <input type="checkbox" id="adsgram-enabled" style="display:none;" onchange="saveAdToggles()">
-            <span onclick="document.getElementById('adsgram-enabled').click()" style="position:absolute;inset:0;background:#e5e7eb;border-radius:13px;cursor:pointer;border:2px solid #111;transition:.2s;" id="adsgram-toggle-ui"></span>
-          </label>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-weight:700;">Enable Monetag</span>
-          <label style="position:relative;display:inline-block;width:50px;height:26px;">
-            <input type="checkbox" id="monetag-enabled" style="display:none;" onchange="saveAdToggles()">
-            <span onclick="document.getElementById('monetag-enabled').click()" style="position:absolute;inset:0;background:#e5e7eb;border-radius:13px;cursor:pointer;border:2px solid #111;transition:.2s;" id="monetag-toggle-ui"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div id="admin-tab-settings" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;margin-bottom:12px;">💱 Coin Conversion</div>
-        <div style="margin-bottom:8px;">
-          <label style="font-weight:700;font-size:13px;">Coins per 1 USDT</label>
-          <input id="coin-usdt" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
-        </div>
-        <div style="margin-bottom:8px;">
-          <label style="font-weight:700;font-size:13px;">Coins per 1 USD</label>
-          <input id="coin-usd" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="font-weight:700;font-size:13px;">Coins per 1 BDT</label>
-          <input id="coin-bdt" type="number" placeholder="e.g. 833" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
-        </div>
-        <div style="margin-bottom:8px;">
-          <label style="font-weight:700;font-size:13px;">Min Withdraw (Coins)</label>
-          <input id="min-withdraw" type="number" placeholder="e.g. 5000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="font-weight:700;font-size:13px;">Referral Bonus (Coins)</label>
-          <input id="referral-bonus" type="number" placeholder="e.g. 500" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
-        </div>
-        <button class="btn" onclick="saveSettings()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Save Settings</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- =================== USER PANEL =================== -->
-<div id="user-panel">
-
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page active">
-    <div style="padding:16px;">
-      <!-- Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div id="user-avatar" style="width:48px;height:48px;border-radius:14px;border:3px solid #111;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:3px 3px 0 #111;">👤</div>
-          <div>
-            <div style="font-weight:800;font-size:16px;" id="user-name-display">Loading...</div>
-            <div style="font-size:12px;color:#666;font-weight:600;" id="user-rank-display">🏅 Rank #—</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 10px;font-size:11px;font-weight:800;" id="online-badge">🟢 Online</div>
-          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 10px;font-size:18px;cursor:pointer;" onclick="showNotifications()">🔔</div>
-        </div>
-      </div>
-
-      <!-- Balance Card -->
-      <div class="balance-card" style="margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px;">YOUR BALANCE</div>
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
-          <span class="fredoka" style="font-size:44px;" id="balance-coins-display">0</span>
-          <span style="font-size:16px;font-weight:700;">Coins</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
-            <div style="font-size:10px;opacity:.8;font-weight:700;">USDT</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-usdt-display">0.00</div>
-          </div>
-          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
-            <div style="font-size:10px;opacity:.8;font-weight:700;">USD</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-usd-display">0.00</div>
-          </div>
-          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
-            <div style="font-size:10px;opacity:.8;font-weight:700;">BDT</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-bdt-display">0.00</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <button class="btn" onclick="goToQuiz()" style="background:var(--cyan);padding:14px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">🧠 Start Quiz</button>
-        <button class="btn" onclick="goToSpin()" style="background:var(--yellow);padding:14px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">🎰 Daily Spin</button>
-      </div>
-
-      <!-- Daily Bonus -->
-      <div id="daily-bonus-card" class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-weight:800;font-size:15px;">🎁 Daily Bonus</div>
-          <div style="font-size:12px;color:#666;font-weight:600;" id="daily-bonus-status">Tap to claim!</div>
-        </div>
-        <button class="btn" id="claim-daily-btn" onclick="claimDailyBonus()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
-      </div>
-
-      <!-- Ad Banner -->
-      <div class="ad-frame" style="margin-bottom:16px;" onclick="handleAdClick('banner-home')" id="ad-banner-home">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="background:#ffe94a;border:2px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;">AD</span>
-          <span style="font-size:12px;color:#666;font-weight:600;">Sponsored</span>
-        </div>
-        <div style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;">
-          🚀 Earn More with CashZilla Premium
-        </div>
-        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Tap to view offer → Earn 5 coins</div>
-      </div>
-
-      <!-- Leaderboard Preview -->
-      <div class="card" style="padding:16px;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-weight:800;font-size:16px;">🏆 Leaderboard</div>
-          <button onclick="goToPage('leaderboard')" style="background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-size:13px;">See All →</button>
-        </div>
-        <div id="leaderboard-preview"></div>
-      </div>
-
-      <!-- Featured Quizzes -->
-      <div style="margin-bottom:16px;">
-        <div style="font-weight:800;font-size:16px;margin-bottom:10px;">🔥 Featured Quizzes</div>
-        <div id="featured-quizzes" style="display:flex;flex-direction:column;gap:10px;"></div>
-      </div>
-
-      <!-- Stats Row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div class="card" style="padding:12px;text-align:center;">
-          <div style="font-size:20px;">✅</div>
-          <div style="font-weight:800;font-size:18px;" id="stat-quizzes">0</div>
-          <div style="font-size:11px;color:#666;font-weight:600;">Quizzes</div>
-        </div>
-        <div class="card" style="padding:12px;text-align:center;">
-          <div style="font-size:20px;">👥</div>
-          <div style="font-weight:800;font-size:18px;" id="stat-refs">0</div>
-          <div style="font-size:11px;color:#666;font-weight:600;">Referrals</div>
-        </div>
-        <div class="card" style="padding:12px;text-align:center;">
-          <div style="font-size:20px;">🎰</div>
-          <div style="font-weight:800;font-size:18px;" id="stat-spins">0</div>
-          <div style="font-size:11px;color:#666;font-weight:600;">Spins</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUIZ PAGE -->
-  <div id="page-quiz" class="page">
-    <div style="padding:16px;">
-      <div id="quiz-list-view">
-        <div style="font-weight:800;font-size:20px;margin-bottom:14px;" class="fredoka">🧠 Quiz Arena</div>
-        <!-- Categories -->
-        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;" id="quiz-categories"></div>
-        <!-- Quiz Cards -->
-        <div id="quiz-cards-container" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
-      <!-- Quiz Game View -->
-      <div id="quiz-game-view" style="display:none;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <button onclick="exitQuiz()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">← Back</button>
-          <div style="flex:1;" class="progress-bar">
-            <div class="progress-fill" id="quiz-progress-fill" style="background:var(--cyan);width:0%;"></div>
-          </div>
-          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;" id="quiz-timer-display">30s</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-          <span style="font-weight:700;color:#666;" id="quiz-q-num">Q 1/10</span>
-          <span style="font-weight:800;color:var(--purple);" id="quiz-score-display">Score: 0</span>
-        </div>
-        <div class="card-lg" style="padding:20px;margin-bottom:16px;min-height:120px;">
-          <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;" id="quiz-category-label">CATEGORY</div>
-          <div style="font-size:18px;font-weight:800;line-height:1.4;" id="quiz-question-text">Question loads here...</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;" id="quiz-answers"></div>
-      </div>
-      <!-- Quiz Result View -->
-      <div id="quiz-result-view" style="display:none;text-align:center;padding:20px 0;">
-        <div style="font-size:64px;margin-bottom:12px;" id="result-emoji">🎉</div>
-        <div class="fredoka" style="font-size:28px;margin-bottom:8px;" id="result-title">Quiz Complete!</div>
-        <div style="font-size:16px;color:#666;margin-bottom:20px;" id="result-subtitle">You answered correctly!</div>
-        <div class="balance-card" style="margin-bottom:20px;text-align:left;">
-          <div style="font-size:13px;opacity:.8;margin-bottom:4px;">COINS EARNED</div>
-          <div class="fredoka" style="font-size:40px;" id="result-coins">+0</div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-          <div class="card" style="padding:14px;text-align:center;">
-            <div style="font-size:24px;">✅</div>
-            <div style="font-weight:800;font-size:20px;" id="result-correct">0</div>
-            <div style="font-size:12px;color:#666;">Correct</div>
-          </div>
-          <div class="card" style="padding:14px;text-align:center;">
-            <div style="font-size:24px;">❌</div>
-            <div style="font-weight:800;font-size:20px;" id="result-wrong">0</div>
-            <div style="font-size:12px;color:#666;">Wrong</div>
-          </div>
-        </div>
-        <button class="btn" onclick="exitQuiz()" style="background:var(--cyan);padding:14px;width:100%;font-size:16px;">Play Again →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SPIN PAGE -->
-  <div id="page-spin" class="page">
-    <div style="padding:16px;text-align:center;">
-      <div class="fredoka" style="font-size:26px;margin-bottom:6px;">🎰 Lucky Wheel</div>
-      <div style="color:#666;font-weight:600;margin-bottom:16px;" id="spin-status-text">Spin to win amazing prizes!</div>
-      <div style="position:relative;display:inline-block;margin-bottom:20px;">
-        <!-- Pointer -->
-        <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:28px;z-index:10;">▼</div>
-        <canvas id="spin-canvas" width="280" height="280"></canvas>
-      </div>
-      <button class="btn" id="spin-btn" onclick="spinWheel()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;max-width:280px;">
-        🎰 SPIN NOW!
-      </button>
-      <div style="margin-top:10px;font-size:13px;color:#888;font-weight:600;" id="spin-cooldown-text"></div>
-
-      <!-- Spin History -->
-      <div class="card" style="margin-top:16px;padding:14px;text-align:left;">
-        <div style="font-weight:800;margin-bottom:10px;">📜 Spin History</div>
-        <div id="spin-history-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- REFER PAGE -->
-  <div id="page-refer" class="page">
-    <div style="padding:16px;">
-      <div class="fredoka" style="font-size:26px;margin-bottom:16px;">👥 Refer & Earn</div>
-
-      <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-        <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:4px;">YOUR REFERRAL LINK</div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="referral-link-input" readonly style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;" value="Loading..."/>
-          <button class="btn" onclick="copyReferralLink()" style="background:var(--green);color:#fff;padding:10px 14px;">📋</button>
-        </div>
-        <button class="btn" onclick="shareReferralLink()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">📤 Share on Telegram</button>
-      </div>
-
-      <!-- Stats -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#ffe4e6,#fecdd3);">
-          <div style="font-size:11px;font-weight:700;color:#9f1239;">TOTAL REFERRALS</div>
-          <div class="fredoka" style="font-size:32px;" id="total-referrals">0</div>
-        </div>
-        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#e0f2fe,#bae6fd);">
-          <div style="font-size:11px;font-weight:700;color:#0c4a6e;">REFERRAL EARNINGS</div>
-          <div class="fredoka" style="font-size:32px;" id="referral-earnings">0</div>
-          <div style="font-size:11px;color:#666;">Coins</div>
-        </div>
-      </div>
-
-      <!-- How it works -->
-      <div class="card" style="padding:16px;margin-bottom:16px;">
-        <div style="font-weight:800;margin-bottom:12px;">📖 How It Works</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--cyan);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">1</div>
-            <div style="font-weight:600;">Share your unique referral link with friends</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">2</div>
-            <div style="font-weight:600;">Friend joins using your link</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--pink);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">3</div>
-            <div style="font-weight:600;" id="referral-bonus-info">You earn 500 coins per referral!</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Referral List -->
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">👥 My Referrals</div>
-        <div id="my-referrals-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CASH PAGE -->
-  <div id="page-cash" class="page">
-    <div style="padding:16px;">
-      <div class="fredoka" style="font-size:26px;margin-bottom:16px;">💸 Cash Out</div>
-
-      <!-- Balance -->
-      <div class="balance-card" style="margin-bottom:16px;">
-        <div style="font-size:12px;opacity:.8;font-weight:700;">AVAILABLE BALANCE</div>
-        <div class="fredoka" style="font-size:40px;" id="cash-coins">0 Coins</div>
-        <div style="display:flex;gap:12px;margin-top:8px;">
-          <span style="font-size:13px;font-weight:700;">≈ $<span id="cash-usd">0.00</span> USD</span>
-          <span style="font-size:13px;font-weight:700;">≈ ৳<span id="cash-bdt">0.00</span> BDT</span>
-        </div>
-      </div>
-
-      <!-- Withdraw Form -->
-      <div class="card" style="padding:16px;margin-bottom:16px;" id="withdraw-form-section">
-        <div style="font-weight:800;margin-bottom:12px;">💳 Withdraw Method</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;" id="payment-methods-grid">
-          <div class="method-card selected" data-method="bkash" onclick="selectMethod('bkash')">
-            <div style="font-size:22px;">🟣</div><div style="font-weight:700;font-size:13px;">bKash</div>
-          </div>
-          <div class="method-card" data-method="nagad" onclick="selectMethod('nagad')">
-            <div style="font-size:22px;">🟠</div><div style="font-weight:700;font-size:13px;">Nagad</div>
-          </div>
-          <div class="method-card" data-method="usdt" onclick="selectMethod('usdt')">
-            <div style="font-size:22px;">🟢</div><div style="font-weight:700;font-size:13px;">USDT TRC20</div>
-          </div>
-          <div class="method-card" data-method="binance" onclick="selectMethod('binance')">
-            <div style="font-size:22px;">🟡</div><div style="font-weight:700;font-size:13px;">Binance UID</div>
-          </div>
-          <div class="method-card" data-method="faucetpay" onclick="selectMethod('faucetpay')">
-            <div style="font-size:22px;">🔵</div><div style="font-weight:700;font-size:13px;">FaucetPay</div>
-          </div>
-        </div>
-        <input id="withdraw-address" type="text" placeholder="Account number / Address / UID" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:8px;font-size:14px;"/>
-        <input id="withdraw-amount" type="number" placeholder="Amount in Coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:4px;font-size:14px;"/>
-        <div style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px;" id="withdraw-min-text">Minimum: 5000 Coins</div>
-        <button class="btn" onclick="submitWithdraw()" style="background:var(--green);color:#fff;width:100%;padding:14px;font-size:16px;">💸 Submit Withdrawal</button>
-      </div>
-
-      <!-- Withdraw History -->
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">📋 Withdraw History</div>
-        <div id="withdraw-history"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LEADERBOARD FULL PAGE -->
-  <div id="page-leaderboard" class="page">
-    <div style="padding:16px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-        <button onclick="goToPage('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">←</button>
-        <div class="fredoka" style="font-size:22px;">🏆 Leaderboard</div>
-      </div>
-      <!-- Tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <button class="cat-pill active" onclick="loadLeaderboard('weekly',this)">Weekly</button>
-        <button class="cat-pill" onclick="loadLeaderboard('monthly',this)">Monthly</button>
-        <button class="cat-pill" onclick="loadLeaderboard('alltime',this)">All Time</button>
-      </div>
-      <div id="full-leaderboard-list"></div>
-    </div>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <nav id="bottom-nav">
-    <div class="nav-item active" onclick="goToPage('home')" id="nav-home">
-      <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
-    </div>
-    <div class="nav-item" onclick="goToPage('quiz')" id="nav-quiz">
-      <span class="nav-icon">🧠</span><span class="nav-label">Quiz</span>
-    </div>
-    <div class="nav-item" onclick="goToPage('spin')" id="nav-spin">
-      <span class="nav-icon">🎰</span><span class="nav-label">Spin</span>
-    </div>
-    <div class="nav-item" onclick="goToPage('refer')" id="nav-refer">
-      <span class="nav-icon">👥</span><span class="nav-label">Refer</span>
-    </div>
-    <div class="nav-item" onclick="goToPage('cash')" id="nav-cash">
-      <span class="nav-icon">💸</span><span class="nav-label">Cash</span>
-    </div>
-  </nav>
-</div>
-
-<!-- Firebase SDKs -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, get, update, push, onValue, serverTimestamp, increment, query, orderByChild, limitToLast }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
-  authDomain: "ai-tools-9f9a3.firebaseapp.com",
-  projectId: "ai-tools-9f9a3",
-  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
-  messagingSenderId: "839431476061",
-  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
-  measurementId: "G-HKSB33QGW8",
-  databaseURL: "https://ai-tools-9f9a3-default-rtdb.firebaseio.com"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-// Expose to window
-window._fb = { auth, db, ref, set, get, update, push, onValue, serverTimestamp, increment, query, orderByChild, limitToLast, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged };
-
-// ======= APP STATE =======
-window.APP = {
-  user: null,
-  userData: null,
-  settings: { coinUsdt: 10000, coinUsd: 10000, coinBdt: 833, minWithdraw: 5000, referralBonus: 500 },
-  quizzes: [],
-  currentQuiz: null,
-  currentQ: 0,
-  quizScore: 0,
-  quizCorrect: 0,
-  quizWrong: 0,
-  quizTimer: null,
-  spinRunning: false,
-  selectedMethod: 'bkash',
-  adsgram: { blockId: '', zoneId: '', enabled: false },
-  monetag: { zoneId: '', smartlink: '', banner: '', enabled: false },
-  adClickTimes: [],
-  isAdmin: false,
-  currentPage: 'home',
-};
-
-// ======= TELEGRAM INIT =======
-const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.enableClosingConfirmation();
-}
-
-function haptic(type = 'light') {
-  tg?.HapticFeedback?.impactOccurred(type);
-}
-window.haptic = haptic;
-
-// ======= AUTH =======
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window.APP.user = user;
-    await loadUserData(user.uid);
-  } else {
-    signInAnonymously(auth);
-  }
-});
-
-async function loadUserData(uid) {
-  const { ref, get, onValue } = window._fb;
-  const userRef = ref(db, `users/${uid}`);
-  const snap = await get(userRef);
-
-  let tgUser = tg?.initDataUnsafe?.user;
-  const now = Date.now();
-
-  if (!snap.exists()) {
-    // New user
-    const refCode = new URLSearchParams(window.location.search).get('ref') || '';
-    const newUser = {
-      uid,
-      name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : ('User_' + uid.slice(0,6)),
-      username: tgUser?.username || '',
-      avatar: tgUser?.photo_url || '',
-      coins: 500, // Welcome bonus
-      totalEarned: 500,
-      quizzesPlayed: 0,
-      spinsUsed: 0,
-      referrals: 0,
-      referralEarnings: 0,
-      referredBy: refCode,
-      joinedAt: now,
-      lastSeen: now,
-      lastDailyBonus: 0,
-      lastSpin: 0,
-      withdrawHistory: [],
-      banned: false,
-      rank: 0,
-    };
-    await set(ref(db, `users/${uid}`), newUser);
-    window.APP.userData = newUser;
-    // Handle referral bonus
-    if (refCode && refCode !== uid) {
-      await applyReferralBonus(refCode, uid);
-    }
-    // Welcome popup
-    setTimeout(() => showWelcomePopup(newUser), 1500);
-  } else {
-    window.APP.userData = snap.val();
-    // Update last seen
-    update(ref(db, `users/${uid}`), { lastSeen: now });
-  }
-
-  localStorage.setItem('cashzilla_user', JSON.stringify(window.APP.userData));
-
-  // Live listener
-  onValue(ref(db, `users/${uid}`), (s) => {
-    if (s.exists()) {
-      window.APP.userData = s.val();
-      localStorage.setItem('cashzilla_user', JSON.stringify(s.val()));
-      updateUI();
-    }
-  });
-
-  await loadSettings();
-  await loadQuizzes();
-  await loadLeaderboardPreview();
-  updateUI();
-  drawSpinWheel();
-  loadWithdrawHistory();
-  loadSpinHistory();
-  loadReferrals();
-
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('user-panel').style.display = 'block';
-}
-
-async function applyReferralBonus(refUid, newUid) {
-  const { ref, get, update, increment } = window._fb;
-  const settings = window.APP.settings;
-  try {
-    const refUserRef = ref(db, `users/${refUid}`);
-    const refSnap = await get(refUserRef);
-    if (refSnap.exists()) {
-      await update(refUserRef, {
-        coins: increment(settings.referralBonus),
-        referrals: increment(1),
-        referralEarnings: increment(settings.referralBonus),
-      });
-      // Add referral record
-      const { push } = window._fb;
-      push(ref(db, `referrals/${refUid}`), { uid: newUid, timestamp: Date.now(), bonus: settings.referralBonus });
-    }
-  } catch(e) {}
-}
-
-async function loadSettings() {
-  const { ref, get } = window._fb;
-  try {
-    const snap = await get(ref(db, 'settings'));
-    if (snap.exists()) {
-      const s = snap.val();
-      window.APP.settings = { ...window.APP.settings, ...s };
-      if (s.adsgram) window.APP.adsgram = { ...window.APP.adsgram, ...s.adsgram };
-      if (s.monetag) window.APP.monetag = { ...window.APP.monetag, ...s.monetag };
-    }
-  } catch(e) {}
-  // Update min withdraw text
-  document.getElementById('withdraw-min-text').textContent = `Minimum: ${window.APP.settings.minWithdraw} Coins`;
-  document.getElementById('referral-bonus-info').textContent = `You earn ${window.APP.settings.referralBonus} coins per referral!`;
-}
-
-async function loadQuizzes() {
-  const { ref, get } = window._fb;
-  try {
-    const snap = await get(ref(db, 'quizzes'));
-    if (snap.exists()) {
-      const data = snap.val();
-      window.APP.quizzes = Object.entries(data).map(([id, q]) => ({ id, ...q })).filter(q => !q.deleted);
-    } else {
-      window.APP.quizzes = getDefaultQuizzes();
-      // Seed to Firebase
-      window.APP.quizzes.forEach(q => {
-        const { push } = window._fb;
-        push(ref(db, 'quizzes'), q);
-      });
-    }
-  } catch(e) {
-    window.APP.quizzes = getDefaultQuizzes();
-  }
-  renderQuizCards();
-  renderFeaturedQuizzes();
-  renderQuizCategories();
-}
-
-function getDefaultQuizzes() {
-  return [
-    { title: 'General Knowledge', category: 'General', reward: 50, time: 30, difficulty: 'Easy', icon: '🌍',
-      questions: [
-        { q: 'What is the capital of Bangladesh?', options: ['Chittagong','Dhaka','Sylhet','Rajshahi'], answer: 1 },
-        { q: 'How many days are in a leap year?', options: ['365','364','366','367'], answer: 2 },
-        { q: 'What is the largest planet in our solar system?', options: ['Saturn','Neptune','Jupiter','Mars'], answer: 2 },
-        { q: 'Which element has the symbol "O"?', options: ['Gold','Oxygen','Osmium','Oganesson'], answer: 1 },
-        { q: 'How many continents are there?', options: ['5','6','7','8'], answer: 2 },
-      ]},
-    { title: 'Math Challenge', category: 'Math', reward: 80, time: 20, difficulty: 'Medium', icon: '🔢',
-      questions: [
-        { q: 'What is 15 × 12?', options: ['160','170','180','190'], answer: 2 },
-        { q: 'What is the square root of 144?', options: ['11','12','13','14'], answer: 1 },
-        { q: 'What is 25% of 200?', options: ['40','50','55','60'], answer: 1 },
-        { q: 'What is 2⁸?', options: ['128','256','512','64'], answer: 1 },
-        { q: 'What is 7! (7 factorial)?', options: ['5040','2520','720','40320'], answer: 0 },
-      ]},
-    { title: 'Science Blast', category: 'Science', reward: 60, time: 25, difficulty: 'Medium', icon: '🔬',
-      questions: [
-        { q: 'What is the chemical formula for water?', options: ['H2O2','HO','H2O','H3O'], answer: 2 },
-        { q: 'What is the speed of light (approx)?', options: ['3×10⁸ m/s','3×10⁶ m/s','3×10⁴ m/s','3×10¹⁰ m/s'], answer: 0 },
-        { q: 'How many bones in the adult human body?', options: ['196','206','216','186'], answer: 1 },
-        { q: 'What gas do plants absorb?', options: ['Oxygen','Nitrogen','Carbon Dioxide','Hydrogen'], answer: 2 },
-        { q: 'What is the closest star to Earth?', options: ['Proxima Centauri','Sirius','Betelgeuse','The Sun'], answer: 3 },
-      ]},
-    { title: 'Crypto & Finance', category: 'Finance', reward: 100, time: 30, difficulty: 'Hard', icon: '₿',
-      questions: [
-        { q: 'Who created Bitcoin?', options: ['Elon Musk','Satoshi Nakamoto','Vitalik Buterin','Mark Zuckerberg'], answer: 1 },
-        { q: 'What does "USDT" stand for?', options: ['US Dollar Token','Unified Stable Dollar Tether','US Dollar Tether','Universal Stable Dollar'], answer: 2 },
-        { q: 'What is the max supply of Bitcoin?', options: ['18M','21M','25M','100M'], answer: 1 },
-        { q: 'What is DeFi?', options: ['Digital Finance','Decentralized Finance','Distributed Finance','Direct Finance'], answer: 1 },
-        { q: 'Which blockchain uses "Ether"?', options: ['Bitcoin','Solana','Ethereum','Cardano'], answer: 2 },
-      ]},
-    { title: 'Daily Challenge', category: 'Daily', reward: 200, time: 60, difficulty: 'Hard', icon: '⚡',
-      daily: true,
-      questions: [
-        { q: 'What is the national animal of Bangladesh?', options: ['Tiger','Elephant','Deer','Royal Bengal Tiger'], answer: 3 },
-        { q: 'Which country invented tea?', options: ['India','China','Japan','Sri Lanka'], answer: 1 },
-        { q: 'What is the tallest mountain on Earth?', options: ['K2','Kangchenjunga','Mount Everest','Lhotse'], answer: 2 },
-        { q: 'In what year was the smartphone invented?', options: ['1994','1997','2000','2007'], answer: 3 },
-        { q: 'What is the currency of Japan?', options: ['Yuan','Won','Yen','Ruble'], answer: 2 },
-      ]},
-  ];
-}
-
-// ======= UI UPDATES =======
-function updateUI() {
-  const u = window.APP.userData;
-  if (!u) return;
-  const s = window.APP.settings;
-
-  // Name & avatar
-  document.getElementById('user-name-display').textContent = u.name || 'User';
-  document.getElementById('user-rank-display').textContent = '🏅 Rank #' + (u.rank || '—');
-
-  // Avatar emoji based on name
-  const emojis = ['👤','😎','🦸','🧙','🎯','🏆','⚡','🔥'];
-  document.getElementById('user-avatar').textContent = emojis[(u.name?.charCodeAt(0) || 0) % emojis.length];
-
-  // Balance
-  const coins = u.coins || 0;
-  animateCounter('balance-coins-display', coins);
-  document.getElementById('balance-usdt-display').textContent = (coins / s.coinUsdt).toFixed(4);
-  document.getElementById('balance-usd-display').textContent = (coins / s.coinUsd).toFixed(4);
-  document.getElementById('balance-bdt-display').textContent = (coins / s.coinBdt).toFixed(2);
-
-  // Cash page
-  document.getElementById('cash-coins').textContent = coins + ' Coins';
-  document.getElementById('cash-usd').textContent = (coins / s.coinUsd).toFixed(4);
-  document.getElementById('cash-bdt').textContent = (coins / s.coinBdt).toFixed(2);
-
-  // Stats
-  document.getElementById('stat-quizzes').textContent = u.quizzesPlayed || 0;
-  document.getElementById('stat-refs').textContent = u.referrals || 0;
-  document.getElementById('stat-spins').textContent = u.spinsUsed || 0;
-
-  // Referral page
-  document.getElementById('total-referrals').textContent = u.referrals || 0;
-  document.getElementById('referral-earnings').textContent = u.referralEarnings || 0;
-  document.getElementById('referral-link-input').value = getReferralLink();
-
-  // Daily bonus
-  const lastBonus = u.lastDailyBonus || 0;
-  const today = new Date().toDateString();
-  const lastDay = new Date(lastBonus).toDateString();
-  if (today !== lastDay) {
-    document.getElementById('daily-bonus-status').textContent = '🎁 Tap to claim!';
-    document.getElementById('claim-daily-btn').disabled = false;
-    document.getElementById('claim-daily-btn').style.opacity = '1';
-  } else {
-    document.getElementById('daily-bonus-status').textContent = '✅ Claimed today!';
-    document.getElementById('claim-daily-btn').disabled = true;
-    document.getElementById('claim-daily-btn').style.opacity = '.5';
-  }
-}
-
-let counters = {};
-function animateCounter(id, target) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const start = parseInt(el.textContent) || 0;
-  if (start === target) return;
-  const duration = 600;
-  const startTime = performance.now();
-  function step(now) {
-    const progress = Math.min((now - startTime) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(start + (target - start) * ease).toLocaleString();
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target.toLocaleString();
-  }
-  requestAnimationFrame(step);
-  el.classList.add('count-anim');
-  setTimeout(() => el.classList.remove('count-anim'), 400);
-}
-
-function getReferralLink() {
-  const uid = window.APP.user?.uid || 'xxx';
-  return `https://t.me/CashZillaBot?start=${uid}`;
-}
-
-// ======= NAVIGATION =======
-window.goToPage = function(page) {
-  haptic();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  const el = document.getElementById('page-' + page);
-  if (el) el.classList.add('active');
-  const nav = document.getElementById('nav-' + page);
-  if (nav) nav.classList.add('active');
-
-  window.APP.currentPage = page;
-
-  if (page === 'quiz') {
-    renderQuizCards();
-    renderQuizCategories();
-  }
-  if (page === 'leaderboard') loadLeaderboard('weekly');
-  if (page === 'cash') loadWithdrawHistory();
-  if (page === 'refer') loadReferrals();
-  if (page === 'spin') loadSpinHistory();
-};
-
-window.goToQuiz = () => goToPage('quiz');
-window.goToSpin = () => goToPage('spin');
-
-// ======= QUIZ SYSTEM =======
-let quizFilterCategory = 'All';
-
-function renderQuizCategories() {
-  const cats = ['All', ...new Set(window.APP.quizzes.map(q => q.category))];
-  const el = document.getElementById('quiz-categories');
-  el.innerHTML = cats.map(c => `<button class="cat-pill ${c === quizFilterCategory ? 'active' : ''}" onclick="filterQuizCategory('${c}',this)">${c}</button>`).join('');
-}
-
-window.filterQuizCategory = function(cat, btn) {
-  quizFilterCategory = cat;
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  renderQuizCards();
-};
-
-function renderQuizCards() {
-  const filtered = quizFilterCategory === 'All' ? window.APP.quizzes : window.APP.quizzes.filter(q => q.category === quizFilterCategory);
-  const container = document.getElementById('quiz-cards-container');
-  if (!container) return;
-  container.innerHTML = filtered.map(q => quizCard(q)).join('');
-}
-
-function quizCard(q) {
-  const diffColors = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
-  const color = diffColors[q.difficulty] || '#888';
-  return `<div class="card" style="padding:16px;cursor:pointer;" onclick="startQuiz('${q.id}')">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="font-size:36px;background:#f3f4f6;border:2px solid #111;border-radius:14px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;">${q.icon||'❓'}</div>
-      <div style="flex:1;">
-        <div style="font-weight:800;font-size:16px;">${q.title}</div>
-        <div style="font-size:12px;color:#666;font-weight:600;">${q.questions?.length||0} questions · ${q.time}s each</div>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <span style="background:${color}22;color:${color};border:1.5px solid ${color};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${q.difficulty}</span>
-          ${q.daily ? '<span style="background:#ffe94a;border:1.5px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">⚡ Daily</span>' : ''}
-        </div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:var(--yellow);border:2px solid #111;border-radius:12px;padding:8px 12px;">
-          <div style="font-size:11px;font-weight:700;">REWARD</div>
-          <div style="font-weight:900;font-size:18px;">+${q.reward}</div>
-          <div style="font-size:10px;font-weight:600;">coins</div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderFeaturedQuizzes() {
-  const featured = window.APP.quizzes.slice(0, 3);
-  const el = document.getElementById('featured-quizzes');
-  if (!el) return;
-  el.innerHTML = featured.map(q => `<div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToPage('quiz')">
-    <div style="font-size:28px;">${q.icon||'❓'}</div>
-    <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.category} · +${q.reward} coins</div></div>
-    <div style="font-size:20px;">›</div>
-  </div>`).join('');
-}
-
-window.startQuiz = function(quizId) {
-  const quiz = window.APP.quizzes.find(q => q.id === quizId);
-  if (!quiz || !quiz.questions || quiz.questions.length === 0) { showToast('Quiz not available!'); return; }
-  haptic('medium');
-
-  // Anti-cheat: check quiz cooldown per quiz
-  const lastPlayed = localStorage.getItem('quiz_last_' + quizId);
-  if (quiz.daily && lastPlayed) {
-    const today = new Date().toDateString();
-    const lastDay = new Date(parseInt(lastPlayed)).toDateString();
-    if (today === lastDay) { showToast('Daily quiz already played today!'); return; }
-  }
-
-  window.APP.currentQuiz = quiz;
-  window.APP.currentQ = 0;
-  window.APP.quizScore = 0;
-  window.APP.quizCorrect = 0;
-  window.APP.quizWrong = 0;
-
-  document.getElementById('quiz-list-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-game-view').style.display = 'block';
-  renderQuestion();
-};
-
-function renderQuestion() {
-  const quiz = window.APP.currentQuiz;
-  const q = quiz.questions[window.APP.currentQ];
-  if (!q) { endQuiz(); return; }
-
-  const total = quiz.questions.length;
-  const cur = window.APP.currentQ;
-
-  document.getElementById('quiz-q-num').textContent = `Q ${cur + 1}/${total}`;
-  document.getElementById('quiz-score-display').textContent = `Score: ${window.APP.quizScore}`;
-  document.getElementById('quiz-progress-fill').style.width = `${(cur / total) * 100}%`;
-  document.getElementById('quiz-category-label').textContent = quiz.category?.toUpperCase() || 'QUIZ';
-  document.getElementById('quiz-question-text').textContent = q.q;
-
-  const answersEl = document.getElementById('quiz-answers');
-  const optLabels = ['A','B','C','D'];
-  answersEl.innerHTML = q.options.map((opt, i) =>
-    `<button class="answer-btn" onclick="selectAnswer(${i})">${optLabels[i]}. ${opt}</button>`
-  ).join('');
-
-  // Timer
-  clearInterval(window.APP.quizTimer);
-  let timeLeft = quiz.time || 30;
-  document.getElementById('quiz-timer-display').textContent = timeLeft + 's';
-  window.APP.quizTimer = setInterval(() => {
-    timeLeft--;
-    document.getElementById('quiz-timer-display').textContent = timeLeft + 's';
-    if (timeLeft <= 5) document.getElementById('quiz-timer-display').style.background = '#fecaca';
-    if (timeLeft <= 0) {
-      clearInterval(window.APP.quizTimer);
-      window.APP.quizWrong++;
-      highlightAnswer(-1, q.answer);
-      setTimeout(() => nextQuestion(), 1500);
-    }
-  }, 1000);
-}
-
-window.selectAnswer = function(selected) {
-  clearInterval(window.APP.quizTimer);
-  haptic();
-  const quiz = window.APP.currentQuiz;
-  const q = quiz.questions[window.APP.currentQ];
-  const correct = q.answer;
-
-  // Disable all buttons
-  document.querySelectorAll('.answer-btn').forEach(b => b.onclick = null);
-
-  if (selected === correct) {
-    window.APP.quizScore += Math.floor(quiz.reward / quiz.questions.length);
-    window.APP.quizCorrect++;
-    haptic('medium');
-    spawnFloatingCoins();
-  } else {
-    window.APP.quizWrong++;
-    haptic('heavy');
-  }
-  highlightAnswer(selected, correct);
-  setTimeout(() => nextQuestion(), 1200);
-};
-
-function highlightAnswer(selected, correct) {
-  const btns = document.querySelectorAll('.answer-btn');
-  btns.forEach((btn, i) => {
-    if (i === correct) btn.classList.add('correct');
-    else if (i === selected && selected !== correct) btn.classList.add('wrong');
-  });
-}
-
-function nextQuestion() {
-  window.APP.currentQ++;
-  document.getElementById('quiz-timer-display').style.background = 'var(--yellow)';
-  if (window.APP.currentQ >= window.APP.currentQuiz.questions.length) endQuiz();
-  else renderQuestion();
-}
-
-async function endQuiz() {
-  clearInterval(window.APP.quizTimer);
-  const quiz = window.APP.currentQuiz;
-  const earned = window.APP.quizScore;
-  const correct = window.APP.quizCorrect;
-  const wrong = window.APP.quizWrong;
-
-  // Anti-spam cooldown
-  localStorage.setItem('quiz_last_' + quiz.id, Date.now().toString());
-
-  // Update Firebase
-  const { ref, update, increment } = window._fb;
-  const uid = window.APP.user.uid;
-  try {
-    await update(ref(db, `users/${uid}`), {
-      coins: increment(earned),
-      totalEarned: increment(earned),
-      quizzesPlayed: increment(1),
-    });
-    // Log transaction
-    push(ref(db, `transactions/${uid}`), { type: 'quiz', amount: earned, quizTitle: quiz.title, timestamp: Date.now() });
-  } catch(e) {}
-
-  document.getElementById('quiz-game-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'block';
-
-  const pct = Math.round((correct / quiz.questions.length) * 100);
-  document.getElementById('result-emoji').textContent = pct >= 80 ? '🏆' : pct >= 50 ? '😊' : '😅';
-  document.getElementById('result-title').textContent = pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good Job!' : 'Keep Practicing!';
-  document.getElementById('result-subtitle').textContent = `${correct}/${quiz.questions.length} correct (${pct}%)`;
-  document.getElementById('result-coins').textContent = '+' + earned;
-  document.getElementById('result-correct').textContent = correct;
-  document.getElementById('result-wrong').textContent = wrong;
-
-  if (pct === 100) spawnConfetti();
-  haptic('medium');
-}
-
-window.exitQuiz = function() {
-  clearInterval(window.APP.quizTimer);
-  document.getElementById('quiz-game-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-list-view').style.display = 'block';
-};
-
-// ======= SPIN WHEEL =======
-const WHEEL_SEGMENTS = [
-  { label: '50 Coins', value: 50, color: '#00d4e8' },
-  { label: '100 Coins', value: 100, color: '#ffe94a' },
-  { label: '200 Coins', value: 200, color: '#a855f7' },
-  { label: 'Try Again', value: 0, color: '#f3f4f6' },
-  { label: '500 Coins', value: 500, color: '#ff6eb4' },
-  { label: '30 Coins', value: 30, color: '#22c55e' },
-  { label: '1000 Coins', value: 1000, color: '#ff7b39' },
-  { label: '150 Coins', value: 150, color: '#818cf8' },
-];
-
-function drawSpinWheel(rotation = 0) {
-  const canvas = document.getElementById('spin-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-  const r = cx - 8;
-  const segments = WHEEL_SEGMENTS;
-  const arc = (Math.PI * 2) / segments.length;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  segments.forEach((seg, i) => {
-    const start = rotation + i * arc - Math.PI / 2;
-    const end = start + arc;
-
-    // Segment
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, end);
-    ctx.closePath();
-    ctx.fillStyle = seg.color;
-    ctx.fill();
-    ctx.strokeStyle = '#111';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Text
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(start + arc / 2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#111';
-    ctx.font = 'bold 11px Nunito';
-    ctx.fillText(seg.label, r - 10, 4);
-    ctx.restore();
-  });
-
-  // Center circle
-  ctx.beginPath();
-  ctx.arc(cx, cy, 28, 0, Math.PI * 2);
-  ctx.fillStyle = '#ffe94a';
-  ctx.fill();
-  ctx.strokeStyle = '#111';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.fillStyle = '#111';
-  ctx.font = 'bold 16px Nunito';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('💰', cx, cy);
-}
-
-window.spinWheel = async function() {
-  if (window.APP.spinRunning) return;
-
-  const u = window.APP.userData;
-  const now = Date.now();
-  const lastSpin = u.lastSpin || 0;
-  const cooldown = 24 * 60 * 60 * 1000; // 24h
-
-  if (now - lastSpin < cooldown) {
-    const remaining = Math.ceil((cooldown - (now - lastSpin)) / 3600000);
-    showToast(`Come back in ${remaining}h for your daily spin!`);
-    return;
-  }
-
-  haptic('medium');
-  window.APP.spinRunning = true;
-  document.getElementById('spin-btn').disabled = true;
-  document.getElementById('spin-btn').textContent = '🎰 Spinning...';
-
-  const winIndex = Math.floor(Math.random() * WHEEL_SEGMENTS.length);
-  const winner = WHEEL_SEGMENTS[winIndex];
-  const arcSize = (Math.PI * 2) / WHEEL_SEGMENTS.length;
-  const targetAngle = (Math.PI * 2 * 5) - (winIndex * arcSize) - arcSize / 2;
-  const duration = 4000;
-  const start = performance.now();
-  let currentRot = 0;
-
-  function animate(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 4);
-    currentRot = ease * targetAngle;
-    drawSpinWheel(currentRot);
-    if (progress < 1) requestAnimationFrame(animate);
-    else onSpinEnd(winner);
-  }
-  requestAnimationFrame(animate);
-};
-
-async function onSpinEnd(winner) {
-  haptic('heavy');
-  window.APP.spinRunning = false;
-  document.getElementById('spin-btn').disabled = false;
-  document.getElementById('spin-btn').textContent = '🎰 SPIN NOW!';
-
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-
-  if (winner.value > 0) {
-    spawnConfetti();
-    await update(ref(db, `users/${uid}`), {
-      coins: increment(winner.value),
-      totalEarned: increment(winner.value),
-      spinsUsed: increment(1),
-      lastSpin: Date.now(),
-    });
-    push(ref(db, `spins/${uid}`), { reward: winner.value, label: winner.label, timestamp: Date.now() });
-    showToast(`🎉 You won ${winner.label}!`);
-    showPopup('🎰 Lucky Spin!', `<div style="text-align:center;"><div style="font-size:56px;margin-bottom:12px;">🎉</div><div class="fredoka" style="font-size:28px;">${winner.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to your balance!</div></div>`);
-  } else {
-    await update(ref(db, `users/${uid}`), { spinsUsed: increment(1), lastSpin: Date.now() });
-    push(ref(db, `spins/${uid}`), { reward: 0, label: winner.label, timestamp: Date.now() });
-    showToast('😅 Better luck next time!');
-  }
-  loadSpinHistory();
-  document.getElementById('spin-cooldown-text').textContent = 'Next spin available in 24 hours';
-}
-
-async function loadSpinHistory() {
-  const { ref, get } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  try {
-    const snap = await get(ref(db, `spins/${uid}`));
-    const el = document.getElementById('spin-history-list');
-    if (!snap.exists() || !el) { if(el) el.innerHTML = '<div style="color:#888;font-weight:600;text-align:center;">No spins yet</div>'; return; }
-    const spins = Object.values(snap.val()).slice(-10).reverse();
-    el.innerHTML = spins.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <span style="font-weight:600;">🎰 ${s.label}</span>
-      <span style="color:#666;font-size:12px;">${new Date(s.timestamp).toLocaleDateString()}</span>
-    </div>`).join('');
-  } catch(e) {}
-}
-
-// ======= DAILY BONUS =======
-window.claimDailyBonus = async function() {
-  const u = window.APP.userData;
-  const today = new Date().toDateString();
-  const lastDay = new Date(u.lastDailyBonus || 0).toDateString();
-  if (today === lastDay) { showToast('Already claimed today!'); return; }
-
-  haptic('medium');
-  const bonus = 100;
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  await update(ref(db, `users/${uid}`), { coins: increment(bonus), totalEarned: increment(bonus), lastDailyBonus: Date.now() });
-  push(ref(db, `transactions/${uid}`), { type: 'daily_bonus', amount: bonus, timestamp: Date.now() });
-  spawnConfetti();
-  showToast('🎁 Daily bonus claimed! +100 Coins');
-  spawnFloatingCoins();
-};
-
-// ======= LEADERBOARD =======
-async function loadLeaderboardPreview() {
-  const { ref, query, orderByChild, limitToLast, get } = window._fb;
-  try {
-    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(5));
-    const snap = await get(q);
-    const el = document.getElementById('leaderboard-preview');
-    if (!el) return;
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;font-weight:600;text-align:center;padding:10px;">No data yet</div>'; return; }
-    const users = [];
-    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
-    el.innerHTML = users.slice(0, 5).map((u, i) => leaderboardRow(u, i)).join('');
-  } catch(e) {}
-}
-
-window.loadLeaderboard = async function(type, btn) {
-  if (btn) {
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  const { ref, query, orderByChild, limitToLast, get } = window._fb;
-  const el = document.getElementById('full-leaderboard-list');
-  if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:auto;"></div></div>';
-  try {
-    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(20));
-    const snap = await get(q);
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">No data yet</div>'; return; }
-    const users = [];
-    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
-    el.innerHTML = users.map((u, i) => `<div class="card" style="padding:14px;margin-bottom:10px;${i < 3 ? '' : ''}">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="font-size:22px;width:36px;text-align:center;">${['🥇','🥈','🥉'][i] || '#' + (i + 1)}</div>
-        <div style="flex:1;"><div style="font-weight:800;">${u.name || 'User'}</div><div style="font-size:12px;color:#666;">${u.totalEarned || 0} total coins earned</div></div>
-        <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;">${(u.coins || 0).toLocaleString()} 🪙</div>
-      </div>
-    </div>`).join('');
-  } catch(e) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">Could not load</div>'; }
-};
-
-function leaderboardRow(u, i) {
-  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-  return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-    <div style="font-size:20px;width:30px;text-align:center;">${medals[i] || (i+1)}</div>
-    <div style="flex:1;font-weight:700;font-size:14px;">${u.name || 'User'}</div>
-    <div style="font-weight:800;color:var(--purple);">${(u.coins||0).toLocaleString()} 🪙</div>
-  </div>`;
-}
-
-// ======= WITHDRAW =======
-window.selectMethod = function(method) {
-  window.APP.selectedMethod = method;
-  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-  document.querySelector(`[data-method="${method}"]`)?.classList.add('selected');
-};
-
-window.submitWithdraw = async function() {
-  const u = window.APP.userData;
-  const amount = parseInt(document.getElementById('withdraw-amount').value) || 0;
-  const address = document.getElementById('withdraw-address').value.trim();
-  const min = window.APP.settings.minWithdraw;
-
-  if (!address) { showToast('Enter your account address!'); return; }
-  if (amount < min) { showToast(`Minimum ${min} coins required!`); return; }
-  if ((u.coins || 0) < amount) { showToast('Not enough coins!'); return; }
-
-  haptic('medium');
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  const s = window.APP.settings;
-  const method = window.APP.selectedMethod;
-
-  const withdraw = {
-    uid, amount, address, method,
-    status: 'pending',
-    timestamp: Date.now(),
-    amountUsdt: (amount / s.coinUsdt).toFixed(4),
-    amountBdt: (amount / s.coinBdt).toFixed(2),
-    userName: u.name,
-  };
-
-  try {
-    await push(ref(db, `withdraws`), withdraw);
-    await update(ref(db, `users/${uid}`), { coins: increment(-amount) });
-    showToast('✅ Withdrawal request submitted!');
-    document.getElementById('withdraw-amount').value = '';
-    document.getElementById('withdraw-address').value = '';
-    loadWithdrawHistory();
-  } catch(e) { showToast('Error submitting request!'); }
-};
-
-async function loadWithdrawHistory() {
-  const { ref, get, query, orderByChild } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  const el = document.getElementById('withdraw-history');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, 'withdraws'));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
-    const all = [];
-    snap.forEach(child => { const v = child.val(); if (v.uid === uid) all.push(v); });
-    if (all.length === 0) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
-    all.sort((a, b) => b.timestamp - a.timestamp);
-    el.innerHTML = all.slice(0, 10).map(w => {
-      const statusColor = { pending: '#f59e0b', approved: '#22c55e', rejected: '#ef4444' }[w.status] || '#888';
-      return `<div style="border:2px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><div style="font-weight:700;">${w.method?.toUpperCase()}</div><div style="font-size:12px;color:#666;">${new Date(w.timestamp).toLocaleDateString()}</div></div>
-          <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${statusColor}22;color:${statusColor};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</div></div>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) {}
-}
-
-// ======= REFERRALS =======
-async function loadReferrals() {
-  const { ref, get } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  const el = document.getElementById('my-referrals-list');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, `referrals/${uid}`));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No referrals yet</div>'; return; }
-    const refs = Object.values(snap.val()).slice(-20).reverse();
-    el.innerHTML = refs.map(r => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <div><div style="font-weight:700;">Friend joined</div><div style="font-size:12px;color:#666;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
-      <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
-    </div>`).join('');
-  } catch(e) {}
-}
-
-window.copyReferralLink = function() {
-  const link = getReferralLink();
-  navigator.clipboard.writeText(link).catch(() => {});
-  showToast('Referral link copied! 📋');
-  haptic();
-};
-
-window.shareReferralLink = function() {
-  const link = getReferralLink();
-  const text = `Join CashZilla and earn coins! 💰 Use my link: ${link}`;
-  if (tg) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Join CashZilla and earn coins! 💰')}`);
-  else navigator.clipboard.writeText(text);
-};
-
-// ======= AD SYSTEM =======
-let adClicks = 0;
-let lastAdMinute = 0;
-let adsThisMinute = 0;
-
-window.handleAdClick = function(placement) {
-  // Rate limit: max 2 per minute
-  const now = Math.floor(Date.now() / 60000);
-  if (now !== lastAdMinute) { lastAdMinute = now; adsThisMinute = 0; }
-  if (adsThisMinute >= 2) { showToast('Ad limit reached. Come back later!'); return; }
-  adsThisMinute++;
-
-  haptic();
-  const reward = 5;
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-
-  // Check Adsgram
-  if (window.APP.adsgram.enabled && window.APP.adsgram.blockId) {
-    showRewardedAd(reward);
-  } else if (window.APP.monetag.enabled && window.APP.monetag.smartlink) {
-    window.open(window.APP.monetag.smartlink, '_blank');
-    awardAdCoins(reward);
-  } else {
-    awardAdCoins(reward);
-  }
-  update(ref(db, 'stats/adClicks'), increment(1));
-};
-
-function awardAdCoins(coins) {
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user?.uid;
-  update(ref(db, `users/${uid}`), { coins: increment(coins) });
-  push(ref(db, `transactions/${uid}`), { type: 'ad_click', amount: coins, timestamp: Date.now() });
-  showToast(`+${coins} coins from ad! 🎯`);
-  spawnFloatingCoins();
-}
-
-function showRewardedAd(reward) {
-  // Adsgram integration
-  if (typeof AdController !== 'undefined') {
-    AdController.show().then(() => awardAdCoins(reward)).catch(() => showToast('Ad not available'));
-  } else {
-    awardAdCoins(reward);
-  }
-}
-
-// ======= NOTIFICATIONS =======
-window.showNotifications = function() {
-  showPopup('🔔 Notifications', `<div style="text-align:center;padding:10px;">
-    <div style="font-size:40px;margin-bottom:10px;">🔔</div>
-    <div style="font-weight:700;">No new notifications</div>
-    <div style="color:#888;font-size:14px;margin-top:8px;">Check back later for updates!</div>
-  </div>`);
-};
-
-// ======= ADMIN PANEL =======
-window.adminLogin = async function(email) {
-  if (email?.toLowerCase() === 'kingadmin@cashzilla.com') {
-    window.APP.isAdmin = true;
-    document.getElementById('user-panel').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    document.getElementById('bottom-nav').style.display = 'none';
-    await loadAdminData();
-    showToast('👑 Admin panel opened!');
-  }
-};
-
-window.adminLogout = function() {
-  window.APP.isAdmin = false;
-  document.getElementById('admin-panel').style.display = 'none';
-  document.getElementById('user-panel').style.display = 'block';
-  document.getElementById('bottom-nav').style.display = 'flex';
-};
-
-window.showAdminTab = function(tab) {
-  document.querySelectorAll('[id^="admin-tab-"]').forEach(el => el.style.display = 'none');
-  document.getElementById('admin-tab-' + tab).style.display = 'block';
-  document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-};
-
-async function loadAdminData() {
-  const { ref, get, query, orderByChild } = window._fb;
-
-  // Total users
-  try {
-    const snap = await get(ref(db, 'users'));
-    let total = 0, online = 0, totalCoins = 0;
-    if (snap.exists()) {
-      snap.forEach(child => {
-        const u = child.val();
-        total++;
-        totalCoins += u.coins || 0;
-        if (Date.now() - (u.lastSeen || 0) < 300000) online++;
-      });
-    }
-    document.getElementById('admin-total-users').textContent = total;
-    document.getElementById('admin-online-users').textContent = online;
-    document.getElementById('admin-total-coins').textContent = totalCoins.toLocaleString();
-  } catch(e) {}
-
-  // Withdrawals
-  try {
-    const snap = await get(ref(db, 'withdraws'));
-    let total = 0;
-    if (snap.exists()) snap.forEach(() => total++);
-    document.getElementById('admin-total-withdrawals').textContent = total;
-    loadAdminWithdrawals(snap);
-  } catch(e) {}
-
-  loadAdminUsers();
-  loadAdminQuizzes();
-  loadAdminSettings();
-}
-
-async function loadAdminUsers() {
-  const { ref, get } = window._fb;
-  const el = document.getElementById('admin-users-list');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, 'users'));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;">No users</div>'; return; }
-    const users = [];
-    snap.forEach(child => users.push({ id: child.key, ...child.val() }));
-    el.innerHTML = users.map(u => `<div class="card" style="padding:12px;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:24px;">👤</div>
-        <div style="flex:1;">
-          <div style="font-weight:800;">${u.name || 'User'}</div>
-          <div style="font-size:12px;color:#666;">${u.uid?.slice(0,10)}... · ${u.coins||0} coins</div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn" onclick="adminAddCoins('${u.uid}')" style="background:var(--green);color:#fff;padding:6px 10px;font-size:12px;">+Coins</button>
-          <button class="btn" onclick="adminBanUser('${u.uid}')" style="background:${u.banned?'#ef4444':'#f3f4f6'};padding:6px 10px;font-size:12px;">${u.banned?'Unban':'Ban'}</button>
-        </div>
-      </div>
-    </div>`).join('');
-  } catch(e) {}
-}
-
-window.adminAddCoins = async function(uid) {
-  const amount = parseInt(prompt('Coins to add:') || '0');
-  if (!amount) return;
-  const { ref, update, increment } = window._fb;
-  await update(ref(db, `users/${uid}`), { coins: increment(amount) });
-  showToast(`Added ${amount} coins to user`);
-  loadAdminUsers();
-};
-
-window.adminBanUser = async function(uid) {
-  const { ref, get, update } = window._fb;
-  const snap = await get(ref(db, `users/${uid}/banned`));
-  const banned = snap.val();
-  await update(ref(db, `users/${uid}`), { banned: !banned });
-  showToast(banned ? 'User unbanned' : 'User banned');
-  loadAdminUsers();
-};
-
-window.adminSearchUser = function() {
-  const q = document.getElementById('user-search').value.toLowerCase();
-  document.querySelectorAll('#admin-users-list .card').forEach(card => {
-    card.style.display = card.textContent.toLowerCase().includes(q) ? 'block' : 'none';
-  });
-};
-
-async function loadAdminQuizzes() {
-  const el = document.getElementById('admin-quizzes-list');
-  if (!el) return;
-  el.innerHTML = window.APP.quizzes.map(q => `<div class="card" style="padding:12px;margin-bottom:8px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="font-size:28px;">${q.icon||'❓'}</div>
-      <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.questions?.length||0} questions · +${q.reward} coins</div></div>
-      <button class="btn" onclick="adminDeleteQuiz('${q.id}')" style="background:#ef4444;color:#fff;padding:6px 10px;font-size:12px;">Delete</button>
-    </div>
-  </div>`).join('');
-}
-
-window.adminDeleteQuiz = async function(id) {
-  if (!confirm('Delete this quiz?')) return;
-  const { ref, update } = window._fb;
-  await update(ref(db, `quizzes/${id}`), { deleted: true });
-  window.APP.quizzes = window.APP.quizzes.filter(q => q.id !== id);
-  loadAdminQuizzes();
-  showToast('Quiz deleted');
-};
-
-window.showCreateQuizForm = function() {
-  showPopup('➕ Create Quiz', `<div>
-    <input id="new-quiz-title" type="text" placeholder="Quiz Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-category" type="text" placeholder="Category" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-reward" type="number" placeholder="Reward (coins)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-time" type="number" placeholder="Time per question (seconds)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <button class="btn" onclick="submitNewQuiz()" style="background:var(--green);color:#fff;width:100%;padding:12px;">Create Quiz</button>
-  </div>`);
-};
-
-window.submitNewQuiz = async function() {
-  const title = document.getElementById('new-quiz-title')?.value;
-  const category = document.getElementById('new-quiz-category')?.value;
-  const reward = parseInt(document.getElementById('new-quiz-reward')?.value) || 50;
-  const time = parseInt(document.getElementById('new-quiz-time')?.value) || 30;
-  if (!title) { showToast('Enter a title!'); return; }
-  const { ref, push } = window._fb;
-  const newQuiz = { title, category, reward, time, icon:'❓', difficulty:'Medium', questions:[] };
-  await push(ref(db, 'quizzes'), newQuiz);
-  showToast('Quiz created!');
-  closePopup();
-  loadAdminQuizzes();
-};
-
-function loadAdminWithdrawals(snap) {
-  const el = document.getElementById('admin-withdrawals-list');
-  if (!el) return;
-  if (!snap || !snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals</div>'; return; }
-  const withdraws = [];
-  snap.forEach(child => withdraws.push({ id: child.key, ...child.val() }));
-  withdraws.sort((a, b) => b.timestamp - a.timestamp);
-  el.innerHTML = withdraws.map(w => `<div class="card" style="padding:12px;margin-bottom:8px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div><div style="font-weight:800;">${w.userName||'User'}</div><div style="font-size:12px;color:#666;">${w.method?.toUpperCase()} · ${w.amount} coins</div></div>
-      <span style="background:${w.status==='pending'?'#fef9c3':w.status==='approved'?'#dcfce7':'#fee2e2'};border:1.5px solid #111;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</span>
-    </div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px;">Address: ${w.address}</div>
-    ${w.status==='pending' ? `<div style="display:flex;gap:8px;">
-      <button class="btn" onclick="adminApproveWithdraw('${w.id}')" style="flex:1;background:var(--green);color:#fff;padding:8px;font-size:13px;">✅ Approve</button>
-      <button class="btn" onclick="adminRejectWithdraw('${w.id}')" style="flex:1;background:#ef4444;color:#fff;padding:8px;font-size:13px;">❌ Reject</button>
-    </div>` : ''}
-  </div>`).join('');
-}
-
-window.adminApproveWithdraw = async function(id) {
-  const { ref, update } = window._fb;
-  await update(ref(db, `withdraws/${id}`), { status: 'approved' });
-  showToast('Withdrawal approved ✅');
-  loadAdminData();
-};
-
-window.adminRejectWithdraw = async function(id) {
-  const { ref, update, get, increment } = window._fb;
-  const snap = await get(ref(db, `withdraws/${id}`));
-  if (snap.exists()) {
-    const w = snap.val();
-    await update(ref(db, `withdraws/${id}`), { status: 'rejected' });
-    // Refund
-    await update(ref(db, `users/${w.uid}`), { coins: increment(w.amount) });
-  }
-  showToast('Withdrawal rejected ❌');
-  loadAdminData();
-};
-
-window.adminSendNotification = async function() {
-  const title = document.getElementById('notif-title').value;
-  const msg = document.getElementById('notif-msg').value;
-  if (!title || !msg) { showToast('Fill all fields!'); return; }
-  const { ref, push } = window._fb;
-  await push(ref(db, 'notifications'), { title, message: msg, timestamp: Date.now() });
-  showToast('Notification sent to all users!');
-  document.getElementById('notif-title').value = '';
-  document.getElementById('notif-msg').value = '';
-};
-
-function loadAdminSettings() {
-  const s = window.APP.settings;
-  document.getElementById('coin-usdt').value = s.coinUsdt;
-  document.getElementById('coin-usd').value = s.coinUsd;
-  document.getElementById('coin-bdt').value = s.coinBdt;
-  document.getElementById('min-withdraw').value = s.minWithdraw;
-  document.getElementById('referral-bonus').value = s.referralBonus;
-  document.getElementById('adsgram-block-id').value = window.APP.adsgram.blockId;
-  document.getElementById('adsgram-zone-id').value = window.APP.adsgram.zoneId;
-  document.getElementById('monetag-zone-id').value = window.APP.monetag.zoneId;
-  document.getElementById('monetag-smartlink').value = window.APP.monetag.smartlink;
-}
-
-window.saveSettings = async function() {
-  const { ref, set } = window._fb;
-  const settings = {
-    coinUsdt: parseInt(document.getElementById('coin-usdt').value) || 10000,
-    coinUsd: parseInt(document.getElementById('coin-usd').value) || 10000,
-    coinBdt: parseInt(document.getElementById('coin-bdt').value) || 833,
-    minWithdraw: parseInt(document.getElementById('min-withdraw').value) || 5000,
-    referralBonus: parseInt(document.getElementById('referral-bonus').value) || 500,
-    adsgram: window.APP.adsgram,
-    monetag: window.APP.monetag,
-  };
-  await set(ref(db, 'settings'), settings);
-  window.APP.settings = settings;
-  showToast('Settings saved! ✅');
-};
-
-window.saveAdsgramConfig = async function() {
-  const { ref, update } = window._fb;
-  window.APP.adsgram.blockId = document.getElementById('adsgram-block-id').value;
-  window.APP.adsgram.zoneId = document.getElementById('adsgram-zone-id').value;
-  await update(ref(db, 'settings/adsgram'), window.APP.adsgram);
-  showToast('Adsgram config saved!');
-};
-
-window.saveMonetag = async function() {
-  const { ref, update } = window._fb;
-  window.APP.monetag.zoneId = document.getElementById('monetag-zone-id').value;
-  window.APP.monetag.smartlink = document.getElementById('monetag-smartlink').value;
-  window.APP.monetag.banner = document.getElementById('monetag-banner').value;
-  await update(ref(db, 'settings/monetag'), window.APP.monetag);
-  showToast('Monetag config saved!');
-};
-
-window.saveAdToggles = async function() {
-  window.APP.adsgram.enabled = document.getElementById('adsgram-enabled').checked;
-  window.APP.monetag.enabled = document.getElementById('monetag-enabled').checked;
-  const { ref, update } = window._fb;
-  await update(ref(db, 'settings'), { adsgram: window.APP.adsgram, monetag: window.APP.monetag });
-  // Update toggle UI
-  document.getElementById('adsgram-toggle-ui').style.background = window.APP.adsgram.enabled ? '#22c55e' : '#e5e7eb';
-  document.getElementById('monetag-toggle-ui').style.background = window.APP.monetag.enabled ? '#22c55e' : '#e5e7eb';
-};
-
-// ======= POPUP SYSTEM =======
-window.showPopup = function(title, html) {
-  const box = document.getElementById('popup-box');
-  box.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div style="font-weight:800;font-size:18px;">${title}</div>
-    <button onclick="closePopup()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;">×</button>
-  </div>${html}`;
-  document.getElementById('popup-overlay').style.display = 'flex';
-};
-window.closePopup = function() { document.getElementById('popup-overlay').style.display = 'none'; };
-
-function showWelcomePopup(u) {
-  showPopup('🎉 Welcome!', `<div style="text-align:center;">
-    <div style="font-size:56px;margin-bottom:12px;">💰</div>
-    <div class="fredoka" style="font-size:24px;">Welcome, ${u.name?.split(' ')[0]}!</div>
-    <div style="color:#666;margin:10px 0;font-weight:600;">You've received 500 welcome coins!</div>
-    <div class="balance-card" style="margin:14px 0;text-align:left;"><div style="font-size:13px;opacity:.8;">WELCOME BONUS</div><div class="fredoka" style="font-size:36px;">+500 Coins 🪙</div></div>
-    <button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:14px;font-size:16px;">Start Earning! 🚀</button>
-  </div>`);
-}
-
-// ======= TOAST =======
-window.showToast = function(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-};
-
-// ======= CONFETTI =======
-window.spawnConfetti = function() {
-  const colors = ['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
-  for (let i = 0; i < 50; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'confetti-piece';
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.background = colors[Math.floor(Math.random() * colors.length)];
-      el.style.animationDuration = (1.5 + Math.random()) + 's';
-      el.style.animationDelay = Math.random() * .5 + 's';
-      el.style.transform = `rotate(${Math.random() * 360}deg)`;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
-    }, i * 30);
-  }
-};
-
-window.spawnFloatingCoins = function() {
-  for (let i = 0; i < 5; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'floating-coin';
-      el.textContent = '🪙';
-      el.style.left = (30 + Math.random() * 40) + 'vw';
-      el.style.top = '50vh';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1500);
-    }, i * 150);
-  }
-};
-
-// ======= ADMIN EMAIL CHECK =======
-// Check if tg user triggers admin
-setTimeout(() => {
-  const tgUser = tg?.initDataUnsafe?.user;
-  if (tgUser?.username === 'kingadmin') adminLogin('kingadmin@cashzilla.com');
-}, 2000);
-
-// Expose admin login globally
-window.adminLogin = window.adminLogin;
-
-// ======= AUTO AD ROTATION =======
-setInterval(() => {
-  if (window.APP.user && !window.APP.isAdmin) {
-    autoRotateAds();
-  }
-}, 35000);
-
-function autoRotateAds() {
-  const now = Math.floor(Date.now() / 60000);
-  if (now !== lastAdMinute) { lastAdMinute = now; adsThisMinute = 0; }
-  if (adsThisMinute >= 2) return;
-  // Just refresh ad visual (no reward for auto)
-  const adEl = document.getElementById('ad-banner-home');
-  if (adEl) {
-    adEl.style.opacity = '.5';
-    setTimeout(() => { if(adEl) adEl.style.opacity = '1'; }, 500);
-  }
-}
-
-console.log('✅ CashZilla loaded successfully!');
-</script>
-
-<script>
-// Admin login via URL param (for testing)
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('admin') === 'kingadmin@cashzilla.com') {
-    setTimeout(() => window.adminLogin && adminLogin('kingadmin@cashzilla.com'), 3000);
-  }
-});
-</script>
+    <!-- Firebase SDKs (CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics-compat.js"></script>
+    <!-- Firebase Storage would also be needed for avatars/quiz images -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-storage-compat.js"></script> -->
+
+    <script>
+        // Initialize Telegram WebApp SDK
+        const WebApp = window.Telegram.WebApp;
+
+        // Firebase Configuration (REPLACE WITH YOUR ACTUAL CONFIG)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+
+        // Initialize Firebase
+        let firebaseApp;
+        let auth;
+        let db;
+        let analytics;
+        // let storage; // For Firebase Storage
+
+        // Admin Telegram User ID
+        const ADMIN_TELEGRAM_ID = '8601120665'; // Your Telegram User ID
+
+        // --- Loading Screen Logic ---
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingProgressBar = document.getElementById('loading-progress-bar');
+        const loadingText = document.getElementById('loading-text');
+        const appContent = document.getElementById('app-content');
+
+        let progress = 0;
+        const updateLoading = (text, newProgress) => {
+            loadingText.textContent = text;
+            progress = Math.min(newProgress, 100);
+            loadingProgressBar.style.width = `${progress}%`;
+        };
+
+        const hideLoadingScreen = () => {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                appContent.classList.remove('hidden');
+                appContent.style.opacity = '1';
+                WebApp.expand(); // Expand the Mini App to full screen
+            }, 700); // Matches opacity transition duration
+        };
+
+        // --- Core App Logic ---
+        let currentUser = null; // Stores Firebase user object
+        let telegramUser = null; // Stores Telegram user data
+        let userData = {}; // Stores user data from Firebase Realtime DB
+
+        document.addEventListener('DOMContentLoaded', () => {
+            WebApp.ready(); // Inform Telegram that the app is ready
+
+            // Simulate loading progress
+            updateLoading('Initializing app...', 10);
+
+            // 1. Telegram WebApp Initialization
+            try {
+                if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
+                    telegramUser = WebApp.initDataUnsafe.user;
+                    console.log('Telegram User:', telegramUser);
+                    updateLoading('Connecting to Telegram...', 30);
+                } else {
+                    console.warn('Telegram user data not available. Running in standalone mode.');
+                    telegramUser = { id: 'test_user_123', first_name: 'Test', last_name: 'User', username: 'testuser' };
+                    updateLoading('Running in test mode (no Telegram user)...', 30);
+                }
+
+                WebApp.onEvent('themeChanged', () => {
+                    // Handle Telegram theme changes if needed
+                    console.log('Telegram theme changed:', WebApp.themeParams);
+                });
+
+                // Set up BackButton (example)
+                WebApp.BackButton.onClick(() => {
+                    console.log('Telegram BackButton clicked!');
+                    showToast('Back button clicked!', 'info');
+                    // Implement navigation logic here if on a sub-page
+                    // For now, let's just make it close the app as a default
+                    // WebApp.close();
+                });
+                WebApp.BackButton.show(); // Show BackButton always for this example
+
+                updateLoading('Connecting to Firebase...', 60);
+                // 2. Firebase Initialization
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.database();
+                analytics = firebase.analytics();
+                // storage = firebase.storage(); // if using storage
+
+                // Anonymous authentication for simplicity, or use Telegram ID
+                auth.signInAnonymously().then(() => {
+                    console.log('Firebase Anonymous user signed in.');
+                    updateLoading('Firebase connected...', 80);
+                    handleUserLogin();
+                }).catch((error) => {
+                    console.error("Firebase Auth Error:", error);
+                    loadingText.textContent = 'Firebase connection failed!';
+                    showToast('Firebase connection failed!', 'error');
+                });
+
+            } catch (error) {
+                console.error("Telegram WebApp or Firebase initialization error:", error);
+                loadingText.textContent = 'Critical error during initialization!';
+                showToast('Critical error during initialization!', 'error');
+            }
+        });
+
+        // Function to handle user login and data loading
+        async function handleUserLogin() {
+            if (!telegramUser || !telegramUser.id) {
+                console.error("No Telegram user ID to process.");
+                loadingText.textContent = 'No Telegram user found. Cannot proceed.';
+                return;
+            }
+
+            const userId = telegramUser.id.toString(); // Ensure ID is string for Firebase keys
+            currentUser = {
+                uid: userId, // Using Telegram ID as unique identifier for our app
+                is_admin: (userId === ADMIN_TELEGRAM_ID)
+            };
+
+            // Reference to user's data in Firebase
+            const userRef = db.ref(`users/${userId}`);
+
+            // Set up real-time listener for user data
+            userRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    userData = data;
+                    console.log('User data updated:', userData);
+                    updateUI(); // Update UI with latest data
+                    // Cache to LocalStorage
+                    localStorage.setItem(`user_${userId}_data`, JSON.stringify(userData));
+                    localStorage.setItem(`user_${userId}_balance`, userData.coins || 0);
+                } else {
+                    // New user or data not initialized, create default profile
+                    console.log('New user or data not found. Initializing profile.');
+                    const newUserProfile = {
+                        telegram_id: userId,
+                        username: telegramUser.username || `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
+                        first_name: telegramUser.first_name || '',
+                        last_name: telegramUser.last_name || '',
+                        avatar_url: telegramUser.photo_url || 'https://via.placeholder.com/40',
+                        coins: 0,
+                        usdt_balance: 0,
+                        bdt_balance: 0,
+                        rank: 'Newbie',
+                        last_daily_reward: 0,
+                        referral_code: generateReferralCode(userId),
+                        referred_by: '',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    userRef.set(newUserProfile)
+                        .then(() => console.log('New user profile created!'))
+                        .catch(error => console.error('Error creating user profile:', error));
+                }
+            });
+
+            // Admin panel access check
+            if (currentUser.is_admin) {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('admin-id-display').textContent = userId;
+                console.log('Admin access granted!');
+            }
+
+            // After 3 seconds, hide loading and show app
+            setTimeout(() => {
+                updateLoading('Ready!', 100);
+                hideLoadingScreen();
+            }, 3000); // Show loading for exactly 3 seconds
+        }
+
+        function generateReferralCode(userId) {
+            return `REF-${userId.substring(0, 6).toUpperCase()}`; // Simple code
+        }
+
+        // --- UI Update Functions ---
+        function updateUI() {
+            if (!userData || !telegramUser) return;
+
+            // User Info
+            document.getElementById('user-avatar').src = userData.avatar_url || telegramUser.photo_url || 'https://via.placeholder.com/40';
+            document.getElementById('user-username').innerHTML = `${userData.username || telegramUser.username || telegramUser.first_name} ${currentUser.is_admin ? '<span class="admin-badge">ADMIN</span>' : ''}`;
+            document.getElementById('user-rank').textContent = userData.rank;
+
+            // Balances
+            document.getElementById('user-balance-coins').textContent = userData.coins.toLocaleString();
+            document.getElementById('user-balance-coins-large').textContent = userData.coins.toLocaleString();
+
+            // Calculate USDT/BDT based on admin settings
+            db.ref('settings/conversion_rates').once('value', snapshot => {
+                const rates = snapshot.val();
+                if (rates) {
+                    const usdtValue = (userData.coins * (rates.coin_to_usdt || 0)).toFixed(2);
+                    const bdtValue = (userData.coins * (rates.coin_to_bdt || 0)).toFixed(2);
+                    document.getElementById('user-balance-usd').textContent = usdtValue;
+                    document.getElementById('user-balance-bdt').textContent = bdtValue;
+                }
+            });
+
+            // Referral Link
+            document.getElementById('referral-link').textContent = `https://t.me/${WebApp.initDataUnsafe.bot.username}?start=${userData.referral_code}`;
+
+            // Check for Daily Reward
+            const lastClaim = userData.last_daily_reward || 0;
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const canClaim = (now - lastClaim) > twentyFourHours;
+            const dailyRewardButton = document.getElementById('claim-daily-reward');
+            if (canClaim) {
+                dailyRewardButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                dailyRewardButton.classList.add('bg-black', 'hover:bg-gray-800');
+                dailyRewardButton.textContent = 'Claim';
+                dailyRewardButton.disabled = false;
+            } else {
+                dailyRewardButton.classList.remove('bg-black', 'hover:bg-gray-800');
+                dailyRewardButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                const nextClaimTime = new Date(lastClaim + twentyFourHours);
+                dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(nextClaimTime - now)}`;
+                dailyRewardButton.disabled = true;
+            }
+        }
+
+        function formatTimeRemaining(ms) {
+            const seconds = Math.floor((ms / 1000) % 60);
+            const minutes = Math.floor((ms / (1000 * 60)) % 60);
+            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+            return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+        }
+
+        // --- Event Listeners & Interactions ---
+
+        // Daily Reward Claim
+        document.getElementById('claim-daily-reward').addEventListener('click', async () => {
+            if (!currentUser || document.getElementById('claim-daily-reward').disabled) return;
+
+            const userId = currentUser.uid;
+            const userRef = db.ref(`users/${userId}`);
+            const now = Date.now();
+            const dailyRewardAmount = 100; // Example amount
+
+            try {
+                const snapshot = await userRef.once('value');
+                const user = snapshot.val();
+
+                if (!user) {
+                    showToast('User data not found.', 'error');
+                    return;
+                }
+
+                const lastClaim = user.last_daily_reward || 0;
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                if ((now - lastClaim) < twentyFourHours) {
+                    showToast('Daily bonus already claimed!', 'warning');
+                    return;
+                }
+
+                // Use transaction to safely update coins
+                await userRef.transaction(currentData => {
+                    if (currentData) {
+                        currentData.coins = (currentData.coins || 0) + dailyRewardAmount;
+                        currentData.last_daily_reward = now;
+                    }
+                    return currentData;
+                });
+
+                showToast(`Claimed ${dailyRewardAmount} coins!`, 'success');
+                // Trigger confetti animation
+                triggerConfetti();
+                WebApp.HapticFeedback.notificationOccurred('success');
+
+            } catch (error) {
+                console.error("Error claiming daily reward:", error);
+                showToast('Failed to claim daily reward.', 'error');
+                WebApp.HapticFeedback.notificationOccurred('error');
+            }
+        });
+
+        // Copy Referral Link
+        document.getElementById('copy-referral-link').addEventListener('click', () => {
+            const referralLink = document.getElementById('referral-link').textContent;
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showToast('Referral link copied!', 'success');
+                WebApp.HapticFeedback.impactOccurred('light');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                showToast('Failed to copy link.', 'error');
+                WebApp.HapticFeedback.notificationOccurred('error');
+            });
+        });
+
+        // Submit Withdraw Request
+        document.getElementById('submit-withdraw').addEventListener('click', async () => {
+            if (!currentUser) return;
+
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            const method = document.getElementById('withdraw-method').value;
+            const address = document.getElementById('withdraw-address').value.trim();
+
+            if (isNaN(amount) || amount <= 0 || !method || !address) {
+                showToast('Please fill all withdrawal details.', 'warning');
+                WebApp.HapticFeedback.notificationOccurred('warning');
+                return;
+            }
+
+            // Convert coins to USD to check minimum
+            const ratesSnapshot = await db.ref('settings/conversion_rates').once('value');
+            const rates = ratesSnapshot.val();
+            const minWithdrawUSD = 5; // Example minimum
+            const equivalentUSD = (amount * (rates.coin_to_usdt || 0));
+
+            if (equivalentUSD < minWithdrawUSD) {
+                showToast(`Minimum withdraw is $${minWithdrawUSD} USD (approx ${Math.ceil(minWithdrawUSD / (rates.coin_to_usdt || 0.0001))} coins).`, 'warning');
+                WebApp.HapticFeedback.notificationOccurred('warning');
+                return;
+            }
+
+            if (userData.coins < amount) {
+                showToast('Insufficient coins for withdrawal.', 'error');
+                WebApp.HapticFeedback.notificationOccurred('error');
+                return;
+            }
+
+            WebApp.MainButton.setText('Processing Withdraw...');
+            WebApp.MainButton.show();
+            WebApp.MainButton.showProgress();
+
+            try {
+                const userId = currentUser.uid;
+                const withdrawRef = db.ref('withdraws').push(); // Generate new unique key
+                const userRef = db.ref(`users/${userId}`);
+
+                await userRef.transaction(currentData => {
+                    if (currentData && currentData.coins >= amount) {
+                        currentData.coins -= amount;
+                        return currentData;
+                    }
+                    return undefined; // Abort transaction if insufficient funds
+                });
+
+                await withdrawRef.set({
+                    userId: userId,
+                    username: userData.username,
+                    amount_coins: amount,
+                    amount_usd: equivalentUSD.toFixed(2),
+                    method: method,
+                    address: address,
+                    status: 'pending',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                showToast('Withdraw request submitted successfully!', 'success');
+                document.getElementById('withdraw-amount').value = '';
+                document.getElementById('withdraw-address').value = '';
+                WebApp.HapticFeedback.notificationOccurred('success');
+
+                // Send notification to admin bot (this would be an API call to your backend)
+                // fetch('/api/bot/notifyAdmin', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         adminChatId: ADMIN_TELEGRAM_ID,
+                //         message: `New withdraw request from ${userData.username} (${userId}) for ${amount} coins ($${equivalentUSD.toFixed(2)}) via ${method} to ${address}.`
+                //     })
+                // });
+
+            } catch (error) {
+                console.error("Error submitting withdraw request:", error);
+                showToast('Failed to submit withdraw request.', 'error');
+                WebApp.HapticFeedback.notificationOccurred('error');
+            } finally {
+                WebApp.MainButton.hideProgress();
+                WebApp.MainButton.hide(); // Hide button after action
+            }
+        });
+
+        // Admin Panel Functions (Placeholders)
+        if (currentUser && currentUser.is_admin) {
+            // Load admin stats
+            db.ref('users').on('value', snapshot => {
+                const users = snapshot.val();
+                if (users) {
+                    const totalUsers = Object.keys(users).length;
+                    const onlineUsers = Object.values(users).filter(u => u.last_online > (Date.now() - 5 * 60 * 1000)).length; // Example: last online within 5 mins
+                    document.getElementById('admin-total-users').textContent = totalUsers;
+                    document.getElementById('admin-online-users').textContent = onlineUsers;
+                }
+            });
+
+            db.ref('withdraws').on('value', snapshot => {
+                const withdraws = snapshot.val();
+                if (withdraws) {
+                    const totalWithdrawals = Object.keys(withdraws).length;
+                    const pendingWithdraws = Object.values(withdraws).filter(w => w.status === 'pending').length;
+                    document.getElementById('admin-total-withdrawals').textContent = totalWithdrawals;
+                    document.getElementById('admin-pending-withdraws').textContent = pendingWithdraws;
+                }
+            });
+
+            // Save Conversion Rates
+            document.getElementById('coin-to-usdt').value = localStorage.getItem('admin_coin_to_usdt') || '0.0001';
+            document.getElementById('coin-to-bdt').value = localStorage.getItem('admin_coin_to_bdt') || '0.01';
+
+            document.querySelector('#admin-panel button.bg-green-500').addEventListener('click', () => {
+                const coinToUsdt = parseFloat(document.getElementById('coin-to-usdt').value);
+                const coinToBdt = parseFloat(document.getElementById('coin-to-bdt').value);
+
+                if (isNaN(coinToUsdt) || isNaN(coinToBdt) || coinToUsdt <= 0 || coinToBdt <= 0) {
+                    showToast('Invalid conversion rates.', 'warning');
+                    return;
+                }
+
+                db.ref('settings/conversion_rates').set({
+                    coin_to_usdt: coinToUsdt,
+                    coin_to_bdt: coinToBdt
+                }).then(() => {
+                    showToast('Conversion rates saved!', 'success');
+                    localStorage.setItem('admin_coin_to_usdt', coinToUsdt);
+                    localStorage.setItem('admin_coin_to_bdt', coinToBdt);
+                }).catch(err => {
+                    console.error("Error saving conversion rates:", err);
+                    showToast('Failed to save rates.', 'error');
+                });
+            });
+
+            // Send Broadcast (requires backend for Telegram Bot API)
+            document.getElementById('send-broadcast').addEventListener('click', () => {
+                const message = document.getElementById('broadcast-message').value.trim();
+                if (!message) {
+                    showToast('Broadcast message cannot be empty.', 'warning');
+                    return;
+                }
+                showToast('Broadcast functionality requires a backend server to interact with Telegram Bot API.', 'info');
+                console.log('Simulating broadcast:', message);
+                // In a real app, you would send this to your backend, which then uses the Bot API
+                // fetch('/api/bot/broadcast', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ message: message })
+                // });
+            });
+        }
+
+
+        // --- Navigation Logic ---
+        const navItems = document.querySelectorAll('.bottom-nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetTab = item.dataset.tab;
+                setActiveTab(targetTab);
+                WebApp.HapticFeedback.impactOccurred('light');
+            });
+        });
+
+        function setActiveTab(targetTab) {
+            // Remove active from all nav items and hide all tab content
+            navItems.forEach(item => item.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active to clicked nav item and show corresponding tab content
+            document.querySelector(`.bottom-nav-item[data-tab="${targetTab}"]`).classList.add('active');
+            document.getElementById(`tab-${targetTab}`).classList.add('active');
+
+            // If it's the admin tab, ensure the panel is visible only to admin
+            if (targetTab === 'admin' && currentUser && currentUser.uid === ADMIN_TELEGRAM_ID) {
+                document.getElementById('admin-panel').classList.remove('hidden');
+            } else if (targetTab === 'admin' && (!currentUser || currentUser.uid !== ADMIN_TELEGRAM_ID)) {
+                // This scenario should ideally not happen if admin button is hidden
+                console.warn("Attempted to access admin panel without permission.");
+                showToast('Access Denied!', 'error');
+                setActiveTab('home'); // Redirect to home if somehow tried to access
+            }
+
+            // Update Telegram MainButton (example: show MainButton on Cash tab)
+            if (targetTab === 'cash') {
+                WebApp.MainButton.setText('Submit Withdraw Request');
+                WebApp.MainButton.show();
+                WebApp.MainButton.disable(); // Disable until form is valid
+            } else {
+                WebApp.MainButton.hide();
+            }
+        }
+
+        // Initialize active tab
+        setActiveTab('home');
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info', duration = 3000) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `premium-card !shadow-none !border-gray-300 glass-effect p-3 rounded-xl shadow-lg text-sm font-semibold flex items-center transform translate-y-full opacity-0 transition-all duration-300 ease-out`;
+
+            let icon = '';
+            let textColor = '';
+            let bgColor = '';
+
+            switch (type) {
+                case 'success':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle text-green-500 mr-2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>`;
+                    textColor = 'text-green-800';
+                    bgColor = 'bg-green-100';
+                    break;
+                case 'error':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-circle text-red-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`;
+                    textColor = 'text-red-800';
+                    bgColor = 'bg-red-100';
+                    break;
+                case 'warning':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle text-yellow-500 mr-2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`;
+                    textColor = 'text-yellow-800';
+                    bgColor = 'bg-yellow-100';
+                    break;
+                case 'info':
+                default:
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info text-blue-500 mr-2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+                    textColor = 'text-blue-800';
+                    bgColor = 'bg-blue-100';
+            }
+
+            toast.innerHTML = `${icon} <span class="${textColor}">${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+            }, 10);
+
+            // Animate out and remove
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100%)';
+                toast.style.opacity = '0';
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        // --- Confetti Animation (Basic CSS/JS) ---
+        function triggerConfetti() {
+            const confettiContainer = document.createElement('div');
+            confettiContainer.style.position = 'fixed';
+            confettiContainer.style.top = '0';
+            confettiContainer.style.left = '0';
+            confettiContainer.style.width = '100%';
+            confettiContainer.style.height = '100%';
+            confettiContainer.style.pointerEvents = 'none';
+            confettiContainer.style.overflow = 'hidden';
+            confettiContainer.style.zIndex = '9998';
+            document.body.appendChild(confettiContainer);
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `${Math.random() * -50}px`; // Start above screen
+                confetti.style.opacity = Math.random();
+                confetti.style.transform = `scale(${Math.random() * 0.8 + 0.2}) rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s ease-out forwards`;
+                confettiContainer.appendChild(confetti);
+            }
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes confetti-fall {
+                    0% { transform: translateY(0vh) rotate(0deg) opacity(1); }
+                    100% { transform: translateY(100vh) rotate(720deg) opacity(0); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+                confettiContainer.remove();
+                style.remove();
+            }, 5000);
+        }
+
+        // --- Counter Animation for Numbers (simplified) ---
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0; // Remove commas for parsing
+
+            const duration = 1000; // 1 second
+            let startTime;
+
+            function step(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const progress = (currentTime - startTime) / duration;
+
+                if (progress < 1) {
+                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease-out effect
+                    const currentValue = startValue + (targetValue - startValue) * easedProgress;
+                    element.textContent = currentValue.toFixed(elementId.includes('usd') || elementId.includes('bdt') ? 2 : 0).toLocaleString();
+                    requestAnimationFrame(step);
+                } else {
+                    element.textContent = targetValue.toFixed(elementId.includes('usd') || elementId.includes('bdt') ? 2 : 0).toLocaleString();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // Re-apply counter animations on UI update
+        const originalUpdateUI = updateUI; // Store original reference
+        updateUI = function() {
+            originalUpdateUI(); // Call original function first
+
+            if (userData) {
+                // Apply counter animations
+                animateCounter('user-balance-usd', parseFloat(document.getElementById('user-balance-usd').textContent));
+                animateCounter('user-balance-bdt', parseFloat(document.getElementById('user-balance-bdt').textContent));
+                animateCounter('user-balance-coins-large', userData.coins);
+                animateCounter('user-balance-coins', userData.coins); // For header coins
+            }
+        };
+
+        // Initialize theme for Telegram WebApp
+        WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8'); // Set header color to app background
+        WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8'); // Set background color to app background
+
+    </script>
 </body>
 </html>
