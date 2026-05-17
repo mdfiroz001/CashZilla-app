@@ -444,7 +444,7 @@
         </div>
 
         <!-- Admin Panel (Hidden by default) -->
-        <div id="admin-panel" class="tab-content mt-4 px-4 max-w-lg mx-auto bg-red-100 border-2 border-red-500 rounded-xl p-6 hidden">
+        <div id="tab-admin" class="tab-content mt-4 px-4 max-w-lg mx-auto bg-red-100 border-2 border-red-500 rounded-xl p-6 hidden">
             <h2 class="text-2xl font-bold mb-4 text-red-700 text-center">ADMIN PANEL</h2>
             <p class="text-red-600 mb-4">Access granted for Telegram ID: <span id="admin-id-display" class="font-bold"></span></p>
 
@@ -561,6 +561,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H5a2 2 0 0 0 0 4v-3"/><path d="M22 7V4a1 1 0 0 0-1-1H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4h18a2 2 0 0 1 0 4H3a2 2 0 0 0 0 4v-3"/></svg>
                     <span>Cash</span>
                 </a>
+                <!-- Admin Tab - Only visible if admin -->
+                <a href="#" class="bottom-nav-item hidden" id="admin-nav-item" data-tab="admin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Admin</span>
+                </a>
             </div>
         </nav>
 
@@ -585,13 +590,14 @@
 
         // Firebase Configuration (REPLACE WITH YOUR ACTUAL CONFIG)
         const firebaseConfig = {
-                  apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+              apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
   authDomain: "ai-tools-9f9a3.firebaseapp.com",
   projectId: "ai-tools-9f9a3",
   storageBucket: "ai-tools-9f9a3.firebasestorage.app",
   messagingSenderId: "839431476061",
   appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
 };
+
         // Initialize Firebase
         let firebaseApp;
         let auth;
@@ -609,20 +615,39 @@
         const appContent = document.getElementById('app-content');
 
         let progress = 0;
+        let initReady = {
+            telegram: false,
+            firebase: false,
+            userData: false,
+            minTimeElapsed: false // Ensures it stays for at least 3 seconds
+        };
+        const MIN_LOADING_TIME_MS = 3000;
+        let loadingStartTime = Date.now();
+
         const updateLoading = (text, newProgress) => {
             loadingText.textContent = text;
             progress = Math.min(newProgress, 100);
             loadingProgressBar.style.width = `${progress}%`;
         };
 
-        const hideLoadingScreen = () => {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-                appContent.classList.remove('hidden');
-                appContent.style.opacity = '1';
-                WebApp.expand(); // Expand the Mini App to full screen
-            }, 700); // Matches opacity transition duration
+        const checkAndHideLoadingScreen = () => {
+            if (initReady.telegram && initReady.firebase && initReady.userData && initReady.minTimeElapsed) {
+                console.log('All readiness conditions met. Hiding loading screen.');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    appContent.classList.remove('hidden');
+                    appContent.style.opacity = '1';
+                    WebApp.expand(); // Expand the Mini App to full screen
+                    // Make admin nav item visible if user is admin
+                    if (currentUser && currentUser.is_admin) {
+                        document.getElementById('admin-nav-item').classList.remove('hidden');
+                        document.getElementById('admin-id-display').textContent = currentUser.uid; // Display admin ID
+                    }
+                }, 700); // Matches opacity transition duration
+            } else {
+                console.log('Not all readiness conditions met:', initReady);
+            }
         };
 
         // --- Core App Logic ---
@@ -631,37 +656,57 @@
         let userData = {}; // Stores user data from Firebase Realtime DB
 
         document.addEventListener('DOMContentLoaded', () => {
-            WebApp.ready(); // Inform Telegram that the app is ready
+            console.log('DOMContentLoaded: Initializing app...');
 
-            // Simulate loading progress
-            updateLoading('Initializing app...', 10);
+            // Start min loading time timer
+            setTimeout(() => {
+                initReady.minTimeElapsed = true;
+                console.log('Minimum loading time elapsed.');
+                checkAndHideLoadingScreen();
+            }, MIN_LOADING_TIME_MS - (Date.now() - loadingStartTime)); // Adjust if DOMContentLoaded took time
 
             // 1. Telegram WebApp Initialization
             try {
+                WebApp.ready(); // Inform Telegram that the app is ready
+
                 if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.user) {
                     telegramUser = WebApp.initDataUnsafe.user;
                     console.log('Telegram User:', telegramUser);
-                    updateLoading('Connecting to Telegram...', 30);
+                    updateLoading('Telegram connected...', 30);
                 } else {
-                    console.warn('Telegram user data not available. Running in standalone mode.');
-                    telegramUser = { id: 'test_user_123', first_name: 'Test', last_name: 'User', username: 'testuser' };
+                    // Fallback for testing outside Telegram
+                    console.warn('Telegram user data not available. Running in standalone/test mode.');
+                    telegramUser = { id: 'test_user_12345', first_name: 'Test', last_name: 'User', username: 'testuser', photo_url: 'https://via.placeholder.com/40' };
+                    // If running locally, set ADMIN_TELEGRAM_ID to 'test_user_12345' to test admin panel
+                    // const ADMIN_TELEGRAM_ID = 'test_user_12345'; // Temporarily for local testing
                     updateLoading('Running in test mode (no Telegram user)...', 30);
                 }
+                initReady.telegram = true;
+                checkAndHideLoadingScreen();
 
                 WebApp.onEvent('themeChanged', () => {
-                    // Handle Telegram theme changes if needed
                     console.log('Telegram theme changed:', WebApp.themeParams);
+                    // Dynamically update app theme if desired
+                    WebApp.setHeaderColor(WebApp.themeParams.bg_color || '#f0f4f8');
+                    WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f4f8');
                 });
 
-                // Set up BackButton (example)
                 WebApp.BackButton.onClick(() => {
                     console.log('Telegram BackButton clicked!');
-                    showToast('Back button clicked!', 'info');
-                    // Implement navigation logic here if on a sub-page
-                    // For now, let's just make it close the app as a default
+                    showToast('Back button clicked! (Not fully implemented)', 'info');
+                    // Ideal implementation: navigate back in app history, or close if at root
+                    // For now, let's just make it close the app as a default if no history
                     // WebApp.close();
                 });
-                WebApp.BackButton.show(); // Show BackButton always for this example
+                WebApp.BackButton.show(); // Show BackButton always for this example, adjust as needed
+
+                // Initialize Telegram MainButton, keep hidden initially
+                WebApp.MainButton.setText('Submit Withdraw Request');
+                WebApp.MainButton.setParams({
+                    text_color: '#FFFFFF',
+                    color: '#EF4444' // red-500
+                });
+                WebApp.MainButton.onClick(handleSubmitWithdrawFromMainButton); // Attach event listener
 
                 updateLoading('Connecting to Firebase...', 60);
                 // 2. Firebase Initialization
@@ -671,29 +716,32 @@
                 analytics = firebase.analytics();
                 // storage = firebase.storage(); // if using storage
 
-                // Anonymous authentication for simplicity, or use Telegram ID
                 auth.signInAnonymously().then(() => {
                     console.log('Firebase Anonymous user signed in.');
                     updateLoading('Firebase connected...', 80);
-                    handleUserLogin();
+                    initReady.firebase = true;
+                    handleUserLogin(); // This will trigger user data load and final screen check
                 }).catch((error) => {
                     console.error("Firebase Auth Error:", error);
                     loadingText.textContent = 'Firebase connection failed!';
-                    showToast('Firebase connection failed!', 'error');
+                    showToast('Firebase connection failed! Check console for details.', 'error');
+                    // In a real app, you might want to show a retry button here
                 });
 
             } catch (error) {
-                console.error("Telegram WebApp or Firebase initialization error:", error);
-                loadingText.textContent = 'Critical error during initialization!';
-                showToast('Critical error during initialization!', 'error');
+                console.error("Critical initialization error:", error);
+                loadingText.textContent = 'Critical error during initialization! See console.';
+                showToast('Critical error: ' + error.message, 'error');
             }
         });
 
         // Function to handle user login and data loading
         async function handleUserLogin() {
             if (!telegramUser || !telegramUser.id) {
-                console.error("No Telegram user ID to process.");
-                loadingText.textContent = 'No Telegram user found. Cannot proceed.';
+                console.error("No Telegram user ID to process user data.");
+                loadingText.textContent = 'User ID not found. App might not function fully.';
+                initReady.userData = true; // Still allow app to open, but with limited features
+                checkAndHideLoadingScreen();
                 return;
             }
 
@@ -702,22 +750,19 @@
                 uid: userId, // Using Telegram ID as unique identifier for our app
                 is_admin: (userId === ADMIN_TELEGRAM_ID)
             };
+            console.log('Current User (after Firebase login):', currentUser);
 
-            // Reference to user's data in Firebase
             const userRef = db.ref(`users/${userId}`);
 
-            // Set up real-time listener for user data
-            userRef.on('value', (snapshot) => {
+            // Fetch initial user data once to ensure we have it before setting up listener
+            try {
+                const snapshot = await userRef.once('value');
                 const data = snapshot.val();
+
                 if (data) {
                     userData = data;
-                    console.log('User data updated:', userData);
-                    updateUI(); // Update UI with latest data
-                    // Cache to LocalStorage
-                    localStorage.setItem(`user_${userId}_data`, JSON.stringify(userData));
-                    localStorage.setItem(`user_${userId}_balance`, userData.coins || 0);
+                    console.log('Initial user data loaded:', userData);
                 } else {
-                    // New user or data not initialized, create default profile
                     console.log('New user or data not found. Initializing profile.');
                     const newUserProfile = {
                         telegram_id: userId,
@@ -731,27 +776,34 @@
                         rank: 'Newbie',
                         last_daily_reward: 0,
                         referral_code: generateReferralCode(userId),
-                        referred_by: '',
+                        referred_by: WebApp.initDataUnsafe.start_param || '', // Capture referral param if present
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
-                    userRef.set(newUserProfile)
-                        .then(() => console.log('New user profile created!'))
-                        .catch(error => console.error('Error creating user profile:', error));
+                    await userRef.set(newUserProfile);
+                    userData = newUserProfile; // Set initial data for current session
+                    console.log('New user profile created!');
                 }
-            });
-
-            // Admin panel access check
-            if (currentUser.is_admin) {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('admin-id-display').textContent = userId;
-                console.log('Admin access granted!');
+                initReady.userData = true; // User data is now available
+                updateLoading('Ready!', 100);
+                checkAndHideLoadingScreen(); // Check if all conditions are met
+            } catch (error) {
+                console.error('Error fetching/creating user profile:', error);
+                loadingText.textContent = 'Failed to load user data!';
+                showToast('Failed to load user data. Please try again.', 'error');
             }
 
-            // After 3 seconds, hide loading and show app
-            setTimeout(() => {
-                updateLoading('Ready!', 100);
-                hideLoadingScreen();
-            }, 3000); // Show loading for exactly 3 seconds
+            // Set up real-time listener for future updates
+            userRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    userData = data;
+                    console.log('User data updated via listener:', userData);
+                    updateUI(); // Update UI with latest data
+                    // Cache to LocalStorage
+                    localStorage.setItem(`user_${userId}_data`, JSON.stringify(userData));
+                    localStorage.setItem(`user_${userId}_balance`, userData.coins || 0);
+                }
+            });
         }
 
         function generateReferralCode(userId) {
@@ -760,7 +812,7 @@
 
         // --- UI Update Functions ---
         function updateUI() {
-            if (!userData || !telegramUser) return;
+            if (!userData || !telegramUser || !currentUser) return; // Ensure all data is present
 
             // User Info
             document.getElementById('user-avatar').src = userData.avatar_url || telegramUser.photo_url || 'https://via.placeholder.com/40';
@@ -777,13 +829,19 @@
                 if (rates) {
                     const usdtValue = (userData.coins * (rates.coin_to_usdt || 0)).toFixed(2);
                     const bdtValue = (userData.coins * (rates.coin_to_bdt || 0)).toFixed(2);
-                    document.getElementById('user-balance-usd').textContent = usdtValue;
-                    document.getElementById('user-balance-bdt').textContent = bdtValue;
+                    animateCounter('user-balance-usd', parseFloat(usdtValue));
+                    animateCounter('user-balance-bdt', parseFloat(bdtValue));
                 }
             });
 
             // Referral Link
-            document.getElementById('referral-link').textContent = `https://t.me/${WebApp.initDataUnsafe.bot.username}?start=${userData.referral_code}`;
+            // Ensure WebApp.initDataUnsafe.bot is available before creating link
+            if (WebApp.initDataUnsafe && WebApp.initDataUnsafe.bot && WebApp.initDataUnsafe.bot.username) {
+                document.getElementById('referral-link').textContent = `https://t.me/${WebApp.initDataUnsafe.bot.username}?start=${userData.referral_code}`;
+            } else {
+                 document.getElementById('referral-link').textContent = `https://t.me/YOUR_BOT_USERNAME?start=${userData.referral_code}`; // Fallback if bot username not available
+            }
+
 
             // Check for Daily Reward
             const lastClaim = userData.last_daily_reward || 0;
@@ -802,10 +860,30 @@
                 const nextClaimTime = new Date(lastClaim + twentyFourHours);
                 dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(nextClaimTime - now)}`;
                 dailyRewardButton.disabled = true;
+                // Update timer every second if active
+                if (window.dailyRewardTimer) clearInterval(window.dailyRewardTimer);
+                window.dailyRewardTimer = setInterval(() => {
+                    const remaining = nextClaimTime - Date.now();
+                    if (remaining <= 0) {
+                        clearInterval(window.dailyRewardTimer);
+                        updateUI(); // Re-evaluate and enable button
+                    } else {
+                        dailyRewardButton.textContent = `Next in: ${formatTimeRemaining(remaining)}`;
+                    }
+                }, 1000);
+            }
+
+            // Admin panel visibility in nav
+            const adminNavItem = document.getElementById('admin-nav-item');
+            if (currentUser.is_admin) {
+                adminNavItem.classList.remove('hidden');
+            } else {
+                adminNavItem.classList.add('hidden');
             }
         }
 
         function formatTimeRemaining(ms) {
+            if (ms < 0) return '00h 00m 00s';
             const seconds = Math.floor((ms / 1000) % 60);
             const minutes = Math.floor((ms / (1000 * 60)) % 60);
             const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
@@ -874,55 +952,93 @@
             });
         });
 
-        // Submit Withdraw Request
+        // Withdraw form validation and MainButton enablement
+        const withdrawAmountInput = document.getElementById('withdraw-amount');
+        const withdrawMethodSelect = document.getElementById('withdraw-method');
+        const withdrawAddressInput = document.getElementById('withdraw-address');
+
+        const validateWithdrawForm = () => {
+            const amount = parseInt(withdrawAmountInput.value);
+            const method = withdrawMethodSelect.value;
+            const address = withdrawAddressInput.value.trim();
+
+            if (isNaN(amount) || amount <= 0 || !method || !address || userData.coins < amount) {
+                WebApp.MainButton.disable();
+            } else {
+                WebApp.MainButton.enable();
+            }
+        };
+
+        withdrawAmountInput.addEventListener('input', validateWithdrawForm);
+        withdrawMethodSelect.addEventListener('change', validateWithdrawForm);
+        withdrawAddressInput.addEventListener('input', validateWithdrawForm);
+
+        // Submit Withdraw Request (local button)
         document.getElementById('submit-withdraw').addEventListener('click', async () => {
-            if (!currentUser) return;
+            await handleSubmitWithdraw();
+        });
 
-            const amount = parseInt(document.getElementById('withdraw-amount').value);
-            const method = document.getElementById('withdraw-method').value;
-            const address = document.getElementById('withdraw-address').value.trim();
+        // Submit Withdraw Request (Telegram MainButton)
+        async function handleSubmitWithdrawFromMainButton() {
+            await handleSubmitWithdraw();
+        }
 
+        async function handleSubmitWithdraw() {
+            if (!currentUser || WebApp.MainButton.isDisabled) return;
+
+            const amount = parseInt(withdrawAmountInput.value);
+            const method = withdrawMethodSelect.value;
+            const address = withdrawAddressInput.value.trim();
+
+            // Re-validate just in case
             if (isNaN(amount) || amount <= 0 || !method || !address) {
-                showToast('Please fill all withdrawal details.', 'warning');
+                showToast('Please fill all withdrawal details correctly.', 'warning');
                 WebApp.HapticFeedback.notificationOccurred('warning');
-                return;
-            }
-
-            // Convert coins to USD to check minimum
-            const ratesSnapshot = await db.ref('settings/conversion_rates').once('value');
-            const rates = ratesSnapshot.val();
-            const minWithdrawUSD = 5; // Example minimum
-            const equivalentUSD = (amount * (rates.coin_to_usdt || 0));
-
-            if (equivalentUSD < minWithdrawUSD) {
-                showToast(`Minimum withdraw is $${minWithdrawUSD} USD (approx ${Math.ceil(minWithdrawUSD / (rates.coin_to_usdt || 0.0001))} coins).`, 'warning');
-                WebApp.HapticFeedback.notificationOccurred('warning');
-                return;
-            }
-
-            if (userData.coins < amount) {
-                showToast('Insufficient coins for withdrawal.', 'error');
-                WebApp.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
             WebApp.MainButton.setText('Processing Withdraw...');
-            WebApp.MainButton.show();
             WebApp.MainButton.showProgress();
 
             try {
                 const userId = currentUser.uid;
-                const withdrawRef = db.ref('withdraws').push(); // Generate new unique key
                 const userRef = db.ref(`users/${userId}`);
 
+                const ratesSnapshot = await db.ref('settings/conversion_rates').once('value');
+                const rates = ratesSnapshot.val();
+                const minWithdrawUSD = 5; // Example minimum
+                const equivalentUSD = (amount * (rates.coin_to_usdt || 0));
+
+                if (equivalentUSD < minWithdrawUSD) {
+                    showToast(`Minimum withdraw is $${minWithdrawUSD} USD (approx ${Math.ceil(minWithdrawUSD / (rates.coin_to_usdt || 0.0001))} coins).`, 'warning');
+                    WebApp.HapticFeedback.notificationOccurred('warning');
+                    return;
+                }
+
+                if (userData.coins < amount) {
+                    showToast('Insufficient coins for withdrawal.', 'error');
+                    WebApp.HapticFeedback.notificationOccurred('error');
+                    return;
+                }
+
+                // Use transaction to safely deduct coins
+                let transactionSuccess = false;
                 await userRef.transaction(currentData => {
-                    if (currentData && currentData.coins >= amount) {
-                        currentData.coins -= amount;
+                    if (currentData && (currentData.coins || 0) >= amount) {
+                        currentData.coins = currentData.coins - amount;
+                        transactionSuccess = true;
                         return currentData;
                     }
                     return undefined; // Abort transaction if insufficient funds
                 });
 
+                if (!transactionSuccess) {
+                    showToast('Failed to deduct coins. Insufficient balance or concurrent update.', 'error');
+                    WebApp.HapticFeedback.notificationOccurred('error');
+                    return;
+                }
+
+                const withdrawRef = db.ref('withdraws').push(); // Generate new unique key
                 await withdrawRef.set({
                     userId: userId,
                     username: userData.username,
@@ -935,8 +1051,9 @@
                 });
 
                 showToast('Withdraw request submitted successfully!', 'success');
-                document.getElementById('withdraw-amount').value = '';
-                document.getElementById('withdraw-address').value = '';
+                withdrawAmountInput.value = '';
+                withdrawAddressInput.value = '';
+                validateWithdrawForm(); // Re-validate and disable MainButton if needed
                 WebApp.HapticFeedback.notificationOccurred('success');
 
                 // Send notification to admin bot (this would be an API call to your backend)
@@ -953,20 +1070,27 @@
                 console.error("Error submitting withdraw request:", error);
                 showToast('Failed to submit withdraw request.', 'error');
                 WebApp.HapticFeedback.notificationOccurred('error');
+                // Revert coins if transaction failed after initial check (complex for client-side)
             } finally {
                 WebApp.MainButton.hideProgress();
-                WebApp.MainButton.hide(); // Hide button after action
+                // MainButton visibility is managed by setActiveTab or validateWithdrawForm
             }
-        });
+        }
+
 
         // Admin Panel Functions (Placeholders)
-        if (currentUser && currentUser.is_admin) {
+        // These will only run if currentUser.is_admin is true
+        // And are attached AFTER currentUser is determined
+        function setupAdminPanelListeners() {
+            if (!currentUser || !currentUser.is_admin) return;
+
             // Load admin stats
             db.ref('users').on('value', snapshot => {
                 const users = snapshot.val();
                 if (users) {
                     const totalUsers = Object.keys(users).length;
-                    const onlineUsers = Object.values(users).filter(u => u.last_online > (Date.now() - 5 * 60 * 1000)).length; // Example: last online within 5 mins
+                    // Example: last online within 5 mins
+                    const onlineUsers = Object.values(users).filter(u => u.last_online && (Date.now() - u.last_online) < 5 * 60 * 1000).length;
                     document.getElementById('admin-total-users').textContent = totalUsers;
                     document.getElementById('admin-online-users').textContent = onlineUsers;
                 }
@@ -982,11 +1106,17 @@
                 }
             });
 
-            // Save Conversion Rates
-            document.getElementById('coin-to-usdt').value = localStorage.getItem('admin_coin_to_usdt') || '0.0001';
-            document.getElementById('coin-to-bdt').value = localStorage.getItem('admin_coin_to_bdt') || '0.01';
+            // Load saved conversion rates
+            db.ref('settings/conversion_rates').once('value', snapshot => {
+                const rates = snapshot.val();
+                if (rates) {
+                    document.getElementById('coin-to-usdt').value = rates.coin_to_usdt;
+                    document.getElementById('coin-to-bdt').value = rates.coin_to_bdt;
+                }
+            });
 
-            document.querySelector('#admin-panel button.bg-green-500').addEventListener('click', () => {
+            // Save Conversion Rates
+            document.querySelector('#tab-admin button.bg-green-500').addEventListener('click', () => {
                 const coinToUsdt = parseFloat(document.getElementById('coin-to-usdt').value);
                 const coinToBdt = parseFloat(document.getElementById('coin-to-bdt').value);
 
@@ -1000,8 +1130,6 @@
                     coin_to_bdt: coinToBdt
                 }).then(() => {
                     showToast('Conversion rates saved!', 'success');
-                    localStorage.setItem('admin_coin_to_usdt', coinToUsdt);
-                    localStorage.setItem('admin_coin_to_bdt', coinToBdt);
                 }).catch(err => {
                     console.error("Error saving conversion rates:", err);
                     showToast('Failed to save rates.', 'error');
@@ -1024,6 +1152,7 @@
                 //     body: JSON.stringify({ message: message })
                 // });
             });
+             // Add event listeners for other admin functions here (e.g., user search, withdraw approval)
         }
 
 
@@ -1035,6 +1164,14 @@
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetTab = item.dataset.tab;
+
+                // Prevent non-admins from accessing admin tab
+                if (targetTab === 'admin' && (!currentUser || !currentUser.is_admin)) {
+                    showToast('Access Denied: You are not an admin.', 'error');
+                    WebApp.HapticFeedback.notificationOccurred('error');
+                    return; // Stop here if not admin
+                }
+
                 setActiveTab(targetTab);
                 WebApp.HapticFeedback.impactOccurred('light');
             });
@@ -1045,32 +1182,31 @@
             navItems.forEach(item => item.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
 
-            // Add active to clicked nav item and show corresponding tab content
-            document.querySelector(`.bottom-nav-item[data-tab="${targetTab}"]`).classList.add('active');
-            document.getElementById(`tab-${targetTab}`).classList.add('active');
-
-            // If it's the admin tab, ensure the panel is visible only to admin
-            if (targetTab === 'admin' && currentUser && currentUser.uid === ADMIN_TELEGRAM_ID) {
-                document.getElementById('admin-panel').classList.remove('hidden');
-            } else if (targetTab === 'admin' && (!currentUser || currentUser.uid !== ADMIN_TELEGRAM_ID)) {
-                // This scenario should ideally not happen if admin button is hidden
-                console.warn("Attempted to access admin panel without permission.");
-                showToast('Access Denied!', 'error');
-                setActiveTab('home'); // Redirect to home if somehow tried to access
+            // Add active to clicked nav item
+            const activeNavItem = document.querySelector(`.bottom-nav-item[data-tab="${targetTab}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
             }
 
-            // Update Telegram MainButton (example: show MainButton on Cash tab)
+            // Show corresponding tab content
+            const activeTabContent = document.getElementById(`tab-${targetTab}`);
+            if (activeTabContent) {
+                activeTabContent.classList.add('active');
+            }
+
+            // Manage Telegram MainButton visibility based on tab
             if (targetTab === 'cash') {
-                WebApp.MainButton.setText('Submit Withdraw Request');
                 WebApp.MainButton.show();
-                WebApp.MainButton.disable(); // Disable until form is valid
+                validateWithdrawForm(); // Ensure button state is correct on tab switch
             } else {
                 WebApp.MainButton.hide();
             }
-        }
 
-        // Initialize active tab
-        setActiveTab('home');
+            // Setup admin panel listeners when admin tab is activated
+            if (targetTab === 'admin' && currentUser && currentUser.is_admin) {
+                setupAdminPanelListeners();
+            }
+        }
 
         // --- Toast Notification System ---
         function showToast(message, type = 'info', duration = 3000) {
@@ -1169,9 +1305,10 @@
         function animateCounter(elementId, targetValue) {
             const element = document.getElementById(elementId);
             if (!element) return;
-            const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0; // Remove commas for parsing
+            // Get current value from textContent, remove commas for parsing
+            const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
 
-            const duration = 1000; // 1 second
+            const duration = 800; // Animation duration in ms
             let startTime;
 
             function step(currentTime) {
@@ -1179,7 +1316,7 @@
                 const progress = (currentTime - startTime) / duration;
 
                 if (progress < 1) {
-                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease-out effect
+                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
                     const currentValue = startValue + (targetValue - startValue) * easedProgress;
                     element.textContent = currentValue.toFixed(elementId.includes('usd') || elementId.includes('bdt') ? 2 : 0).toLocaleString();
                     requestAnimationFrame(step);
@@ -1190,17 +1327,13 @@
             requestAnimationFrame(step);
         }
 
-        // Re-apply counter animations on UI update
-        const originalUpdateUI = updateUI; // Store original reference
-        updateUI = function() {
-            originalUpdateUI(); // Call original function first
-
-            if (userData) {
-                // Apply counter animations
-                animateCounter('user-balance-usd', parseFloat(document.getElementById('user-balance-usd').textContent));
-                animateCounter('user-balance-bdt', parseFloat(document.getElementById('user-balance-bdt').textContent));
-                animateCounter('user-balance-coins-large', userData.coins);
-                animateCounter('user-balance-coins', userData.coins); // For header coins
+        // Initialize active tab AFTER the app is fully loaded and UI updated
+        // This ensures updateUI has run at least once before setActiveTab is called.
+        const originalCheckAndHideLoadingScreen = checkAndHideLoadingScreen;
+        checkAndHideLoadingScreen = () => {
+            originalCheckAndHideLoadingScreen();
+            if (initReady.telegram && initReady.firebase && initReady.userData && initReady.minTimeElapsed) {
+                setActiveTab('home'); // Set initial tab to home
             }
         };
 
