@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>CashZilla – Quiz & Earn</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#f7f8ff;--card:#fff;--border:#111;--cyan:#00d4e8;--yellow:#ffe94a;
+    --purple:#a855f7;--pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;
+    --shadow:4px 4px 0 #111;--shadow-lg:6px 6px 0 #111;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
+  body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
+  .fredoka{font-family:'Fredoka One',cursive;}
+
+  /* CARDS */
+  .card{background:var(--card);border:3px solid var(--border);border-radius:20px;box-shadow:var(--shadow);}
+  .card-lg{background:var(--card);border:3px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);}
+  .btn{border:3px solid var(--border);border-radius:14px;font-weight:800;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;active:scale(.97);}
+  .btn:active{transform:translate(3px,3px);box-shadow:none;}
+
+  /* NAV */
+  #bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;safe-area-inset-bottom:env(safe-area-inset-bottom);}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;transition:background .15s;gap:3px;}
+  .nav-item.active{background:var(--yellow);}
+  .nav-icon{font-size:22px;line-height:1;}
+  .nav-label{font-size:10px;font-weight:800;color:#111;}
+
+  /* BALANCE CARD */
+  .balance-card{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;color:#fff;padding:20px;}
+
+  /* SPIN WHEEL */
+  #spin-canvas{border:4px solid #111;border-radius:50%;box-shadow:6px 6px 0 #111;}
+
+  /* QUIZ */
+  .answer-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;transition:all .15s;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;}
+  .answer-btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #111;}
+  .answer-btn.correct{background:#bbf7d0;border-color:#16a34a;}
+  .answer-btn.wrong{background:#fecaca;border-color:#dc2626;}
+
+  /* CONFETTI */
+  .confetti-piece{position:fixed;width:10px;height:10px;top:-10px;border-radius:2px;animation:confetti-fall 2.5s linear forwards;pointer-events:none;z-index:9999;}
+  @keyframes confetti-fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+  /* COUNTER */
+  @keyframes countUp{from{transform:scale(1.4);color:#ff6eb4;}to{transform:scale(1);}}
+  .count-anim{animation:countUp .4s ease;}
+
+  /* TOAST */
+  #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 24px;border-radius:14px;font-weight:700;z-index:9999;transition:transform .3s;white-space:nowrap;}
+  #toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* LOADER */
+  .spinner{width:40px;height:40px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* SLIDE */
+  .page{display:none;animation:slideIn .25s ease;}
+  .page.active{display:block;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* AD FRAME */
+  .ad-frame{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:4px 4px 0 #111;cursor:pointer;overflow:hidden;position:relative;}
+  .ad-frame:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111;transition:.15s;}
+
+  /* LEADERBOARD */
+  .rank-1{background:linear-gradient(135deg,#ffe94a,#fbbf24);}
+  .rank-2{background:linear-gradient(135deg,#e5e7eb,#9ca3af);}
+  .rank-3{background:linear-gradient(135deg,#fdba74,#f97316);}
+
+  /* SKELETON */
+  .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:skeleton-load 1.2s infinite;}
+  @keyframes skeleton-load{to{background-position:-200% 0;}}
+
+  /* WHEEL ANIMATION */
+  @keyframes wheelSpin{from{transform:rotate(0deg);}to{transform:rotate(var(--angle));}}
+
+  /* POPUP */
+  .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;}
+  .popup-box{background:#fff;border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;padding:24px;margin:20px;max-width:380px;width:100%;animation:popIn .3s ease;}
+  @keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+  /* FLOATING COINS */
+  .floating-coin{position:fixed;font-size:20px;pointer-events:none;animation:floatUp 1.2s ease-out forwards;z-index:999;}
+  @keyframes floatUp{from{transform:translateY(0);opacity:1;}to{transform:translateY(-120px);opacity:0;}}
+
+  /* ADMIN */
+  #admin-panel{display:none;}
+  .admin-stat-card{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;padding:16px;}
+  .admin-tab{padding:10px 18px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;}
+  .admin-tab.active{background:var(--yellow);}
+
+  /* PROGRESS BAR */
+  .progress-bar{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:6px;transition:width .5s ease;}
+
+  /* CATEGORY PILLS */
+  .cat-pill{padding:8px 16px;border:2px solid #111;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .cat-pill.active{background:#111;color:#fff;}
+
+  /* WITHDRAW METHODS */
+  .method-card{border:3px solid #e5e7eb;border-radius:16px;padding:14px;cursor:pointer;transition:.15s;background:#fff;}
+  .method-card.selected{border-color:#111;background:var(--yellow);box-shadow:3px 3px 0 #111;}
+
+  ::-webkit-scrollbar{width:0;}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen" style="position:fixed;inset:0;background:#ffe94a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;border:none;">
+  <div style="font-size:60px;margin-bottom:12px;">💰</div>
+  <div class="fredoka" style="font-size:36px;color:#111;">CashZilla</div>
+  <div style="color:#555;font-weight:600;margin-bottom:30px;">Quiz & Earn Platform</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- POPUP OVERLAY -->
+<div id="popup-overlay" class="popup-overlay" style="display:none;">
+  <div id="popup-box" class="popup-box"></div>
+</div>
+
+<!-- =================== ADMIN PANEL =================== -->
+<div id="admin-panel">
+  <div style="background:linear-gradient(135deg,#111,#1f2937);padding:20px;color:#fff;position:sticky;top:0;z-index:50;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:32px;">👑</div>
+      <div>
+        <div class="fredoka" style="font-size:22px;">Admin Panel</div>
+        <div style="font-size:12px;opacity:.7;">CashZilla Control Center</div>
+      </div>
+      <button onclick="adminLogout()" class="btn" style="margin-left:auto;background:#ef4444;color:#fff;padding:8px 14px;font-size:13px;">Logout</button>
+    </div>
+    <!-- Admin Tabs -->
+    <div style="display:flex;gap:8px;margin-top:14px;overflow-x:auto;padding-bottom:4px;">
+      <button class="admin-tab active" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+      <button class="admin-tab" onclick="showAdminTab('users')">👥 Users</button>
+      <button class="admin-tab" onclick="showAdminTab('quizzes')">❓ Quizzes</button>
+      <button class="admin-tab" onclick="showAdminTab('withdrawals')">💸 Withdrawals</button>
+      <button class="admin-tab" onclick="showAdminTab('ads')">📢 Ads</button>
+      <button class="admin-tab" onclick="showAdminTab('settings')">⚙️ Settings</button>
+    </div>
+  </div>
+
+  <div style="padding:16px;">
+    <!-- DASHBOARD -->
+    <div id="admin-tab-dashboard">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#00d4e8,#22d3ee);">
+          <div style="font-size:11px;font-weight:700;color:#0e7490;">TOTAL USERS</div>
+          <div class="fredoka" style="font-size:28px;" id="admin-total-users">0</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#ffe94a,#fbbf24);">
+          <div style="font-size:11px;font-weight:700;color:#92400e;">ONLINE NOW</div>
+          <div class="fredoka" style="font-size:28px;" id="admin-online-users">0</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#a855f7,#9333ea);">
+          <div style="font-size:11px;font-weight:700;color:#fff;opacity:.8;">TOTAL COINS</div>
+          <div class="fredoka" style="font-size:28px;color:#fff;" id="admin-total-coins">0</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#ff6eb4,#ec4899);">
+          <div style="font-size:11px;font-weight:700;color:#fff;opacity:.8;">WITHDRAWALS</div>
+          <div class="fredoka" style="font-size:28px;color:#fff;" id="admin-total-withdrawals">0</div>
+        </div>
+      </div>
+      <div class="card" style="padding:16px;margin-bottom:14px;">
+        <div style="font-weight:800;margin-bottom:10px;">📢 Send Notification</div>
+        <input id="notif-title" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
+        <textarea id="notif-msg" placeholder="Message" rows="3" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;"></textarea>
+        <button class="btn" onclick="adminSendNotification()" style="background:var(--cyan);width:100%;padding:12px;margin-top:8px;font-size:15px;">Send to All Users</button>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="admin-tab-users" style="display:none;">
+      <div style="margin-bottom:12px;display:flex;gap:8px;">
+        <input id="user-search" type="text" placeholder="Search user..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;"/>
+        <button class="btn" style="background:var(--yellow);padding:10px 14px;" onclick="adminSearchUser()">🔍</button>
+      </div>
+      <div id="admin-users-list"></div>
+    </div>
+
+    <!-- QUIZZES -->
+    <div id="admin-tab-quizzes" style="display:none;">
+      <button class="btn" onclick="showCreateQuizForm()" style="background:var(--green);color:#fff;padding:12px 20px;width:100%;margin-bottom:14px;font-size:15px;">+ Create New Quiz</button>
+      <div id="admin-quizzes-list"></div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div id="admin-tab-withdrawals" style="display:none;">
+      <div id="admin-withdrawals-list"></div>
+    </div>
+
+    <!-- ADS -->
+    <div id="admin-tab-ads" style="display:none;">
+      <div class="card" style="padding:16px;margin-bottom:12px;">
+        <div style="font-weight:800;margin-bottom:12px;">🎯 Adsgram Config</div>
+        <input id="adsgram-block-id" type="text" placeholder="Block ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+        <input id="adsgram-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+        <button class="btn" onclick="saveAdsgramConfig()" style="background:var(--cyan);width:100%;padding:11px;">Save Adsgram</button>
+      </div>
+      <div class="card" style="padding:16px;margin-bottom:12px;">
+        <div style="font-weight:800;margin-bottom:12px;">💰 Monetag Config</div>
+        <input id="monetag-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+        <input id="monetag-smartlink" type="text" placeholder="Smartlink URL" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+        <textarea id="monetag-banner" placeholder="Banner code" rows="3" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;margin-bottom:8px;"></textarea>
+        <button class="btn" onclick="saveMonetag()" style="background:var(--purple);color:#fff;width:100%;padding:11px;">Save Monetag</button>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:800;margin-bottom:12px;">⚙️ Ad Controls</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-weight:700;">Enable Adsgram</span>
+          <label style="position:relative;display:inline-block;width:50px;height:26px;">
+            <input type="checkbox" id="adsgram-enabled" style="display:none;" onchange="saveAdToggles()">
+            <span onclick="document.getElementById('adsgram-enabled').click()" style="position:absolute;inset:0;background:#e5e7eb;border-radius:13px;cursor:pointer;border:2px solid #111;transition:.2s;" id="adsgram-toggle-ui"></span>
+          </label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-weight:700;">Enable Monetag</span>
+          <label style="position:relative;display:inline-block;width:50px;height:26px;">
+            <input type="checkbox" id="monetag-enabled" style="display:none;" onchange="saveAdToggles()">
+            <span onclick="document.getElementById('monetag-enabled').click()" style="position:absolute;inset:0;background:#e5e7eb;border-radius:13px;cursor:pointer;border:2px solid #111;transition:.2s;" id="monetag-toggle-ui"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="admin-tab-settings" style="display:none;">
+      <div class="card" style="padding:16px;margin-bottom:12px;">
+        <div style="font-weight:800;margin-bottom:12px;">💱 Coin Conversion</div>
+        <div style="margin-bottom:8px;">
+          <label style="font-weight:700;font-size:13px;">Coins per 1 USDT</label>
+          <input id="coin-usdt" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
+        </div>
+        <div style="margin-bottom:8px;">
+          <label style="font-weight:700;font-size:13px;">Coins per 1 USD</label>
+          <input id="coin-usd" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:700;font-size:13px;">Coins per 1 BDT</label>
+          <input id="coin-bdt" type="number" placeholder="e.g. 833" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
+        </div>
+        <div style="margin-bottom:8px;">
+          <label style="font-weight:700;font-size:13px;">Min Withdraw (Coins)</label>
+          <input id="min-withdraw" type="number" placeholder="e.g. 5000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:700;font-size:13px;">Referral Bonus (Coins)</label>
+          <input id="referral-bonus" type="number" placeholder="e.g. 500" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/>
+        </div>
+        <button class="btn" onclick="saveSettings()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== USER PANEL =================== -->
+<div id="user-panel">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div style="padding:16px;">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="user-avatar" style="width:48px;height:48px;border-radius:14px;border:3px solid #111;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:3px 3px 0 #111;">👤</div>
+          <div>
+            <div style="font-weight:800;font-size:16px;" id="user-name-display">Loading...</div>
+            <div style="font-size:12px;color:#666;font-weight:600;" id="user-rank-display">🏅 Rank #—</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 10px;font-size:11px;font-weight:800;" id="online-badge">🟢 Online</div>
+          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 10px;font-size:18px;cursor:pointer;" onclick="showNotifications()">🔔</div>
+        </div>
+      </div>
+
+      <!-- Balance Card -->
+      <div class="balance-card" style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px;">YOUR BALANCE</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
+          <span class="fredoka" style="font-size:44px;" id="balance-coins-display">0</span>
+          <span style="font-size:16px;font-weight:700;">Coins</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-size:10px;opacity:.8;font-weight:700;">USDT</div>
+            <div style="font-weight:800;font-size:16px;" id="balance-usdt-display">0.00</div>
+          </div>
+          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-size:10px;opacity:.8;font-weight:700;">USD</div>
+            <div style="font-weight:800;font-size:16px;" id="balance-usd-display">0.00</div>
+          </div>
+          <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-size:10px;opacity:.8;font-weight:700;">BDT</div>
+            <div style="font-weight:800;font-size:16px;" id="balance-bdt-display">0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <button class="btn" onclick="goToQuiz()" style="background:var(--cyan);padding:14px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">🧠 Start Quiz</button>
+        <button class="btn" onclick="goToSpin()" style="background:var(--yellow);padding:14px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">🎰 Daily Spin</button>
+      </div>
+
+      <!-- Daily Bonus -->
+      <div id="daily-bonus-card" class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-weight:800;font-size:15px;">🎁 Daily Bonus</div>
+          <div style="font-size:12px;color:#666;font-weight:600;" id="daily-bonus-status">Tap to claim!</div>
+        </div>
+        <button class="btn" id="claim-daily-btn" onclick="claimDailyBonus()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
+      </div>
+
+      <!-- Ad Banner -->
+      <div class="ad-frame" style="margin-bottom:16px;" onclick="handleAdClick('banner-home')" id="ad-banner-home">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="background:#ffe94a;border:2px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;">AD</span>
+          <span style="font-size:12px;color:#666;font-weight:600;">Sponsored</span>
+        </div>
+        <div style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;">
+          🚀 Earn More with CashZilla Premium
+        </div>
+        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Tap to view offer → Earn 5 coins</div>
+      </div>
+
+      <!-- Leaderboard Preview -->
+      <div class="card" style="padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-weight:800;font-size:16px;">🏆 Leaderboard</div>
+          <button onclick="goToPage('leaderboard')" style="background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-size:13px;">See All →</button>
+        </div>
+        <div id="leaderboard-preview"></div>
+      </div>
+
+      <!-- Featured Quizzes -->
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:800;font-size:16px;margin-bottom:10px;">🔥 Featured Quizzes</div>
+        <div id="featured-quizzes" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div class="card" style="padding:12px;text-align:center;">
+          <div style="font-size:20px;">✅</div>
+          <div style="font-weight:800;font-size:18px;" id="stat-quizzes">0</div>
+          <div style="font-size:11px;color:#666;font-weight:600;">Quizzes</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center;">
+          <div style="font-size:20px;">👥</div>
+          <div style="font-weight:800;font-size:18px;" id="stat-refs">0</div>
+          <div style="font-size:11px;color:#666;font-weight:600;">Referrals</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center;">
+          <div style="font-size:20px;">🎰</div>
+          <div style="font-weight:800;font-size:18px;" id="stat-spins">0</div>
+          <div style="font-size:11px;color:#666;font-weight:600;">Spins</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ PAGE -->
+  <div id="page-quiz" class="page">
+    <div style="padding:16px;">
+      <div id="quiz-list-view">
+        <div style="font-weight:800;font-size:20px;margin-bottom:14px;" class="fredoka">🧠 Quiz Arena</div>
+        <!-- Categories -->
+        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;" id="quiz-categories"></div>
+        <!-- Quiz Cards -->
+        <div id="quiz-cards-container" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+      <!-- Quiz Game View -->
+      <div id="quiz-game-view" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <button onclick="exitQuiz()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">← Back</button>
+          <div style="flex:1;" class="progress-bar">
+            <div class="progress-fill" id="quiz-progress-fill" style="background:var(--cyan);width:0%;"></div>
+          </div>
+          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;" id="quiz-timer-display">30s</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-weight:700;color:#666;" id="quiz-q-num">Q 1/10</span>
+          <span style="font-weight:800;color:var(--purple);" id="quiz-score-display">Score: 0</span>
+        </div>
+        <div class="card-lg" style="padding:20px;margin-bottom:16px;min-height:120px;">
+          <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;" id="quiz-category-label">CATEGORY</div>
+          <div style="font-size:18px;font-weight:800;line-height:1.4;" id="quiz-question-text">Question loads here...</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="quiz-answers"></div>
+      </div>
+      <!-- Quiz Result View -->
+      <div id="quiz-result-view" style="display:none;text-align:center;padding:20px 0;">
+        <div style="font-size:64px;margin-bottom:12px;" id="result-emoji">🎉</div>
+        <div class="fredoka" style="font-size:28px;margin-bottom:8px;" id="result-title">Quiz Complete!</div>
+        <div style="font-size:16px;color:#666;margin-bottom:20px;" id="result-subtitle">You answered correctly!</div>
+        <div class="balance-card" style="margin-bottom:20px;text-align:left;">
+          <div style="font-size:13px;opacity:.8;margin-bottom:4px;">COINS EARNED</div>
+          <div class="fredoka" style="font-size:40px;" id="result-coins">+0</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+          <div class="card" style="padding:14px;text-align:center;">
+            <div style="font-size:24px;">✅</div>
+            <div style="font-weight:800;font-size:20px;" id="result-correct">0</div>
+            <div style="font-size:12px;color:#666;">Correct</div>
+          </div>
+          <div class="card" style="padding:14px;text-align:center;">
+            <div style="font-size:24px;">❌</div>
+            <div style="font-weight:800;font-size:20px;" id="result-wrong">0</div>
+            <div style="font-size:12px;color:#666;">Wrong</div>
+          </div>
+        </div>
+        <button class="btn" onclick="exitQuiz()" style="background:var(--cyan);padding:14px;width:100%;font-size:16px;">Play Again →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPIN PAGE -->
+  <div id="page-spin" class="page">
+    <div style="padding:16px;text-align:center;">
+      <div class="fredoka" style="font-size:26px;margin-bottom:6px;">🎰 Lucky Wheel</div>
+      <div style="color:#666;font-weight:600;margin-bottom:16px;" id="spin-status-text">Spin to win amazing prizes!</div>
+      <div style="position:relative;display:inline-block;margin-bottom:20px;">
+        <!-- Pointer -->
+        <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:28px;z-index:10;">▼</div>
+        <canvas id="spin-canvas" width="280" height="280"></canvas>
+      </div>
+      <button class="btn" id="spin-btn" onclick="spinWheel()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;max-width:280px;">
+        🎰 SPIN NOW!
+      </button>
+      <div style="margin-top:10px;font-size:13px;color:#888;font-weight:600;" id="spin-cooldown-text"></div>
+
+      <!-- Spin History -->
+      <div class="card" style="margin-top:16px;padding:14px;text-align:left;">
+        <div style="font-weight:800;margin-bottom:10px;">📜 Spin History</div>
+        <div id="spin-history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFER PAGE -->
+  <div id="page-refer" class="page">
+    <div style="padding:16px;">
+      <div class="fredoka" style="font-size:26px;margin-bottom:16px;">👥 Refer & Earn</div>
+
+      <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
+        <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:4px;">YOUR REFERRAL LINK</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="referral-link-input" readonly style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;" value="Loading..."/>
+          <button class="btn" onclick="copyReferralLink()" style="background:var(--green);color:#fff;padding:10px 14px;">📋</button>
+        </div>
+        <button class="btn" onclick="shareReferralLink()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">📤 Share on Telegram</button>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#ffe4e6,#fecdd3);">
+          <div style="font-size:11px;font-weight:700;color:#9f1239;">TOTAL REFERRALS</div>
+          <div class="fredoka" style="font-size:32px;" id="total-referrals">0</div>
+        </div>
+        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#e0f2fe,#bae6fd);">
+          <div style="font-size:11px;font-weight:700;color:#0c4a6e;">REFERRAL EARNINGS</div>
+          <div class="fredoka" style="font-size:32px;" id="referral-earnings">0</div>
+          <div style="font-size:11px;color:#666;">Coins</div>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <div class="card" style="padding:16px;margin-bottom:16px;">
+        <div style="font-weight:800;margin-bottom:12px;">📖 How It Works</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="background:var(--cyan);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">1</div>
+            <div style="font-weight:600;">Share your unique referral link with friends</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">2</div>
+            <div style="font-weight:600;">Friend joins using your link</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="background:var(--pink);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">3</div>
+            <div style="font-weight:600;" id="referral-bonus-info">You earn 500 coins per referral!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Referral List -->
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:800;margin-bottom:10px;">👥 My Referrals</div>
+        <div id="my-referrals-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASH PAGE -->
+  <div id="page-cash" class="page">
+    <div style="padding:16px;">
+      <div class="fredoka" style="font-size:26px;margin-bottom:16px;">💸 Cash Out</div>
+
+      <!-- Balance -->
+      <div class="balance-card" style="margin-bottom:16px;">
+        <div style="font-size:12px;opacity:.8;font-weight:700;">AVAILABLE BALANCE</div>
+        <div class="fredoka" style="font-size:40px;" id="cash-coins">0 Coins</div>
+        <div style="display:flex;gap:12px;margin-top:8px;">
+          <span style="font-size:13px;font-weight:700;">≈ $<span id="cash-usd">0.00</span> USD</span>
+          <span style="font-size:13px;font-weight:700;">≈ ৳<span id="cash-bdt">0.00</span> BDT</span>
+        </div>
+      </div>
+
+      <!-- Withdraw Form -->
+      <div class="card" style="padding:16px;margin-bottom:16px;" id="withdraw-form-section">
+        <div style="font-weight:800;margin-bottom:12px;">💳 Withdraw Method</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;" id="payment-methods-grid">
+          <div class="method-card selected" data-method="bkash" onclick="selectMethod('bkash')">
+            <div style="font-size:22px;">🟣</div><div style="font-weight:700;font-size:13px;">bKash</div>
+          </div>
+          <div class="method-card" data-method="nagad" onclick="selectMethod('nagad')">
+            <div style="font-size:22px;">🟠</div><div style="font-weight:700;font-size:13px;">Nagad</div>
+          </div>
+          <div class="method-card" data-method="usdt" onclick="selectMethod('usdt')">
+            <div style="font-size:22px;">🟢</div><div style="font-weight:700;font-size:13px;">USDT TRC20</div>
+          </div>
+          <div class="method-card" data-method="binance" onclick="selectMethod('binance')">
+            <div style="font-size:22px;">🟡</div><div style="font-weight:700;font-size:13px;">Binance UID</div>
+          </div>
+          <div class="method-card" data-method="faucetpay" onclick="selectMethod('faucetpay')">
+            <div style="font-size:22px;">🔵</div><div style="font-weight:700;font-size:13px;">FaucetPay</div>
+          </div>
+        </div>
+        <input id="withdraw-address" type="text" placeholder="Account number / Address / UID" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:8px;font-size:14px;"/>
+        <input id="withdraw-amount" type="number" placeholder="Amount in Coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:4px;font-size:14px;"/>
+        <div style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px;" id="withdraw-min-text">Minimum: 5000 Coins</div>
+        <button class="btn" onclick="submitWithdraw()" style="background:var(--green);color:#fff;width:100%;padding:14px;font-size:16px;">💸 Submit Withdrawal</button>
+      </div>
+
+      <!-- Withdraw History -->
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:800;margin-bottom:10px;">📋 Withdraw History</div>
+        <div id="withdraw-history"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD FULL PAGE -->
+  <div id="page-leaderboard" class="page">
+    <div style="padding:16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="goToPage('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">←</button>
+        <div class="fredoka" style="font-size:22px;">🏆 Leaderboard</div>
+      </div>
+      <!-- Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="cat-pill active" onclick="loadLeaderboard('weekly',this)">Weekly</button>
+        <button class="cat-pill" onclick="loadLeaderboard('monthly',this)">Monthly</button>
+        <button class="cat-pill" onclick="loadLeaderboard('alltime',this)">All Time</button>
+      </div>
+      <div id="full-leaderboard-list"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <div class="nav-item active" onclick="goToPage('home')" id="nav-home">
+      <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" onclick="goToPage('quiz')" id="nav-quiz">
+      <span class="nav-icon">🧠</span><span class="nav-label">Quiz</span>
+    </div>
+    <div class="nav-item" onclick="goToPage('spin')" id="nav-spin">
+      <span class="nav-icon">🎰</span><span class="nav-label">Spin</span>
+    </div>
+    <div class="nav-item" onclick="goToPage('refer')" id="nav-refer">
+      <span class="nav-icon">👥</span><span class="nav-label">Refer</span>
+    </div>
+    <div class="nav-item" onclick="goToPage('cash')" id="nav-cash">
+      <span class="nav-icon">💸</span><span class="nav-label">Cash</span>
+    </div>
+  </nav>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, get, update, push, onValue, serverTimestamp, increment, query, orderByChild, limitToLast }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+  authDomain: "ai-tools-9f9a3.firebaseapp.com",
+  projectId: "ai-tools-9f9a3",
+  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
+  messagingSenderId: "839431476061",
+  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
+  measurementId: "G-HKSB33QGW8",
+  databaseURL: "https://ai-tools-9f9a3-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// Expose to window
+window._fb = { auth, db, ref, set, get, update, push, onValue, serverTimestamp, increment, query, orderByChild, limitToLast, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged };
+
+// ======= APP STATE =======
+window.APP = {
+  user: null,
+  userData: null,
+  settings: { coinUsdt: 10000, coinUsd: 10000, coinBdt: 833, minWithdraw: 5000, referralBonus: 500 },
+  quizzes: [],
+  currentQuiz: null,
+  currentQ: 0,
+  quizScore: 0,
+  quizCorrect: 0,
+  quizWrong: 0,
+  quizTimer: null,
+  spinRunning: false,
+  selectedMethod: 'bkash',
+  adsgram: { blockId: '', zoneId: '', enabled: false },
+  monetag: { zoneId: '', smartlink: '', banner: '', enabled: false },
+  adClickTimes: [],
+  isAdmin: false,
+  currentPage: 'home',
+};
+
+// ======= TELEGRAM INIT =======
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.enableClosingConfirmation();
+}
+
+function haptic(type = 'light') {
+  tg?.HapticFeedback?.impactOccurred(type);
+}
+window.haptic = haptic;
+
+// ======= AUTH =======
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    window.APP.user = user;
+    await loadUserData(user.uid);
+  } else {
+    signInAnonymously(auth);
+  }
+});
+
+async function loadUserData(uid) {
+  const { ref, get, onValue } = window._fb;
+  const userRef = ref(db, `users/${uid}`);
+  const snap = await get(userRef);
+
+  let tgUser = tg?.initDataUnsafe?.user;
+  const now = Date.now();
+
+  if (!snap.exists()) {
+    // New user
+    const refCode = new URLSearchParams(window.location.search).get('ref') || '';
+    const newUser = {
+      uid,
+      name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : ('User_' + uid.slice(0,6)),
+      username: tgUser?.username || '',
+      avatar: tgUser?.photo_url || '',
+      coins: 500, // Welcome bonus
+      totalEarned: 500,
+      quizzesPlayed: 0,
+      spinsUsed: 0,
+      referrals: 0,
+      referralEarnings: 0,
+      referredBy: refCode,
+      joinedAt: now,
+      lastSeen: now,
+      lastDailyBonus: 0,
+      lastSpin: 0,
+      withdrawHistory: [],
+      banned: false,
+      rank: 0,
+    };
+    await set(ref(db, `users/${uid}`), newUser);
+    window.APP.userData = newUser;
+    // Handle referral bonus
+    if (refCode && refCode !== uid) {
+      await applyReferralBonus(refCode, uid);
+    }
+    // Welcome popup
+    setTimeout(() => showWelcomePopup(newUser), 1500);
+  } else {
+    window.APP.userData = snap.val();
+    // Update last seen
+    update(ref(db, `users/${uid}`), { lastSeen: now });
+  }
+
+  localStorage.setItem('cashzilla_user', JSON.stringify(window.APP.userData));
+
+  // Live listener
+  onValue(ref(db, `users/${uid}`), (s) => {
+    if (s.exists()) {
+      window.APP.userData = s.val();
+      localStorage.setItem('cashzilla_user', JSON.stringify(s.val()));
+      updateUI();
+    }
+  });
+
+  await loadSettings();
+  await loadQuizzes();
+  await loadLeaderboardPreview();
+  updateUI();
+  drawSpinWheel();
+  loadWithdrawHistory();
+  loadSpinHistory();
+  loadReferrals();
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('user-panel').style.display = 'block';
+}
+
+async function applyReferralBonus(refUid, newUid) {
+  const { ref, get, update, increment } = window._fb;
+  const settings = window.APP.settings;
+  try {
+    const refUserRef = ref(db, `users/${refUid}`);
+    const refSnap = await get(refUserRef);
+    if (refSnap.exists()) {
+      await update(refUserRef, {
+        coins: increment(settings.referralBonus),
+        referrals: increment(1),
+        referralEarnings: increment(settings.referralBonus),
+      });
+      // Add referral record
+      const { push } = window._fb;
+      push(ref(db, `referrals/${refUid}`), { uid: newUid, timestamp: Date.now(), bonus: settings.referralBonus });
+    }
+  } catch(e) {}
+}
+
+async function loadSettings() {
+  const { ref, get } = window._fb;
+  try {
+    const snap = await get(ref(db, 'settings'));
+    if (snap.exists()) {
+      const s = snap.val();
+      window.APP.settings = { ...window.APP.settings, ...s };
+      if (s.adsgram) window.APP.adsgram = { ...window.APP.adsgram, ...s.adsgram };
+      if (s.monetag) window.APP.monetag = { ...window.APP.monetag, ...s.monetag };
+    }
+  } catch(e) {}
+  // Update min withdraw text
+  document.getElementById('withdraw-min-text').textContent = `Minimum: ${window.APP.settings.minWithdraw} Coins`;
+  document.getElementById('referral-bonus-info').textContent = `You earn ${window.APP.settings.referralBonus} coins per referral!`;
+}
+
+async function loadQuizzes() {
+  const { ref, get } = window._fb;
+  try {
+    const snap = await get(ref(db, 'quizzes'));
+    if (snap.exists()) {
+      const data = snap.val();
+      window.APP.quizzes = Object.entries(data).map(([id, q]) => ({ id, ...q })).filter(q => !q.deleted);
+    } else {
+      window.APP.quizzes = getDefaultQuizzes();
+      // Seed to Firebase
+      window.APP.quizzes.forEach(q => {
+        const { push } = window._fb;
+        push(ref(db, 'quizzes'), q);
+      });
+    }
+  } catch(e) {
+    window.APP.quizzes = getDefaultQuizzes();
+  }
+  renderQuizCards();
+  renderFeaturedQuizzes();
+  renderQuizCategories();
+}
+
+function getDefaultQuizzes() {
+  return [
+    { title: 'General Knowledge', category: 'General', reward: 50, time: 30, difficulty: 'Easy', icon: '🌍',
+      questions: [
+        { q: 'What is the capital of Bangladesh?', options: ['Chittagong','Dhaka','Sylhet','Rajshahi'], answer: 1 },
+        { q: 'How many days are in a leap year?', options: ['365','364','366','367'], answer: 2 },
+        { q: 'What is the largest planet in our solar system?', options: ['Saturn','Neptune','Jupiter','Mars'], answer: 2 },
+        { q: 'Which element has the symbol "O"?', options: ['Gold','Oxygen','Osmium','Oganesson'], answer: 1 },
+        { q: 'How many continents are there?', options: ['5','6','7','8'], answer: 2 },
+      ]},
+    { title: 'Math Challenge', category: 'Math', reward: 80, time: 20, difficulty: 'Medium', icon: '🔢',
+      questions: [
+        { q: 'What is 15 × 12?', options: ['160','170','180','190'], answer: 2 },
+        { q: 'What is the square root of 144?', options: ['11','12','13','14'], answer: 1 },
+        { q: 'What is 25% of 200?', options: ['40','50','55','60'], answer: 1 },
+        { q: 'What is 2⁸?', options: ['128','256','512','64'], answer: 1 },
+        { q: 'What is 7! (7 factorial)?', options: ['5040','2520','720','40320'], answer: 0 },
+      ]},
+    { title: 'Science Blast', category: 'Science', reward: 60, time: 25, difficulty: 'Medium', icon: '🔬',
+      questions: [
+        { q: 'What is the chemical formula for water?', options: ['H2O2','HO','H2O','H3O'], answer: 2 },
+        { q: 'What is the speed of light (approx)?', options: ['3×10⁸ m/s','3×10⁶ m/s','3×10⁴ m/s','3×10¹⁰ m/s'], answer: 0 },
+        { q: 'How many bones in the adult human body?', options: ['196','206','216','186'], answer: 1 },
+        { q: 'What gas do plants absorb?', options: ['Oxygen','Nitrogen','Carbon Dioxide','Hydrogen'], answer: 2 },
+        { q: 'What is the closest star to Earth?', options: ['Proxima Centauri','Sirius','Betelgeuse','The Sun'], answer: 3 },
+      ]},
+    { title: 'Crypto & Finance', category: 'Finance', reward: 100, time: 30, difficulty: 'Hard', icon: '₿',
+      questions: [
+        { q: 'Who created Bitcoin?', options: ['Elon Musk','Satoshi Nakamoto','Vitalik Buterin','Mark Zuckerberg'], answer: 1 },
+        { q: 'What does "USDT" stand for?', options: ['US Dollar Token','Unified Stable Dollar Tether','US Dollar Tether','Universal Stable Dollar'], answer: 2 },
+        { q: 'What is the max supply of Bitcoin?', options: ['18M','21M','25M','100M'], answer: 1 },
+        { q: 'What is DeFi?', options: ['Digital Finance','Decentralized Finance','Distributed Finance','Direct Finance'], answer: 1 },
+        { q: 'Which blockchain uses "Ether"?', options: ['Bitcoin','Solana','Ethereum','Cardano'], answer: 2 },
+      ]},
+    { title: 'Daily Challenge', category: 'Daily', reward: 200, time: 60, difficulty: 'Hard', icon: '⚡',
+      daily: true,
+      questions: [
+        { q: 'What is the national animal of Bangladesh?', options: ['Tiger','Elephant','Deer','Royal Bengal Tiger'], answer: 3 },
+        { q: 'Which country invented tea?', options: ['India','China','Japan','Sri Lanka'], answer: 1 },
+        { q: 'What is the tallest mountain on Earth?', options: ['K2','Kangchenjunga','Mount Everest','Lhotse'], answer: 2 },
+        { q: 'In what year was the smartphone invented?', options: ['1994','1997','2000','2007'], answer: 3 },
+        { q: 'What is the currency of Japan?', options: ['Yuan','Won','Yen','Ruble'], answer: 2 },
+      ]},
+  ];
+}
+
+// ======= UI UPDATES =======
+function updateUI() {
+  const u = window.APP.userData;
+  if (!u) return;
+  const s = window.APP.settings;
+
+  // Name & avatar
+  document.getElementById('user-name-display').textContent = u.name || 'User';
+  document.getElementById('user-rank-display').textContent = '🏅 Rank #' + (u.rank || '—');
+
+  // Avatar emoji based on name
+  const emojis = ['👤','😎','🦸','🧙','🎯','🏆','⚡','🔥'];
+  document.getElementById('user-avatar').textContent = emojis[(u.name?.charCodeAt(0) || 0) % emojis.length];
+
+  // Balance
+  const coins = u.coins || 0;
+  animateCounter('balance-coins-display', coins);
+  document.getElementById('balance-usdt-display').textContent = (coins / s.coinUsdt).toFixed(4);
+  document.getElementById('balance-usd-display').textContent = (coins / s.coinUsd).toFixed(4);
+  document.getElementById('balance-bdt-display').textContent = (coins / s.coinBdt).toFixed(2);
+
+  // Cash page
+  document.getElementById('cash-coins').textContent = coins + ' Coins';
+  document.getElementById('cash-usd').textContent = (coins / s.coinUsd).toFixed(4);
+  document.getElementById('cash-bdt').textContent = (coins / s.coinBdt).toFixed(2);
+
+  // Stats
+  document.getElementById('stat-quizzes').textContent = u.quizzesPlayed || 0;
+  document.getElementById('stat-refs').textContent = u.referrals || 0;
+  document.getElementById('stat-spins').textContent = u.spinsUsed || 0;
+
+  // Referral page
+  document.getElementById('total-referrals').textContent = u.referrals || 0;
+  document.getElementById('referral-earnings').textContent = u.referralEarnings || 0;
+  document.getElementById('referral-link-input').value = getReferralLink();
+
+  // Daily bonus
+  const lastBonus = u.lastDailyBonus || 0;
+  const today = new Date().toDateString();
+  const lastDay = new Date(lastBonus).toDateString();
+  if (today !== lastDay) {
+    document.getElementById('daily-bonus-status').textContent = '🎁 Tap to claim!';
+    document.getElementById('claim-daily-btn').disabled = false;
+    document.getElementById('claim-daily-btn').style.opacity = '1';
+  } else {
+    document.getElementById('daily-bonus-status').textContent = '✅ Claimed today!';
+    document.getElementById('claim-daily-btn').disabled = true;
+    document.getElementById('claim-daily-btn').style.opacity = '.5';
+  }
+}
+
+let counters = {};
+function animateCounter(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const duration = 600;
+  const startTime = performance.now();
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(start + (target - start) * ease).toLocaleString();
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString();
+  }
+  requestAnimationFrame(step);
+  el.classList.add('count-anim');
+  setTimeout(() => el.classList.remove('count-anim'), 400);
+}
+
+function getReferralLink() {
+  const uid = window.APP.user?.uid || 'xxx';
+  return `https://t.me/CashZillaBot?start=${uid}`;
+}
+
+// ======= NAVIGATION =======
+window.goToPage = function(page) {
+  haptic();
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  const nav = document.getElementById('nav-' + page);
+  if (nav) nav.classList.add('active');
+
+  window.APP.currentPage = page;
+
+  if (page === 'quiz') {
+    renderQuizCards();
+    renderQuizCategories();
+  }
+  if (page === 'leaderboard') loadLeaderboard('weekly');
+  if (page === 'cash') loadWithdrawHistory();
+  if (page === 'refer') loadReferrals();
+  if (page === 'spin') loadSpinHistory();
+};
+
+window.goToQuiz = () => goToPage('quiz');
+window.goToSpin = () => goToPage('spin');
+
+// ======= QUIZ SYSTEM =======
+let quizFilterCategory = 'All';
+
+function renderQuizCategories() {
+  const cats = ['All', ...new Set(window.APP.quizzes.map(q => q.category))];
+  const el = document.getElementById('quiz-categories');
+  el.innerHTML = cats.map(c => `<button class="cat-pill ${c === quizFilterCategory ? 'active' : ''}" onclick="filterQuizCategory('${c}',this)">${c}</button>`).join('');
+}
+
+window.filterQuizCategory = function(cat, btn) {
+  quizFilterCategory = cat;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuizCards();
+};
+
+function renderQuizCards() {
+  const filtered = quizFilterCategory === 'All' ? window.APP.quizzes : window.APP.quizzes.filter(q => q.category === quizFilterCategory);
+  const container = document.getElementById('quiz-cards-container');
+  if (!container) return;
+  container.innerHTML = filtered.map(q => quizCard(q)).join('');
+}
+
+function quizCard(q) {
+  const diffColors = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
+  const color = diffColors[q.difficulty] || '#888';
+  return `<div class="card" style="padding:16px;cursor:pointer;" onclick="startQuiz('${q.id}')">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:36px;background:#f3f4f6;border:2px solid #111;border-radius:14px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;">${q.icon||'❓'}</div>
+      <div style="flex:1;">
+        <div style="font-weight:800;font-size:16px;">${q.title}</div>
+        <div style="font-size:12px;color:#666;font-weight:600;">${q.questions?.length||0} questions · ${q.time}s each</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <span style="background:${color}22;color:${color};border:1.5px solid ${color};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${q.difficulty}</span>
+          ${q.daily ? '<span style="background:#ffe94a;border:1.5px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">⚡ Daily</span>' : ''}
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="background:var(--yellow);border:2px solid #111;border-radius:12px;padding:8px 12px;">
+          <div style="font-size:11px;font-weight:700;">REWARD</div>
+          <div style="font-weight:900;font-size:18px;">+${q.reward}</div>
+          <div style="font-size:10px;font-weight:600;">coins</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFeaturedQuizzes() {
+  const featured = window.APP.quizzes.slice(0, 3);
+  const el = document.getElementById('featured-quizzes');
+  if (!el) return;
+  el.innerHTML = featured.map(q => `<div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToPage('quiz')">
+    <div style="font-size:28px;">${q.icon||'❓'}</div>
+    <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.category} · +${q.reward} coins</div></div>
+    <div style="font-size:20px;">›</div>
+  </div>`).join('');
+}
+
+window.startQuiz = function(quizId) {
+  const quiz = window.APP.quizzes.find(q => q.id === quizId);
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) { showToast('Quiz not available!'); return; }
+  haptic('medium');
+
+  // Anti-cheat: check quiz cooldown per quiz
+  const lastPlayed = localStorage.getItem('quiz_last_' + quizId);
+  if (quiz.daily && lastPlayed) {
+    const today = new Date().toDateString();
+    const lastDay = new Date(parseInt(lastPlayed)).toDateString();
+    if (today === lastDay) { showToast('Daily quiz already played today!'); return; }
+  }
+
+  window.APP.currentQuiz = quiz;
+  window.APP.currentQ = 0;
+  window.APP.quizScore = 0;
+  window.APP.quizCorrect = 0;
+  window.APP.quizWrong = 0;
+
+  document.getElementById('quiz-list-view').style.display = 'none';
+  document.getElementById('quiz-result-view').style.display = 'none';
+  document.getElementById('quiz-game-view').style.display = 'block';
+  renderQuestion();
+};
+
+function renderQuestion() {
+  const quiz = window.APP.currentQuiz;
+  const q = quiz.questions[window.APP.currentQ];
+  if (!q) { endQuiz(); return; }
+
+  const total = quiz.questions.length;
+  const cur = window.APP.currentQ;
+
+  document.getElementById('quiz-q-num').textContent = `Q ${cur + 1}/${total}`;
+  document.getElementById('quiz-score-display').textContent = `Score: ${window.APP.quizScore}`;
+  document.getElementById('quiz-progress-fill').style.width = `${(cur / total) * 100}%`;
+  document.getElementById('quiz-category-label').textContent = quiz.category?.toUpperCase() || 'QUIZ';
+  document.getElementById('quiz-question-text').textContent = q.q;
+
+  const answersEl = document.getElementById('quiz-answers');
+  const optLabels = ['A','B','C','D'];
+  answersEl.innerHTML = q.options.map((opt, i) =>
+    `<button class="answer-btn" onclick="selectAnswer(${i})">${optLabels[i]}. ${opt}</button>`
+  ).join('');
+
+  // Timer
+  clearInterval(window.APP.quizTimer);
+  let timeLeft = quiz.time || 30;
+  document.getElementById('quiz-timer-display').textContent = timeLeft + 's';
+  window.APP.quizTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('quiz-timer-display').textContent = timeLeft + 's';
+    if (timeLeft <= 5) document.getElementById('quiz-timer-display').style.background = '#fecaca';
+    if (timeLeft <= 0) {
+      clearInterval(window.APP.quizTimer);
+      window.APP.quizWrong++;
+      highlightAnswer(-1, q.answer);
+      setTimeout(() => nextQuestion(), 1500);
+    }
+  }, 1000);
+}
+
+window.selectAnswer = function(selected) {
+  clearInterval(window.APP.quizTimer);
+  haptic();
+  const quiz = window.APP.currentQuiz;
+  const q = quiz.questions[window.APP.currentQ];
+  const correct = q.answer;
+
+  // Disable all buttons
+  document.querySelectorAll('.answer-btn').forEach(b => b.onclick = null);
+
+  if (selected === correct) {
+    window.APP.quizScore += Math.floor(quiz.reward / quiz.questions.length);
+    window.APP.quizCorrect++;
+    haptic('medium');
+    spawnFloatingCoins();
+  } else {
+    window.APP.quizWrong++;
+    haptic('heavy');
+  }
+  highlightAnswer(selected, correct);
+  setTimeout(() => nextQuestion(), 1200);
+};
+
+function highlightAnswer(selected, correct) {
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach((btn, i) => {
+    if (i === correct) btn.classList.add('correct');
+    else if (i === selected && selected !== correct) btn.classList.add('wrong');
+  });
+}
+
+function nextQuestion() {
+  window.APP.currentQ++;
+  document.getElementById('quiz-timer-display').style.background = 'var(--yellow)';
+  if (window.APP.currentQ >= window.APP.currentQuiz.questions.length) endQuiz();
+  else renderQuestion();
+}
+
+async function endQuiz() {
+  clearInterval(window.APP.quizTimer);
+  const quiz = window.APP.currentQuiz;
+  const earned = window.APP.quizScore;
+  const correct = window.APP.quizCorrect;
+  const wrong = window.APP.quizWrong;
+
+  // Anti-spam cooldown
+  localStorage.setItem('quiz_last_' + quiz.id, Date.now().toString());
+
+  // Update Firebase
+  const { ref, update, increment } = window._fb;
+  const uid = window.APP.user.uid;
+  try {
+    await update(ref(db, `users/${uid}`), {
+      coins: increment(earned),
+      totalEarned: increment(earned),
+      quizzesPlayed: increment(1),
+    });
+    // Log transaction
+    push(ref(db, `transactions/${uid}`), { type: 'quiz', amount: earned, quizTitle: quiz.title, timestamp: Date.now() });
+  } catch(e) {}
+
+  document.getElementById('quiz-game-view').style.display = 'none';
+  document.getElementById('quiz-result-view').style.display = 'block';
+
+  const pct = Math.round((correct / quiz.questions.length) * 100);
+  document.getElementById('result-emoji').textContent = pct >= 80 ? '🏆' : pct >= 50 ? '😊' : '😅';
+  document.getElementById('result-title').textContent = pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good Job!' : 'Keep Practicing!';
+  document.getElementById('result-subtitle').textContent = `${correct}/${quiz.questions.length} correct (${pct}%)`;
+  document.getElementById('result-coins').textContent = '+' + earned;
+  document.getElementById('result-correct').textContent = correct;
+  document.getElementById('result-wrong').textContent = wrong;
+
+  if (pct === 100) spawnConfetti();
+  haptic('medium');
+}
+
+window.exitQuiz = function() {
+  clearInterval(window.APP.quizTimer);
+  document.getElementById('quiz-game-view').style.display = 'none';
+  document.getElementById('quiz-result-view').style.display = 'none';
+  document.getElementById('quiz-list-view').style.display = 'block';
+};
+
+// ======= SPIN WHEEL =======
+const WHEEL_SEGMENTS = [
+  { label: '50 Coins', value: 50, color: '#00d4e8' },
+  { label: '100 Coins', value: 100, color: '#ffe94a' },
+  { label: '200 Coins', value: 200, color: '#a855f7' },
+  { label: 'Try Again', value: 0, color: '#f3f4f6' },
+  { label: '500 Coins', value: 500, color: '#ff6eb4' },
+  { label: '30 Coins', value: 30, color: '#22c55e' },
+  { label: '1000 Coins', value: 1000, color: '#ff7b39' },
+  { label: '150 Coins', value: 150, color: '#818cf8' },
+];
+
+function drawSpinWheel(rotation = 0) {
+  const canvas = document.getElementById('spin-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const r = cx - 8;
+  const segments = WHEEL_SEGMENTS;
+  const arc = (Math.PI * 2) / segments.length;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  segments.forEach((seg, i) => {
+    const start = rotation + i * arc - Math.PI / 2;
+    const end = start + arc;
+
+    // Segment
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 11px Nunito';
+    ctx.fillText(seg.label, r - 10, 4);
+    ctx.restore();
+  });
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffe94a';
+  ctx.fill();
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fillStyle = '#111';
+  ctx.font = 'bold 16px Nunito';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('💰', cx, cy);
+}
+
+window.spinWheel = async function() {
+  if (window.APP.spinRunning) return;
+
+  const u = window.APP.userData;
+  const now = Date.now();
+  const lastSpin = u.lastSpin || 0;
+  const cooldown = 24 * 60 * 60 * 1000; // 24h
+
+  if (now - lastSpin < cooldown) {
+    const remaining = Math.ceil((cooldown - (now - lastSpin)) / 3600000);
+    showToast(`Come back in ${remaining}h for your daily spin!`);
+    return;
+  }
+
+  haptic('medium');
+  window.APP.spinRunning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('spin-btn').textContent = '🎰 Spinning...';
+
+  const winIndex = Math.floor(Math.random() * WHEEL_SEGMENTS.length);
+  const winner = WHEEL_SEGMENTS[winIndex];
+  const arcSize = (Math.PI * 2) / WHEEL_SEGMENTS.length;
+  const targetAngle = (Math.PI * 2 * 5) - (winIndex * arcSize) - arcSize / 2;
+  const duration = 4000;
+  const start = performance.now();
+  let currentRot = 0;
+
+  function animate(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4);
+    currentRot = ease * targetAngle;
+    drawSpinWheel(currentRot);
+    if (progress < 1) requestAnimationFrame(animate);
+    else onSpinEnd(winner);
+  }
+  requestAnimationFrame(animate);
+};
+
+async function onSpinEnd(winner) {
+  haptic('heavy');
+  window.APP.spinRunning = false;
+  document.getElementById('spin-btn').disabled = false;
+  document.getElementById('spin-btn').textContent = '🎰 SPIN NOW!';
+
+  const { ref, update, increment, push } = window._fb;
+  const uid = window.APP.user.uid;
+
+  if (winner.value > 0) {
+    spawnConfetti();
+    await update(ref(db, `users/${uid}`), {
+      coins: increment(winner.value),
+      totalEarned: increment(winner.value),
+      spinsUsed: increment(1),
+      lastSpin: Date.now(),
+    });
+    push(ref(db, `spins/${uid}`), { reward: winner.value, label: winner.label, timestamp: Date.now() });
+    showToast(`🎉 You won ${winner.label}!`);
+    showPopup('🎰 Lucky Spin!', `<div style="text-align:center;"><div style="font-size:56px;margin-bottom:12px;">🎉</div><div class="fredoka" style="font-size:28px;">${winner.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to your balance!</div></div>`);
+  } else {
+    await update(ref(db, `users/${uid}`), { spinsUsed: increment(1), lastSpin: Date.now() });
+    push(ref(db, `spins/${uid}`), { reward: 0, label: winner.label, timestamp: Date.now() });
+    showToast('😅 Better luck next time!');
+  }
+  loadSpinHistory();
+  document.getElementById('spin-cooldown-text').textContent = 'Next spin available in 24 hours';
+}
+
+async function loadSpinHistory() {
+  const { ref, get } = window._fb;
+  const uid = window.APP.user?.uid;
+  if (!uid) return;
+  try {
+    const snap = await get(ref(db, `spins/${uid}`));
+    const el = document.getElementById('spin-history-list');
+    if (!snap.exists() || !el) { if(el) el.innerHTML = '<div style="color:#888;font-weight:600;text-align:center;">No spins yet</div>'; return; }
+    const spins = Object.values(snap.val()).slice(-10).reverse();
+    el.innerHTML = spins.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <span style="font-weight:600;">🎰 ${s.label}</span>
+      <span style="color:#666;font-size:12px;">${new Date(s.timestamp).toLocaleDateString()}</span>
+    </div>`).join('');
+  } catch(e) {}
+}
+
+// ======= DAILY BONUS =======
+window.claimDailyBonus = async function() {
+  const u = window.APP.userData;
+  const today = new Date().toDateString();
+  const lastDay = new Date(u.lastDailyBonus || 0).toDateString();
+  if (today === lastDay) { showToast('Already claimed today!'); return; }
+
+  haptic('medium');
+  const bonus = 100;
+  const { ref, update, increment, push } = window._fb;
+  const uid = window.APP.user.uid;
+  await update(ref(db, `users/${uid}`), { coins: increment(bonus), totalEarned: increment(bonus), lastDailyBonus: Date.now() });
+  push(ref(db, `transactions/${uid}`), { type: 'daily_bonus', amount: bonus, timestamp: Date.now() });
+  spawnConfetti();
+  showToast('🎁 Daily bonus claimed! +100 Coins');
+  spawnFloatingCoins();
+};
+
+// ======= LEADERBOARD =======
+async function loadLeaderboardPreview() {
+  const { ref, query, orderByChild, limitToLast, get } = window._fb;
+  try {
+    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(5));
+    const snap = await get(q);
+    const el = document.getElementById('leaderboard-preview');
+    if (!el) return;
+    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;font-weight:600;text-align:center;padding:10px;">No data yet</div>'; return; }
+    const users = [];
+    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
+    el.innerHTML = users.slice(0, 5).map((u, i) => leaderboardRow(u, i)).join('');
+  } catch(e) {}
+}
+
+window.loadLeaderboard = async function(type, btn) {
+  if (btn) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const { ref, query, orderByChild, limitToLast, get } = window._fb;
+  const el = document.getElementById('full-leaderboard-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:auto;"></div></div>';
+  try {
+    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(20));
+    const snap = await get(q);
+    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">No data yet</div>'; return; }
+    const users = [];
+    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
+    el.innerHTML = users.map((u, i) => `<div class="card" style="padding:14px;margin-bottom:10px;${i < 3 ? '' : ''}">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="font-size:22px;width:36px;text-align:center;">${['🥇','🥈','🥉'][i] || '#' + (i + 1)}</div>
+        <div style="flex:1;"><div style="font-weight:800;">${u.name || 'User'}</div><div style="font-size:12px;color:#666;">${u.totalEarned || 0} total coins earned</div></div>
+        <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;">${(u.coins || 0).toLocaleString()} 🪙</div>
+      </div>
+    </div>`).join('');
+  } catch(e) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">Could not load</div>'; }
+};
+
+function leaderboardRow(u, i) {
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+    <div style="font-size:20px;width:30px;text-align:center;">${medals[i] || (i+1)}</div>
+    <div style="flex:1;font-weight:700;font-size:14px;">${u.name || 'User'}</div>
+    <div style="font-weight:800;color:var(--purple);">${(u.coins||0).toLocaleString()} 🪙</div>
+  </div>`;
+}
+
+// ======= WITHDRAW =======
+window.selectMethod = function(method) {
+  window.APP.selectedMethod = method;
+  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`[data-method="${method}"]`)?.classList.add('selected');
+};
+
+window.submitWithdraw = async function() {
+  const u = window.APP.userData;
+  const amount = parseInt(document.getElementById('withdraw-amount').value) || 0;
+  const address = document.getElementById('withdraw-address').value.trim();
+  const min = window.APP.settings.minWithdraw;
+
+  if (!address) { showToast('Enter your account address!'); return; }
+  if (amount < min) { showToast(`Minimum ${min} coins required!`); return; }
+  if ((u.coins || 0) < amount) { showToast('Not enough coins!'); return; }
+
+  haptic('medium');
+  const { ref, update, increment, push } = window._fb;
+  const uid = window.APP.user.uid;
+  const s = window.APP.settings;
+  const method = window.APP.selectedMethod;
+
+  const withdraw = {
+    uid, amount, address, method,
+    status: 'pending',
+    timestamp: Date.now(),
+    amountUsdt: (amount / s.coinUsdt).toFixed(4),
+    amountBdt: (amount / s.coinBdt).toFixed(2),
+    userName: u.name,
+  };
+
+  try {
+    await push(ref(db, `withdraws`), withdraw);
+    await update(ref(db, `users/${uid}`), { coins: increment(-amount) });
+    showToast('✅ Withdrawal request submitted!');
+    document.getElementById('withdraw-amount').value = '';
+    document.getElementById('withdraw-address').value = '';
+    loadWithdrawHistory();
+  } catch(e) { showToast('Error submitting request!'); }
+};
+
+async function loadWithdrawHistory() {
+  const { ref, get, query, orderByChild } = window._fb;
+  const uid = window.APP.user?.uid;
+  if (!uid) return;
+  const el = document.getElementById('withdraw-history');
+  if (!el) return;
+  try {
+    const snap = await get(ref(db, 'withdraws'));
+    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
+    const all = [];
+    snap.forEach(child => { const v = child.val(); if (v.uid === uid) all.push(v); });
+    if (all.length === 0) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
+    all.sort((a, b) => b.timestamp - a.timestamp);
+    el.innerHTML = all.slice(0, 10).map(w => {
+      const statusColor = { pending: '#f59e0b', approved: '#22c55e', rejected: '#ef4444' }[w.status] || '#888';
+      return `<div style="border:2px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-weight:700;">${w.method?.toUpperCase()}</div><div style="font-size:12px;color:#666;">${new Date(w.timestamp).toLocaleDateString()}</div></div>
+          <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${statusColor}22;color:${statusColor};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ======= REFERRALS =======
+async function loadReferrals() {
+  const { ref, get } = window._fb;
+  const uid = window.APP.user?.uid;
+  if (!uid) return;
+  const el = document.getElementById('my-referrals-list');
+  if (!el) return;
+  try {
+    const snap = await get(ref(db, `referrals/${uid}`));
+    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No referrals yet</div>'; return; }
+    const refs = Object.values(snap.val()).slice(-20).reverse();
+    el.innerHTML = refs.map(r => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <div><div style="font-weight:700;">Friend joined</div><div style="font-size:12px;color:#666;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
+      <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
+    </div>`).join('');
+  } catch(e) {}
+}
+
+window.copyReferralLink = function() {
+  const link = getReferralLink();
+  navigator.clipboard.writeText(link).catch(() => {});
+  showToast('Referral link copied! 📋');
+  haptic();
+};
+
+window.shareReferralLink = function() {
+  const link = getReferralLink();
+  const text = `Join CashZilla and earn coins! 💰 Use my link: ${link}`;
+  if (tg) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Join CashZilla and earn coins! 💰')}`);
+  else navigator.clipboard.writeText(text);
+};
+
+// ======= AD SYSTEM =======
+let adClicks = 0;
+let lastAdMinute = 0;
+let adsThisMinute = 0;
+
+window.handleAdClick = function(placement) {
+  // Rate limit: max 2 per minute
+  const now = Math.floor(Date.now() / 60000);
+  if (now !== lastAdMinute) { lastAdMinute = now; adsThisMinute = 0; }
+  if (adsThisMinute >= 2) { showToast('Ad limit reached. Come back later!'); return; }
+  adsThisMinute++;
+
+  haptic();
+  const reward = 5;
+  const { ref, update, increment, push } = window._fb;
+  const uid = window.APP.user?.uid;
+  if (!uid) return;
+
+  // Check Adsgram
+  if (window.APP.adsgram.enabled && window.APP.adsgram.blockId) {
+    showRewardedAd(reward);
+  } else if (window.APP.monetag.enabled && window.APP.monetag.smartlink) {
+    window.open(window.APP.monetag.smartlink, '_blank');
+    awardAdCoins(reward);
+  } else {
+    awardAdCoins(reward);
+  }
+  update(ref(db, 'stats/adClicks'), increment(1));
+};
+
+function awardAdCoins(coins) {
+  const { ref, update, increment, push } = window._fb;
+  const uid = window.APP.user?.uid;
+  update(ref(db, `users/${uid}`), { coins: increment(coins) });
+  push(ref(db, `transactions/${uid}`), { type: 'ad_click', amount: coins, timestamp: Date.now() });
+  showToast(`+${coins} coins from ad! 🎯`);
+  spawnFloatingCoins();
+}
+
+function showRewardedAd(reward) {
+  // Adsgram integration
+  if (typeof AdController !== 'undefined') {
+    AdController.show().then(() => awardAdCoins(reward)).catch(() => showToast('Ad not available'));
+  } else {
+    awardAdCoins(reward);
+  }
+}
+
+// ======= NOTIFICATIONS =======
+window.showNotifications = function() {
+  showPopup('🔔 Notifications', `<div style="text-align:center;padding:10px;">
+    <div style="font-size:40px;margin-bottom:10px;">🔔</div>
+    <div style="font-weight:700;">No new notifications</div>
+    <div style="color:#888;font-size:14px;margin-top:8px;">Check back later for updates!</div>
+  </div>`);
+};
+
+// ======= ADMIN PANEL =======
+window.adminLogin = async function(email) {
+  if (email?.toLowerCase() === 'kingadmin@cashzilla.com') {
+    window.APP.isAdmin = true;
+    document.getElementById('user-panel').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('bottom-nav').style.display = 'none';
+    await loadAdminData();
+    showToast('👑 Admin panel opened!');
+  }
+};
+
+window.adminLogout = function() {
+  window.APP.isAdmin = false;
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('user-panel').style.display = 'block';
+  document.getElementById('bottom-nav').style.display = 'flex';
+};
+
+window.showAdminTab = function(tab) {
+  document.querySelectorAll('[id^="admin-tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById('admin-tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+};
+
+async function loadAdminData() {
+  const { ref, get, query, orderByChild } = window._fb;
+
+  // Total users
+  try {
+    const snap = await get(ref(db, 'users'));
+    let total = 0, online = 0, totalCoins = 0;
+    if (snap.exists()) {
+      snap.forEach(child => {
+        const u = child.val();
+        total++;
+        totalCoins += u.coins || 0;
+        if (Date.now() - (u.lastSeen || 0) < 300000) online++;
+      });
+    }
+    document.getElementById('admin-total-users').textContent = total;
+    document.getElementById('admin-online-users').textContent = online;
+    document.getElementById('admin-total-coins').textContent = totalCoins.toLocaleString();
+  } catch(e) {}
+
+  // Withdrawals
+  try {
+    const snap = await get(ref(db, 'withdraws'));
+    let total = 0;
+    if (snap.exists()) snap.forEach(() => total++);
+    document.getElementById('admin-total-withdrawals').textContent = total;
+    loadAdminWithdrawals(snap);
+  } catch(e) {}
+
+  loadAdminUsers();
+  loadAdminQuizzes();
+  loadAdminSettings();
+}
+
+async function loadAdminUsers() {
+  const { ref, get } = window._fb;
+  const el = document.getElementById('admin-users-list');
+  if (!el) return;
+  try {
+    const snap = await get(ref(db, 'users'));
+    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;">No users</div>'; return; }
+    const users = [];
+    snap.forEach(child => users.push({ id: child.key, ...child.val() }));
+    el.innerHTML = users.map(u => `<div class="card" style="padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">👤</div>
+        <div style="flex:1;">
+          <div style="font-weight:800;">${u.name || 'User'}</div>
+          <div style="font-size:12px;color:#666;">${u.uid?.slice(0,10)}... · ${u.coins||0} coins</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn" onclick="adminAddCoins('${u.uid}')" style="background:var(--green);color:#fff;padding:6px 10px;font-size:12px;">+Coins</button>
+          <button class="btn" onclick="adminBanUser('${u.uid}')" style="background:${u.banned?'#ef4444':'#f3f4f6'};padding:6px 10px;font-size:12px;">${u.banned?'Unban':'Ban'}</button>
+        </div>
+      </div>
+    </div>`).join('');
+  } catch(e) {}
+}
+
+window.adminAddCoins = async function(uid) {
+  const amount = parseInt(prompt('Coins to add:') || '0');
+  if (!amount) return;
+  const { ref, update, increment } = window._fb;
+  await update(ref(db, `users/${uid}`), { coins: increment(amount) });
+  showToast(`Added ${amount} coins to user`);
+  loadAdminUsers();
+};
+
+window.adminBanUser = async function(uid) {
+  const { ref, get, update } = window._fb;
+  const snap = await get(ref(db, `users/${uid}/banned`));
+  const banned = snap.val();
+  await update(ref(db, `users/${uid}`), { banned: !banned });
+  showToast(banned ? 'User unbanned' : 'User banned');
+  loadAdminUsers();
+};
+
+window.adminSearchUser = function() {
+  const q = document.getElementById('user-search').value.toLowerCase();
+  document.querySelectorAll('#admin-users-list .card').forEach(card => {
+    card.style.display = card.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+  });
+};
+
+async function loadAdminQuizzes() {
+  const el = document.getElementById('admin-quizzes-list');
+  if (!el) return;
+  el.innerHTML = window.APP.quizzes.map(q => `<div class="card" style="padding:12px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="font-size:28px;">${q.icon||'❓'}</div>
+      <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.questions?.length||0} questions · +${q.reward} coins</div></div>
+      <button class="btn" onclick="adminDeleteQuiz('${q.id}')" style="background:#ef4444;color:#fff;padding:6px 10px;font-size:12px;">Delete</button>
+    </div>
+  </div>`).join('');
+}
+
+window.adminDeleteQuiz = async function(id) {
+  if (!confirm('Delete this quiz?')) return;
+  const { ref, update } = window._fb;
+  await update(ref(db, `quizzes/${id}`), { deleted: true });
+  window.APP.quizzes = window.APP.quizzes.filter(q => q.id !== id);
+  loadAdminQuizzes();
+  showToast('Quiz deleted');
+};
+
+window.showCreateQuizForm = function() {
+  showPopup('➕ Create Quiz', `<div>
+    <input id="new-quiz-title" type="text" placeholder="Quiz Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+    <input id="new-quiz-category" type="text" placeholder="Category" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+    <input id="new-quiz-reward" type="number" placeholder="Reward (coins)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+    <input id="new-quiz-time" type="number" placeholder="Time per question (seconds)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
+    <button class="btn" onclick="submitNewQuiz()" style="background:var(--green);color:#fff;width:100%;padding:12px;">Create Quiz</button>
+  </div>`);
+};
+
+window.submitNewQuiz = async function() {
+  const title = document.getElementById('new-quiz-title')?.value;
+  const category = document.getElementById('new-quiz-category')?.value;
+  const reward = parseInt(document.getElementById('new-quiz-reward')?.value) || 50;
+  const time = parseInt(document.getElementById('new-quiz-time')?.value) || 30;
+  if (!title) { showToast('Enter a title!'); return; }
+  const { ref, push } = window._fb;
+  const newQuiz = { title, category, reward, time, icon:'❓', difficulty:'Medium', questions:[] };
+  await push(ref(db, 'quizzes'), newQuiz);
+  showToast('Quiz created!');
+  closePopup();
+  loadAdminQuizzes();
+};
+
+function loadAdminWithdrawals(snap) {
+  const el = document.getElementById('admin-withdrawals-list');
+  if (!el) return;
+  if (!snap || !snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals</div>'; return; }
+  const withdraws = [];
+  snap.forEach(child => withdraws.push({ id: child.key, ...child.val() }));
+  withdraws.sort((a, b) => b.timestamp - a.timestamp);
+  el.innerHTML = withdraws.map(w => `<div class="card" style="padding:12px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div><div style="font-weight:800;">${w.userName||'User'}</div><div style="font-size:12px;color:#666;">${w.method?.toUpperCase()} · ${w.amount} coins</div></div>
+      <span style="background:${w.status==='pending'?'#fef9c3':w.status==='approved'?'#dcfce7':'#fee2e2'};border:1.5px solid #111;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px;">Address: ${w.address}</div>
+    ${w.status==='pending' ? `<div style="display:flex;gap:8px;">
+      <button class="btn" onclick="adminApproveWithdraw('${w.id}')" style="flex:1;background:var(--green);color:#fff;padding:8px;font-size:13px;">✅ Approve</button>
+      <button class="btn" onclick="adminRejectWithdraw('${w.id}')" style="flex:1;background:#ef4444;color:#fff;padding:8px;font-size:13px;">❌ Reject</button>
+    </div>` : ''}
+  </div>`).join('');
+}
+
+window.adminApproveWithdraw = async function(id) {
+  const { ref, update } = window._fb;
+  await update(ref(db, `withdraws/${id}`), { status: 'approved' });
+  showToast('Withdrawal approved ✅');
+  loadAdminData();
+};
+
+window.adminRejectWithdraw = async function(id) {
+  const { ref, update, get, increment } = window._fb;
+  const snap = await get(ref(db, `withdraws/${id}`));
+  if (snap.exists()) {
+    const w = snap.val();
+    await update(ref(db, `withdraws/${id}`), { status: 'rejected' });
+    // Refund
+    await update(ref(db, `users/${w.uid}`), { coins: increment(w.amount) });
+  }
+  showToast('Withdrawal rejected ❌');
+  loadAdminData();
+};
+
+window.adminSendNotification = async function() {
+  const title = document.getElementById('notif-title').value;
+  const msg = document.getElementById('notif-msg').value;
+  if (!title || !msg) { showToast('Fill all fields!'); return; }
+  const { ref, push } = window._fb;
+  await push(ref(db, 'notifications'), { title, message: msg, timestamp: Date.now() });
+  showToast('Notification sent to all users!');
+  document.getElementById('notif-title').value = '';
+  document.getElementById('notif-msg').value = '';
+};
+
+function loadAdminSettings() {
+  const s = window.APP.settings;
+  document.getElementById('coin-usdt').value = s.coinUsdt;
+  document.getElementById('coin-usd').value = s.coinUsd;
+  document.getElementById('coin-bdt').value = s.coinBdt;
+  document.getElementById('min-withdraw').value = s.minWithdraw;
+  document.getElementById('referral-bonus').value = s.referralBonus;
+  document.getElementById('adsgram-block-id').value = window.APP.adsgram.blockId;
+  document.getElementById('adsgram-zone-id').value = window.APP.adsgram.zoneId;
+  document.getElementById('monetag-zone-id').value = window.APP.monetag.zoneId;
+  document.getElementById('monetag-smartlink').value = window.APP.monetag.smartlink;
+}
+
+window.saveSettings = async function() {
+  const { ref, set } = window._fb;
+  const settings = {
+    coinUsdt: parseInt(document.getElementById('coin-usdt').value) || 10000,
+    coinUsd: parseInt(document.getElementById('coin-usd').value) || 10000,
+    coinBdt: parseInt(document.getElementById('coin-bdt').value) || 833,
+    minWithdraw: parseInt(document.getElementById('min-withdraw').value) || 5000,
+    referralBonus: parseInt(document.getElementById('referral-bonus').value) || 500,
+    adsgram: window.APP.adsgram,
+    monetag: window.APP.monetag,
+  };
+  await set(ref(db, 'settings'), settings);
+  window.APP.settings = settings;
+  showToast('Settings saved! ✅');
+};
+
+window.saveAdsgramConfig = async function() {
+  const { ref, update } = window._fb;
+  window.APP.adsgram.blockId = document.getElementById('adsgram-block-id').value;
+  window.APP.adsgram.zoneId = document.getElementById('adsgram-zone-id').value;
+  await update(ref(db, 'settings/adsgram'), window.APP.adsgram);
+  showToast('Adsgram config saved!');
+};
+
+window.saveMonetag = async function() {
+  const { ref, update } = window._fb;
+  window.APP.monetag.zoneId = document.getElementById('monetag-zone-id').value;
+  window.APP.monetag.smartlink = document.getElementById('monetag-smartlink').value;
+  window.APP.monetag.banner = document.getElementById('monetag-banner').value;
+  await update(ref(db, 'settings/monetag'), window.APP.monetag);
+  showToast('Monetag config saved!');
+};
+
+window.saveAdToggles = async function() {
+  window.APP.adsgram.enabled = document.getElementById('adsgram-enabled').checked;
+  window.APP.monetag.enabled = document.getElementById('monetag-enabled').checked;
+  const { ref, update } = window._fb;
+  await update(ref(db, 'settings'), { adsgram: window.APP.adsgram, monetag: window.APP.monetag });
+  // Update toggle UI
+  document.getElementById('adsgram-toggle-ui').style.background = window.APP.adsgram.enabled ? '#22c55e' : '#e5e7eb';
+  document.getElementById('monetag-toggle-ui').style.background = window.APP.monetag.enabled ? '#22c55e' : '#e5e7eb';
+};
+
+// ======= POPUP SYSTEM =======
+window.showPopup = function(title, html) {
+  const box = document.getElementById('popup-box');
+  box.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-weight:800;font-size:18px;">${title}</div>
+    <button onclick="closePopup()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;">×</button>
+  </div>${html}`;
+  document.getElementById('popup-overlay').style.display = 'flex';
+};
+window.closePopup = function() { document.getElementById('popup-overlay').style.display = 'none'; };
+
+function showWelcomePopup(u) {
+  showPopup('🎉 Welcome!', `<div style="text-align:center;">
+    <div style="font-size:56px;margin-bottom:12px;">💰</div>
+    <div class="fredoka" style="font-size:24px;">Welcome, ${u.name?.split(' ')[0]}!</div>
+    <div style="color:#666;margin:10px 0;font-weight:600;">You've received 500 welcome coins!</div>
+    <div class="balance-card" style="margin:14px 0;text-align:left;"><div style="font-size:13px;opacity:.8;">WELCOME BONUS</div><div class="fredoka" style="font-size:36px;">+500 Coins 🪙</div></div>
+    <button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:14px;font-size:16px;">Start Earning! 🚀</button>
+  </div>`);
+}
+
+// ======= TOAST =======
+window.showToast = function(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+};
+
+// ======= CONFETTI =======
+window.spawnConfetti = function() {
+  const colors = ['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = (1.5 + Math.random()) + 's';
+      el.style.animationDelay = Math.random() * .5 + 's';
+      el.style.transform = `rotate(${Math.random() * 360}deg)`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }, i * 30);
+  }
+};
+
+window.spawnFloatingCoins = function() {
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'floating-coin';
+      el.textContent = '🪙';
+      el.style.left = (30 + Math.random() * 40) + 'vw';
+      el.style.top = '50vh';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1500);
+    }, i * 150);
+  }
+};
+
+// ======= ADMIN EMAIL CHECK =======
+// Check if tg user triggers admin
+setTimeout(() => {
+  const tgUser = tg?.initDataUnsafe?.user;
+  if (tgUser?.username === 'kingadmin') adminLogin('kingadmin@cashzilla.com');
+}, 2000);
+
+// Expose admin login globally
+window.adminLogin = window.adminLogin;
+
+// ======= AUTO AD ROTATION =======
+setInterval(() => {
+  if (window.APP.user && !window.APP.isAdmin) {
+    autoRotateAds();
+  }
+}, 35000);
+
+function autoRotateAds() {
+  const now = Math.floor(Date.now() / 60000);
+  if (now !== lastAdMinute) { lastAdMinute = now; adsThisMinute = 0; }
+  if (adsThisMinute >= 2) return;
+  // Just refresh ad visual (no reward for auto)
+  const adEl = document.getElementById('ad-banner-home');
+  if (adEl) {
+    adEl.style.opacity = '.5';
+    setTimeout(() => { if(adEl) adEl.style.opacity = '1'; }, 500);
+  }
+}
+
+console.log('✅ CashZilla loaded successfully!');
+</script>
+
+<script>
+// Admin login via URL param (for testing)
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === 'kingadmin@cashzilla.com') {
+    setTimeout(() => window.adminLogin && adminLogin('kingadmin@cashzilla.com'), 3000);
+  }
+});
+</script>
+</body>
+</html>
