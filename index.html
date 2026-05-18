@@ -16,7 +16,7 @@
 body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
 .fredoka{font-family:'Fredoka One',cursive;}
 
-/* ===== LOADING ===== */
+/* LOADING */
 #ls{position:fixed;inset:0;background:#ffe94a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
 #ls.hide{opacity:0;pointer-events:none;}
 .lc{width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#f59e0b,#ffe94a);border:4px solid #92400e;box-shadow:0 6px 0 #92400e;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#92400e;animation:lb 1s ease-in-out infinite;margin-bottom:20px;}
@@ -30,136 +30,143 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 .lpbf{height:100%;background:#111;border-radius:6px;animation:lpf 5s linear forwards;}
 @keyframes lpf{from{width:0%;}to{width:100%;}}
 
-/* ===== CARDS & BUTTONS ===== */
+/* CARDS & BUTTONS */
 .card{background:#fff;border:3px solid #111;border-radius:20px;box-shadow:var(--sh);}
 .btn{border:3px solid #111;border-radius:14px;font-weight:800;box-shadow:var(--sh);cursor:pointer;transition:transform .1s,box-shadow .1s;display:inline-flex;align-items:center;justify-content:center;}
 .btn:active{transform:translate(3px,3px);box-shadow:none;}
 
-/* ===== NAV ===== */
+/* NAV */
 #bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;gap:4px;}
 .ni.active{background:var(--yellow);}
 .nl{font-size:10px;font-weight:800;color:#111;}
 
-/* ===== CSS ICONS ===== */
-/* Home */
+/* CSS ICONS */
 .ic-home{width:22px;height:22px;position:relative;}
 .ic-home::before{content:'';position:absolute;bottom:2px;left:5px;width:12px;height:10px;background:#111;border-radius:2px 2px 0 0;}
 .ic-home::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:10px solid #111;}
-/* Brain/Quiz */
 .ic-brain{width:22px;height:20px;position:relative;}
 .ic-brain::before{content:'';position:absolute;top:2px;left:2px;width:18px;height:14px;border-radius:9px 9px 4px 4px;background:#111;}
 .ic-brain::after{content:'';position:absolute;bottom:0;left:7px;width:8px;height:6px;border-radius:0 0 4px 4px;background:#111;}
-/* Wheel/Spin */
 .ic-wheel{width:22px;height:22px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ff6eb4 25% 50%,#ffe94a 50% 75%,#22c55e 75% 100%);position:relative;}
 .ic-wheel::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#111;}
-/* People/Refer */
 .ic-ref{width:24px;height:20px;position:relative;}
 .ic-ref::before{content:'';position:absolute;top:0;left:1px;width:9px;height:9px;border-radius:50%;background:#111;}
 .ic-ref::after{content:'';position:absolute;bottom:0;left:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#111;}
 .ic-ref2{position:absolute;top:0;right:1px;width:9px;height:9px;border-radius:50%;background:#a855f7;border:2px solid #111;}
 .ic-ref3{position:absolute;bottom:0;right:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#a855f7;border:2px solid #111;}
-/* Cash arrow */
 .ic-cash{width:22px;height:18px;position:relative;}
 .ic-cash::before{content:'';position:absolute;top:50%;left:0;right:8px;height:3px;background:#22c55e;transform:translateY(-50%);border-radius:2px;}
 .ic-cash::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #22c55e;}
-
-/* Coin */
 .ic-coin{width:1em;height:1em;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;display:inline-flex;align-items:center;justify-content:center;font-size:.55em;font-weight:900;color:#92400e;flex-shrink:0;}
-/* Check */
 .ic-check{width:1em;height:1em;border-radius:50%;background:#22c55e;border:2px solid #166534;position:relative;flex-shrink:0;}
 .ic-check::after{content:'';position:absolute;left:22%;top:48%;width:33%;height:18%;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);}
-/* Cross */
 .ic-x{width:1em;height:1em;border-radius:50%;background:#ef4444;border:2px solid #991b1b;position:relative;flex-shrink:0;}
 .ic-x::before,.ic-x::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2.5px;background:#fff;border-radius:2px;}
 .ic-x::before{transform:translate(-50%,-50%) rotate(45deg);}
 .ic-x::after{transform:translate(-50%,-50%) rotate(-45deg);}
-/* Bell */
 .ic-bell{width:20px;height:22px;position:relative;}
 .ic-bell::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:14px;height:12px;border-radius:7px 7px 0 0;background:#111;}
 .ic-bell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:8px;height:5px;border-radius:0 0 4px 4px;background:#111;}
-/* Trophy */
 .ic-trophy{width:22px;height:22px;position:relative;}
 .ic-trophy::before{content:'';position:absolute;top:0;left:3px;width:16px;height:13px;border-radius:10px 10px 4px 4px;background:#f59e0b;border:2px solid #92400e;}
 .ic-trophy::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:12px;height:9px;background:#f59e0b;border:2px solid #92400e;border-radius:0 0 4px 4px;}
-/* Gift */
 .ic-gift{width:20px;height:20px;position:relative;}
 .ic-gift::before{content:'';position:absolute;top:4px;left:1px;width:18px;height:14px;background:#ff6eb4;border:2px solid #9d174d;border-radius:2px;}
 .ic-gift::after{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:2px;height:14px;background:#9d174d;}
-/* Shield (admin) */
 .ic-shield{width:18px;height:22px;background:#a855f7;border:2px solid #4c1d95;clip-path:polygon(50% 0%,100% 20%,100% 60%,50% 100%,0% 60%,0% 20%);}
-/* Star */
 .ic-star{width:20px;height:20px;background:#ffe94a;border:2px solid #92400e;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
-/* Up arrow */
-.ic-up{width:16px;height:16px;position:relative;}
-.ic-up::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:65%;background:#22c55e;}
-.ic-up::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:6px solid #22c55e;}
 
-/* ===== BALANCE CARD ===== */
+/* BALANCE CARD */
 .balcard{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);color:#fff;padding:20px;}
 
-/* ===== QUIZ ===== */
+/* QUIZ */
 .ans-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;width:100%;transition:transform .1s;}
 .ans-btn:hover{transform:translate(-2px,-2px);}
 .ans-btn.ok{background:#bbf7d0;border-color:#16a34a;}
 .ans-btn.no{background:#fecaca;border-color:#dc2626;}
 
-/* ===== PROGRESS ===== */
+/* PROGRESS */
 .pbar{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden;}
 .pfill{height:100%;border-radius:6px;transition:width .4s;}
 
-/* ===== METHOD CARDS ===== */
+/* METHOD CARDS */
 .mc{border:3px solid #e5e7eb;border-radius:16px;padding:12px;cursor:pointer;background:#fff;transition:.15s;}
 .mc.sel{border-color:#111;background:var(--yellow);box-shadow:3px 3px 0 #111;}
 
-/* ===== PILLS ===== */
+/* PILLS */
 .pill{padding:8px 16px;border:2px solid #111;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;background:#fff;}
 .pill.active{background:#111;color:#fff;}
 
-/* ===== PAGES ===== */
+/* PAGES */
 .pg{display:none;}
 .pg.on{display:block;animation:si .2s ease;}
 @keyframes si{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-/* ===== POPUP ===== */
+/* POPUP */
 .pov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;}
 .pbox{background:#fff;border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);padding:24px;margin:20px;max-width:380px;width:100%;animation:pi .25s ease;}
 @keyframes pi{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
 
-/* ===== TOAST ===== */
+/* TOAST */
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 22px;border-radius:14px;font-weight:700;z-index:9000;transition:transform .3s;white-space:nowrap;font-size:14px;}
 #toast.on{transform:translateX(-50%) translateY(0);}
 
-/* ===== CONFETTI ===== */
+/* CONFETTI */
 .cf{position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;animation:cf 2.5s linear forwards;pointer-events:none;z-index:8000;}
 @keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
 
-/* ===== FLOAT COIN ===== */
+/* FLOAT COIN */
 .fc{position:fixed;width:18px;height:18px;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;pointer-events:none;animation:fu 1.2s ease-out forwards;z-index:8000;}
 @keyframes fu{from{transform:translateY(0);opacity:1;}to{transform:translateY(-110px);opacity:0;}}
 
-/* ===== SPINNER ===== */
+/* SPINNER */
 .spin{width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:ro .7s linear infinite;}
 @keyframes ro{to{transform:rotate(360deg);}}
 
-/* ===== ADMIN ===== */
+/* ADMIN */
 #ap{display:none;}
 .at{padding:10px 16px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;font-size:13px;}
 .at.active{background:var(--yellow);}
 .asc{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:var(--sh);padding:16px;}
 
-/* ===== AD FRAME ===== */
-.adf{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:var(--sh);cursor:pointer;}
+/* AD FRAME */
+.adf{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:var(--sh);}
+
+/* ---- HEADER AD FRAME ---- */
+.header-ad-frame{width:100%;min-height:60px;border-bottom:3px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.header-ad-label{position:absolute;top:3px;left:6px;background:var(--yellow);border:1.5px solid #111;border-radius:4px;font-size:9px;font-weight:900;padding:1px 5px;z-index:2;}
+
+/* ---- SPIN WHEEL (image-like style) ---- */
+.spin-page-wrapper{padding:16px;text-align:center;}
+.spin-header-card{background:linear-gradient(135deg,#7c3aed,#a855f7);border:3px solid #111;border-radius:20px;box-shadow:var(--sh2);padding:16px;margin-bottom:18px;color:#fff;display:flex;align-items:center;gap:12px;}
+.spin-stats-row{display:flex;gap:8px;margin-top:10px;}
+.spin-stat-badge{background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 14px;font-weight:800;font-size:13px;color:#111;display:flex;align-items:center;gap:5px;}
+.wheel-container{position:relative;display:inline-block;margin-bottom:10px;}
+.wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid #111;}
+.wheel-pointer::after{content:'';position:absolute;top:-24px;left:-10px;width:20px;height:12px;background:#ef4444;border:2px solid #111;border-radius:4px 4px 0 0;}
+#wcanvas{border:5px solid #111;border-radius:50%;box-shadow:0 8px 0 #111,var(--sh2);display:block;}
+.spin-btn-main{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;margin-top:12px;letter-spacing:.5px;}
+.spin-history-card{margin-top:16px;background:#fff;border:3px solid #111;border-radius:20px;box-shadow:var(--sh);padding:16px;text-align:left;}
+
+/* ---- REFER PAGE (image-like) ---- */
+.refer-hero{background:linear-gradient(135deg,#111,#1f2937);border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);color:#fff;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.refer-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05);}
+.refer-link-box{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:3px solid #111;border-radius:20px;box-shadow:var(--sh);padding:16px;margin-bottom:16px;}
+.refer-copy-row{display:flex;gap:8px;margin-top:8px;}
+.refer-copy-row input{flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;}
+.refer-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.refer-stat-card{background:#fff;border:3px solid #111;border-radius:18px;box-shadow:var(--sh);padding:16px;text-align:center;}
+.how-step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+.how-step:last-child{border-bottom:none;}
+.step-num{width:36px;height:36px;border-radius:10px;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;}
 
 ::-webkit-scrollbar{width:0;}
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
 <div id="toast"></div>
-
-<!-- POPUP -->
 <div id="pov" class="pov" style="display:none;"><div id="pbox" class="pbox"></div></div>
 
 <!-- LOADING -->
@@ -189,6 +196,7 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
       <button class="at" onclick="aTab('users',this)">Users</button>
       <button class="at" onclick="aTab('quiz',this)">Quizzes</button>
       <button class="at" onclick="aTab('wd',this)">Withdrawals</button>
+      <button class="at" onclick="aTab('ads',this)">Ads</button>
       <button class="at" onclick="aTab('notify',this)">Notify</button>
       <button class="at" onclick="aTab('sets',this)">Settings</button>
     </div>
@@ -216,6 +224,7 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </div>
       </div>
     </div>
+
     <!-- USERS -->
     <div id="at-users" style="display:none;">
       <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -224,13 +233,92 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
       </div>
       <div id="ulist"></div>
     </div>
+
     <!-- QUIZZES -->
     <div id="at-quiz" style="display:none;">
       <button class="btn" onclick="showNewQuiz()" style="background:var(--green);color:#fff;padding:12px;width:100%;margin-bottom:14px;font-size:15px;">+ New Quiz</button>
       <div id="qlist"></div>
     </div>
+
     <!-- WITHDRAWALS -->
     <div id="at-wd" style="display:none;"><div id="wdlist"></div></div>
+
+    <!-- ADS MANAGEMENT -->
+    <div id="at-ads" style="display:none;">
+      <div class="card" style="padding:16px;margin-bottom:12px;">
+        <div style="font-weight:800;font-size:16px;margin-bottom:4px;">Ad Network Settings</div>
+        <div style="font-size:12px;color:#666;font-weight:600;margin-bottom:14px;">Active network ads will show automatically</div>
+
+        <!-- Active Network Selector -->
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">Active Ad Network</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div class="mc sel" id="net-none" data-net="none" onclick="selNet('none')">
+            <div style="font-weight:800;font-size:13px;">None (Off)</div>
+            <div style="font-size:11px;color:#666;">Disable all ads</div>
+          </div>
+          <div class="mc" id="net-monetag" data-net="monetag" onclick="selNet('monetag')">
+            <div style="font-weight:800;font-size:13px;">Monetag</div>
+            <div style="font-size:11px;color:#666;">Zone ID based</div>
+          </div>
+          <div class="mc" id="net-adsgram" data-net="adsgram" onclick="selNet('adsgram')">
+            <div style="font-weight:800;font-size:13px;">Adsgram</div>
+            <div style="font-size:11px;color:#666;">Block ID based</div>
+          </div>
+        </div>
+
+        <!-- Monetag Settings -->
+        <div id="monetag-settings" style="display:none;">
+          <div style="font-weight:800;font-size:15px;margin-bottom:10px;color:#a855f7;">🟣 Monetag Settings</div>
+          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Zone ID</label><input id="monetag-zone" type="text" placeholder="e.g. 9288208" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+          <div style="font-size:11px;color:#666;font-weight:600;margin-bottom:10px;">Script: //libtl.com/sdk.js?zone=ZONE_ID</div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:8px;">Ad Types</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-banner" style="width:16px;height:16px;"> Banner Ad (Header)</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-popup" style="width:16px;height:16px;"> Pop-up Ad</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-interstitial" style="width:16px;height:16px;"> Interstitial Ad</label>
+          </div>
+        </div>
+
+        <!-- Adsgram Settings -->
+        <div id="adsgram-settings" style="display:none;">
+          <div style="font-weight:800;font-size:15px;margin-bottom:10px;color:#00d4e8;">🔵 Adsgram Settings</div>
+          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Block ID</label><input id="adsgram-block" type="text" placeholder="e.g. 12345" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+          <div style="font-size:11px;color:#666;font-weight:600;margin-bottom:10px;">Rewarded video ads via Adsgram SDK</div>
+          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Reward Coins per Ad View</label><input id="adsgram-reward" type="number" placeholder="e.g. 10" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        </div>
+
+        <!-- Banner Ad URL -->
+        <div id="banner-settings" style="margin-bottom:10px;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Banner Ad (Header) URL/HTML</div>
+          <textarea id="banner-html" rows="3" placeholder="<a href='...'><img src='...'></a> or any HTML" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;"></textarea>
+        </div>
+
+        <!-- 1-Click Ad URL -->
+        <div style="margin-bottom:14px;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">1-Click Ad URL</div>
+          <input id="oneclick-url" type="text" placeholder="https://..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;"/>
+          <div style="font-size:11px;color:#666;margin-top:4px;font-weight:600;">Opens when user taps the ad area on home</div>
+        </div>
+
+        <!-- Pop-up Ad HTML -->
+        <div style="margin-bottom:14px;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Pop-up Ad HTML</div>
+          <textarea id="popup-html" rows="3" placeholder="HTML content for popup ad..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;"></textarea>
+          <div style="font-size:11px;color:#666;margin-top:4px;font-weight:600;">Shown every 3 minutes to users</div>
+        </div>
+
+        <button class="btn" onclick="saveAdSettings()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">💾 Save Ad Settings</button>
+      </div>
+
+      <!-- Ad Preview -->
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:800;margin-bottom:10px;">Ad Preview</div>
+        <div id="ad-preview-area" style="border:2px dashed #ccc;border-radius:12px;padding:12px;min-height:60px;background:#f9f9f9;">
+          <div style="color:#888;text-align:center;font-weight:600;font-size:13px;">Save settings to preview</div>
+        </div>
+      </div>
+    </div>
+
     <!-- NOTIFY -->
     <div id="at-notify" style="display:none;">
       <div class="card" style="padding:16px;margin-bottom:12px;">
@@ -254,6 +342,7 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         <button class="btn" onclick="sendInApp()" style="background:#a855f7;color:#fff;width:100%;padding:12px;margin-top:8px;font-size:15px;">Send In-App</button>
       </div>
     </div>
+
     <!-- SETTINGS -->
     <div id="at-sets" style="display:none;">
       <div class="card" style="padding:16px;">
@@ -274,6 +363,12 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- HOME -->
   <div id="pg-home" class="pg on">
+    <!-- Header Ad Frame -->
+    <div class="header-ad-frame" id="header-ad-home" style="display:none;">
+      <span class="header-ad-label">AD</span>
+      <div id="header-ad-content-home" style="width:100%;text-align:center;"></div>
+    </div>
+
     <div style="padding:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -291,7 +386,6 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </div>
       </div>
 
-      <!-- Balance -->
       <div class="balcard" style="margin-bottom:16px;">
         <div style="font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px;">YOUR BALANCE</div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
@@ -314,7 +408,6 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </div>
       </div>
 
-      <!-- Actions -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <button class="btn" onclick="gp('quiz')" style="background:var(--cyan);padding:15px;font-size:15px;gap:8px;">
           <div class="ic-brain"></div> Start Quiz
@@ -324,7 +417,6 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </button>
       </div>
 
-      <!-- Daily Bonus -->
       <div class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
         <div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
@@ -336,20 +428,24 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         <button class="btn" id="dbb" onclick="claimDaily()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
       </div>
 
-      <!-- Ad -->
-      <div class="adf" style="margin-bottom:16px;" onclick="adClick()">
+      <!-- Sponsor Ad — no reward, opens 1-click URL -->
+      <div class="adf" style="margin-bottom:16px;cursor:pointer;" id="sponsor-ad-box" onclick="sponsorAdClick()" style="display:none;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <span style="background:#ffe94a;border:2px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;">AD</span>
           <span style="font-size:12px;color:#888;font-weight:600;">Sponsored</span>
         </div>
-        <div style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;gap:8px;">
+        <div id="sponsor-ad-inner" style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;gap:8px;">
           <div class="ic-star" style="width:20px;height:20px;"></div>
           Earn More with CashZilla Premium
         </div>
-        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Tap to view — Earn 5 coins</div>
+        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Sponsored</div>
       </div>
 
-      <!-- Leaderboard preview -->
+      <!-- Adsgram reward ad button -->
+      <div id="adsgram-ad-btn-wrap" style="display:none;margin-bottom:16px;">
+        <button class="btn" onclick="showAdsgramAd()" style="background:linear-gradient(135deg,#00d4e8,#0891b2);color:#fff;width:100%;padding:14px;font-size:15px;">🎬 Watch Ad &amp; Earn Coins</button>
+      </div>
+
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="display:flex;align-items:center;gap:8px;">
@@ -361,13 +457,11 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         <div id="lbprev"></div>
       </div>
 
-      <!-- Featured -->
       <div style="margin-bottom:16px;">
         <div style="font-weight:800;font-size:16px;margin-bottom:10px;">Featured Quizzes</div>
         <div id="fquiz" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
 
-      <!-- Stats -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div class="card" style="padding:12px;text-align:center;">
           <div class="ic-check" style="font-size:20px;margin:0 auto 4px;"></div>
@@ -393,6 +487,11 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- QUIZ PAGE -->
   <div id="pg-quiz" class="pg">
+    <!-- Header Ad Frame for Quiz -->
+    <div class="header-ad-frame" id="header-ad-quiz" style="display:none;">
+      <span class="header-ad-label">AD</span>
+      <div id="header-ad-content-quiz" style="width:100%;text-align:center;"></div>
+    </div>
     <div style="padding:16px;">
       <div id="qlistview">
         <div class="fredoka" style="font-size:22px;margin-bottom:14px;">Quiz Arena</div>
@@ -442,18 +541,43 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- SPIN PAGE -->
   <div id="pg-spin" class="pg">
-    <div style="padding:16px;text-align:center;">
-      <div class="fredoka" style="font-size:26px;margin-bottom:6px;">Lucky Wheel</div>
-      <div style="color:#666;font-weight:600;margin-bottom:16px;" id="spintxt">Spin to win prizes!</div>
-      <div style="position:relative;display:inline-block;margin-bottom:20px;">
-        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid #111;"></div>
-        <canvas id="wcanvas" width="280" height="280" style="border:4px solid #111;border-radius:50%;box-shadow:var(--sh2);"></canvas>
+    <div class="spin-page-wrapper">
+      <!-- Header Ad for Spin -->
+      <div class="header-ad-frame" id="header-ad-spin" style="display:none;">
+        <span class="header-ad-label">AD</span>
+        <div id="header-ad-content-spin" style="width:100%;text-align:center;"></div>
       </div>
-      <br/>
-      <button class="btn" id="spinbtn" onclick="doSpin()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:280px;margin-top:4px;">SPIN NOW!</button>
+
+      <!-- Header Card like screenshot -->
+      <div class="spin-header-card" style="margin-top:8px;">
+        <div style="font-size:32px;">🎰</div>
+        <div>
+          <div class="fredoka" style="font-size:22px;letter-spacing:.5px;">SPIN THE WHEEL</div>
+          <div style="font-size:12px;opacity:.8;font-weight:600;">Daily GodZilla Spin</div>
+          <div style="font-size:12px;opacity:.7;margin-top:2px;">Spin the wheel and win cash prizes!</div>
+          <div class="spin-stats-row">
+            <div class="spin-stat-badge">
+              <span>🎯</span> Total Spins: <span id="spin-total-count">0</span>
+            </div>
+            <div class="spin-stat-badge">
+              <span>⏱️</span> Cooldown: 24h
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wheel -->
+      <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        <canvas id="wcanvas" width="300" height="300"></canvas>
+      </div>
+
+      <button class="btn spin-btn-main" id="spinbtn" onclick="doSpin()">🎯 SPIN NOW!</button>
       <div style="font-size:13px;color:#888;font-weight:600;margin-top:10px;" id="spinct"></div>
-      <div class="card" style="margin-top:16px;padding:14px;text-align:left;">
-        <div style="font-weight:800;margin-bottom:10px;">Spin History</div>
+
+      <!-- Spin History -->
+      <div class="spin-history-card">
+        <div style="font-weight:800;margin-bottom:10px;font-size:15px;">Spin History</div>
         <div id="shinst"></div>
       </div>
     </div>
@@ -461,41 +585,73 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- REFER PAGE -->
   <div id="pg-refer" class="pg">
+    <!-- Header Ad for Refer -->
+    <div class="header-ad-frame" id="header-ad-refer" style="display:none;">
+      <span class="header-ad-label">AD</span>
+      <div id="header-ad-content-refer" style="width:100%;text-align:center;"></div>
+    </div>
+
     <div style="padding:16px;">
-      <div class="fredoka" style="font-size:26px;margin-bottom:16px;">Refer &amp; Earn</div>
-      <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-        <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:8px;">YOUR REFERRAL LINK</div>
-        <div style="display:flex;gap:8px;">
-          <input id="rlink" readonly style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;" value="Loading..."/>
-          <button class="btn" onclick="copyRef()" style="background:var(--green);color:#fff;padding:10px 14px;">Copy</button>
-        </div>
-        <button class="btn" onclick="shareRef()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">Share on Telegram</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#ffe4e6,#fecdd3);">
-          <div style="font-size:11px;font-weight:700;color:#9f1239;">TOTAL REFS</div>
-          <div class="fredoka" style="font-size:32px;" id="tref">0</div>
-        </div>
-        <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#e0f2fe,#bae6fd);">
-          <div style="font-size:11px;font-weight:700;color:#0c4a6e;">REF EARNINGS</div>
-          <div class="fredoka" style="font-size:32px;" id="rearn">0</div>
-          <div style="font-size:11px;color:#666;">Coins</div>
+      <!-- Hero card like screenshot -->
+      <div class="refer-hero">
+        <div style="font-size:11px;font-weight:700;opacity:.6;margin-bottom:4px;">CASHZILLA</div>
+        <div class="fredoka" style="font-size:28px;margin-bottom:4px;">Refer &amp; Earn 🚀</div>
+        <div style="font-size:13px;opacity:.8;font-weight:600;">Invite friends &amp; earn coins for every join!</div>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;text-align:center;flex:1;">
+            <div style="font-size:10px;font-weight:700;opacity:.8;">YOUR REFS</div>
+            <div class="fredoka" style="font-size:26px;" id="tref">0</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;text-align:center;flex:1;">
+            <div style="font-size:10px;font-weight:700;opacity:.8;">EARNINGS</div>
+            <div class="fredoka" style="font-size:26px;" id="rearn">0</div>
+            <div style="font-size:10px;opacity:.7;">Coins</div>
+          </div>
         </div>
       </div>
+
+      <!-- Referral link box -->
+      <div class="refer-link-box">
+        <div style="font-size:12px;font-weight:800;color:#166534;margin-bottom:4px;">📎 YOUR REFERRAL LINK</div>
+        <div class="refer-copy-row">
+          <input id="rlink" readonly value="Loading..."/>
+          <button class="btn" onclick="copyRef()" style="background:var(--green);color:#fff;padding:10px 16px;font-size:14px;">Copy</button>
+        </div>
+        <button class="btn" onclick="shareRef()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">📤 Share on Telegram</button>
+      </div>
+
+      <!-- How it works -->
       <div class="card" style="padding:16px;margin-bottom:16px;">
-        <div style="font-weight:800;margin-bottom:12px;">How It Works</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--cyan);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">1</div><div style="font-weight:600;">Share your unique referral link</div></div>
-          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--yellow);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">2</div><div style="font-weight:600;">Friend joins using your link</div></div>
-          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--pink);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">3</div><div style="font-weight:600;" id="rbinfo">You earn 500 coins!</div></div>
+        <div style="font-weight:800;font-size:15px;margin-bottom:12px;">How It Works</div>
+        <div class="how-step">
+          <div class="step-num" style="background:var(--cyan);">1</div>
+          <div style="font-weight:600;">Share your unique referral link with friends</div>
+        </div>
+        <div class="how-step">
+          <div class="step-num" style="background:var(--yellow);">2</div>
+          <div style="font-weight:600;">Friend joins CashZilla using your link</div>
+        </div>
+        <div class="how-step">
+          <div class="step-num" style="background:var(--pink);color:#fff;">3</div>
+          <div style="font-weight:600;" id="rbinfo">You earn 500 coins instantly!</div>
         </div>
       </div>
-      <div class="card" style="padding:16px;"><div style="font-weight:800;margin-bottom:10px;">My Referrals</div><div id="myref"></div></div>
+
+      <!-- My Referrals -->
+      <div class="card" style="padding:16px;">
+        <div style="font-weight:800;margin-bottom:10px;">My Referrals</div>
+        <div id="myref"></div>
+      </div>
     </div>
   </div>
 
   <!-- CASH PAGE -->
   <div id="pg-cash" class="pg">
+    <!-- Header Ad for Cash -->
+    <div class="header-ad-frame" id="header-ad-cash" style="display:none;">
+      <span class="header-ad-label">AD</span>
+      <div id="header-ad-content-cash" style="width:100%;text-align:center;"></div>
+    </div>
     <div style="padding:16px;">
       <div class="fredoka" style="font-size:26px;margin-bottom:16px;">Cash Out</div>
       <div class="balcard" style="margin-bottom:16px;">
@@ -585,6 +741,9 @@ const ADMIN_TG_ID = '8601120665';
 const BOT_TOKEN   = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
 const ADMIN_CHAT  = '8601120665';
 
+// Default Monetag Zone ID
+const DEFAULT_MONETAG_ZONE = '9288208';
+
 firebase.initializeApp(FB_CFG);
 const auth = firebase.auth();
 const db   = firebase.database();
@@ -594,17 +753,23 @@ const S = {
   user:null, data:null, isAdmin:false,
   sets:{coinUsdt:10000,coinUsd:10000,coinBdt:833,minWd:5000,refBonus:500},
   quizzes:[], curQuiz:null, curQ:0, score:0, correct:0, wrong:0, timer:null,
-  spinning:false, method:'bkash', adMin:0, adCount:0
+  spinning:false, method:'bkash',
+  adSettings:{
+    activeNetwork:'none', // 'none','monetag','adsgram'
+    monetagZone:'', monetagBanner:false, monetagPopup:false, monetagInterstitial:false,
+    adsgramBlock:'', adsgramReward:10,
+    bannerHtml:'', oneclickUrl:'', popupHtml:''
+  },
+  adsgramInstance: null
 };
 
 const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();tg.enableClosingConfirmation();}
 const hap = t => tg?.HapticFeedback?.impactOccurred(t||'light');
 
-// ===== LOADING: show for at least 5s =====
+// Loading
 let loadReady = false, dataReady = false;
 setTimeout(()=>{ loadReady = true; tryHideLoad(); }, 5000);
-
 function tryHideLoad(){
   if(loadReady && dataReady){
     const ls = document.getElementById('ls');
@@ -615,13 +780,10 @@ function tryHideLoad(){
 
 // ===== AUTH =====
 auth.onAuthStateChanged(async u => {
-  if(u){
-    S.user = u;
-    await init(u.uid);
-  } else {
+  if(u){ S.user = u; await init(u.uid); }
+  else {
     auth.signInAnonymously().catch(e=>{
-      console.error(e);
-      dataReady = true; tryHideLoad();
+      console.error(e); dataReady=true; tryHideLoad();
       document.getElementById('up').style.display='block';
     });
   }
@@ -633,11 +795,14 @@ async function init(uid){
     const tgU  = tg?.initDataUnsafe?.user;
     const now  = Date.now();
 
-    // Admin check — Telegram UID only
+    // Admin check — multiple methods
     const tgId = String(tgU?.id||'');
     if(tgId === ADMIN_TG_ID) S.isAdmin = true;
-    // URL test override
     if(new URLSearchParams(location.search).get('admin_uid') === ADMIN_TG_ID) S.isAdmin = true;
+    // Firebase admin flag check
+    if(snap.exists() && snap.val().isAdmin === true) S.isAdmin = true;
+    // URL hash override for testing
+    if(location.hash === '#admin_'+ADMIN_TG_ID) S.isAdmin = true;
 
     if(!snap.exists()){
       const ref = new URLSearchParams(location.search).get('ref')||'';
@@ -663,16 +828,16 @@ async function init(uid){
       return;
     }
 
-    db.ref('users/'+uid).on('value', s=>{
-      if(s.exists()){ S.data=s.val(); updateUI(); }
-    });
+    db.ref('users/'+uid).on('value', s=>{ if(s.exists()){ S.data=s.val(); updateUI(); } });
 
     await loadSets();
+    await loadAdSettingsFromDB();
     await loadQuizzes();
     await loadLBPreview();
     loadWH(); loadSH(); loadRefs();
     updateUI();
     drawWheel();
+    initAdSystem();
 
     document.getElementById('up').style.display = 'block';
     if(S.isAdmin) addAdminBtn();
@@ -684,6 +849,180 @@ async function init(uid){
     dataReady=true; tryHideLoad();
     document.getElementById('up').style.display='block';
   }
+}
+
+// ===== AD SYSTEM =====
+async function loadAdSettingsFromDB(){
+  try{
+    const snap = await db.ref('adSettings').once('value');
+    if(snap.exists()) S.adSettings = {...S.adSettings, ...snap.val()};
+  }catch(e){}
+}
+
+function initAdSystem(){
+  const ads = S.adSettings;
+
+  // Show/hide sponsor ad box (1-click, no reward)
+  const sponsorBox = document.getElementById('sponsor-ad-box');
+  if(ads.oneclickUrl && ads.oneclickUrl.trim()){
+    if(sponsorBox) sponsorBox.style.display='block';
+  } else {
+    if(sponsorBox) sponsorBox.style.display='none';
+  }
+
+  // Header ads
+  const pages = ['home','quiz','spin','refer','cash'];
+  pages.forEach(pg => {
+    const frame = document.getElementById('header-ad-'+pg);
+    const content = document.getElementById('header-ad-content-'+pg);
+    if(!frame || !content) return;
+
+    if(ads.activeNetwork === 'monetag' && ads.monetagBanner && ads.monetagZone){
+      frame.style.display = 'flex';
+      if(pg === 'home') injectMonetagBanner(content, ads.monetagZone);
+    } else if(ads.bannerHtml && ads.bannerHtml.trim()){
+      frame.style.display = 'flex';
+      content.innerHTML = ads.bannerHtml;
+    } else {
+      frame.style.display = 'none';
+    }
+  });
+
+  // Adsgram init
+  if(ads.activeNetwork === 'adsgram' && ads.adsgramBlock){
+    const wrap = document.getElementById('adsgram-ad-btn-wrap');
+    if(wrap) wrap.style.display='block';
+    loadAdsgramSDK(ads.adsgramBlock);
+  }
+
+  // Monetag full init (popup/interstitial)
+  if(ads.activeNetwork === 'monetag' && ads.monetagZone){
+    injectMonetagSDK(ads.monetagZone, ads.monetagPopup, ads.monetagInterstitial);
+  }
+
+  // Pop-up ad from HTML setting (every 3 min)
+  if(ads.popupHtml && ads.popupHtml.trim()){
+    setTimeout(()=>showPopupAd(), 180000);
+  }
+}
+
+function injectMonetagBanner(container, zoneId){
+  // Monetag banner via SDK
+  const s = document.createElement('script');
+  s.src = '//libtl.com/sdk.js';
+  s.setAttribute('data-zone', zoneId);
+  s.setAttribute('data-sdk', 'show_'+zoneId);
+  container.appendChild(s);
+}
+
+function injectMonetagSDK(zoneId, popup, interstitial){
+  if(!popup && !interstitial) return;
+  const s = document.createElement('script');
+  s.src = '//libtl.com/sdk.js';
+  s.setAttribute('data-zone', zoneId);
+  s.setAttribute('data-sdk', 'show_'+zoneId);
+  document.head.appendChild(s);
+}
+
+function loadAdsgramSDK(blockId){
+  const s = document.createElement('script');
+  s.src = 'https://sad.adsgram.ai/js/sad.min.js';
+  s.onload = () => {
+    try{
+      S.adsgramInstance = window.Adsgram?.init({blockId: String(blockId)});
+    }catch(e){ console.log('Adsgram init error', e); }
+  };
+  document.head.appendChild(s);
+}
+
+window.showAdsgramAd = async function(){
+  if(!S.adsgramInstance){ toast('Ad not ready, try again!'); return; }
+  try{
+    const result = await S.adsgramInstance.show();
+    if(result.done){
+      const reward = S.adSettings.adsgramReward || 10;
+      await db.ref('users/'+S.user.uid).update({
+        coins: firebase.database.ServerValue.increment(reward),
+        totalEarned: firebase.database.ServerValue.increment(reward)
+      });
+      db.ref('transactions/'+S.user.uid).push({type:'adsgram',amount:reward,ts:Date.now()});
+      confetti(); floatCoins();
+      toast('🎬 +'+reward+' coins earned!');
+    }
+  }catch(e){ console.log('Adsgram ad error', e); }
+};
+
+function showPopupAd(){
+  const ads = S.adSettings;
+  if(!ads.popupHtml) return;
+  popup('Advertisement', ads.popupHtml + '<br><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:10px;margin-top:8px;">Close</button>');
+}
+
+window.sponsorAdClick = function(){
+  const url = S.adSettings.oneclickUrl;
+  if(!url) return;
+  hap();
+  if(tg) tg.openLink(url);
+  else window.open(url,'_blank');
+  // No reward — sponsor ad only
+};
+
+// ===== AD ADMIN FUNCTIONS =====
+window.selNet = function(net){
+  S.adSettings.activeNetwork = net;
+  document.querySelectorAll('[data-net]').forEach(el => el.classList.remove('sel'));
+  document.getElementById('net-'+net)?.classList.add('sel');
+  document.getElementById('monetag-settings').style.display = net==='monetag' ? 'block' : 'none';
+  document.getElementById('adsgram-settings').style.display = net==='adsgram' ? 'block' : 'none';
+};
+
+window.saveAdSettings = async function(){
+  const ads = {
+    activeNetwork: S.adSettings.activeNetwork,
+    monetagZone: document.getElementById('monetag-zone')?.value?.trim()||'',
+    monetagBanner: document.getElementById('mg-banner')?.checked||false,
+    monetagPopup: document.getElementById('mg-popup')?.checked||false,
+    monetagInterstitial: document.getElementById('mg-interstitial')?.checked||false,
+    adsgramBlock: document.getElementById('adsgram-block')?.value?.trim()||'',
+    adsgramReward: parseInt(document.getElementById('adsgram-reward')?.value)||10,
+    bannerHtml: document.getElementById('banner-html')?.value||'',
+    oneclickUrl: document.getElementById('oneclick-url')?.value?.trim()||'',
+    popupHtml: document.getElementById('popup-html')?.value||''
+  };
+  try{
+    await db.ref('adSettings').set(ads);
+    S.adSettings = ads;
+    // Preview
+    const preview = document.getElementById('ad-preview-area');
+    if(preview){
+      if(ads.bannerHtml) preview.innerHTML = ads.bannerHtml;
+      else if(ads.activeNetwork==='monetag' && ads.monetagZone) preview.innerHTML = `<div style="background:#f3f4f6;padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;">Monetag Zone: ${ads.monetagZone}</div>`;
+      else if(ads.activeNetwork==='adsgram' && ads.adsgramBlock) preview.innerHTML = `<div style="background:#e0f2fe;padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;">Adsgram Block: ${ads.adsgramBlock}</div>`;
+      else preview.innerHTML = '<div style="color:#888;text-align:center;font-weight:600;font-size:13px;">No active ad</div>';
+    }
+    toast('✅ Ad settings saved!');
+  }catch(e){ toast('Error saving!'); }
+};
+
+function loadAdSettingsUI(){
+  const ads = S.adSettings;
+  // Network selection
+  document.querySelectorAll('[data-net]').forEach(el => el.classList.remove('sel'));
+  document.getElementById('net-'+(ads.activeNetwork||'none'))?.classList.add('sel');
+  document.getElementById('monetag-settings').style.display = ads.activeNetwork==='monetag' ? 'block' : 'none';
+  document.getElementById('adsgram-settings').style.display = ads.activeNetwork==='adsgram' ? 'block' : 'none';
+  // Monetag
+  const mz = document.getElementById('monetag-zone'); if(mz) mz.value = ads.monetagZone||'';
+  const mb = document.getElementById('mg-banner'); if(mb) mb.checked = !!ads.monetagBanner;
+  const mp = document.getElementById('mg-popup'); if(mp) mp.checked = !!ads.monetagPopup;
+  const mi = document.getElementById('mg-interstitial'); if(mi) mi.checked = !!ads.monetagInterstitial;
+  // Adsgram
+  const ab = document.getElementById('adsgram-block'); if(ab) ab.value = ads.adsgramBlock||'';
+  const ar = document.getElementById('adsgram-reward'); if(ar) ar.value = ads.adsgramReward||10;
+  // Other
+  const bh = document.getElementById('banner-html'); if(bh) bh.value = ads.bannerHtml||'';
+  const oc = document.getElementById('oneclick-url'); if(oc) oc.value = ads.oneclickUrl||'';
+  const ph = document.getElementById('popup-html'); if(ph) ph.value = ads.popupHtml||'';
 }
 
 // ===== SETTINGS =====
@@ -752,10 +1091,8 @@ function updateUI(){
   const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   el('uname', u.name||'User');
   el('urank', 'Rank #'+(u.rank||'—'));
-  // Avatar initials
   const av=document.getElementById('uav');
   if(av) av.textContent=(u.name||'U').charAt(0).toUpperCase();
-  // Coins
   animNum('bcoins', coins);
   el('busdt',(coins/S.sets.coinUsdt).toFixed(4));
   el('busd',(coins/S.sets.coinUsd).toFixed(4));
@@ -770,6 +1107,9 @@ function updateUI(){
   el('rearn',u.referralEarnings||0);
   const rl=document.getElementById('rlink');
   if(rl) rl.value=refLink();
+  // Spin count
+  const stc = document.getElementById('spin-total-count');
+  if(stc) stc.textContent = u.spinsUsed||0;
   // Daily bonus
   const today=new Date().toDateString();
   const ld=new Date(u.lastDailyBonus||0).toDateString();
@@ -951,31 +1291,52 @@ window.exitQ=function(){
 
 // ===== SPIN WHEEL =====
 const SEGS=[
-  {label:'50 Coins',val:50,color:'#00d4e8'},{label:'100 Coins',val:100,color:'#ffe94a'},
-  {label:'200 Coins',val:200,color:'#a855f7'},{label:'Try Again',val:0,color:'#e5e7eb'},
-  {label:'500 Coins',val:500,color:'#ff6eb4'},{label:'30 Coins',val:30,color:'#22c55e'},
-  {label:'1000 Coins',val:1000,color:'#ff7b39'},{label:'150 Coins',val:150,color:'#818cf8'},
+  {label:'Sorry',val:0,color:'#1a1a2e'},{label:'$0.01',val:50,color:'#ffe94a'},
+  {label:'$0.00',val:0,color:'#00d4e8'},{label:'Sorry',val:0,color:'#ff6eb4'},
+  {label:'$0.00',val:0,color:'#7c3aed'},{label:'$0.01',val:50,color:'#22c55e'},
+  {label:'$0.00',val:0,color:'#f97316'},{label:'$0.00',val:0,color:'#06b6d4'},
 ];
+
 function drawWheel(rot=0){
   const c=document.getElementById('wcanvas'); if(!c) return;
-  const ctx=c.getContext('2d'), cx=140, cy=140, r=132;
+  const ctx=c.getContext('2d'), sz=300, cx=sz/2, cy=sz/2, r=sz/2-6;
   const arc=(Math.PI*2)/SEGS.length;
-  ctx.clearRect(0,0,280,280);
+  ctx.clearRect(0,0,sz,sz);
+
   SEGS.forEach((seg,i)=>{
     const s=rot+i*arc-Math.PI/2, e=s+arc;
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
     ctx.fillStyle=seg.color; ctx.fill();
     ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(s+arc/2);
-    ctx.textAlign='right'; ctx.fillStyle='#111'; ctx.font='bold 11px Nunito,sans-serif';
-    ctx.fillText(seg.label,r-8,4); ctx.restore();
+
+    // Dots on border
+    const dotAngle = rot + i*arc - Math.PI/2 + arc/2;
+    ctx.beginPath();
+    ctx.arc(cx + (r+0)*Math.cos(rot+i*arc-Math.PI/2), cy + (r+0)*Math.sin(rot+i*arc-Math.PI/2), 5, 0, Math.PI*2);
+    ctx.fillStyle='#ffe94a'; ctx.fill();
+    ctx.strokeStyle='#111'; ctx.lineWidth=2; ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(s+arc/2);
+    ctx.textAlign='right';
+    ctx.fillStyle = seg.val===0 ? '#fff' : '#111';
+    ctx.font=`bold 13px Nunito,sans-serif`;
+    ctx.fillText(seg.label, r-12, 5);
+    ctx.restore();
   });
-  ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2);
-  ctx.fillStyle='#ffe94a'; ctx.fill();
-  ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
-  ctx.fillStyle='#111'; ctx.font='bold 16px Nunito,sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('$',cx,cy);
+
+  // Center circle
+  ctx.beginPath(); ctx.arc(cx,cy,34,0,Math.PI*2);
+  const grad = ctx.createRadialGradient(cx-8,cy-8,4,cx,cy,34);
+  grad.addColorStop(0,'#ffe94a'); grad.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.strokeStyle='#111'; ctx.lineWidth=4; ctx.stroke();
+
+  // Center godzilla face (simple emoji-like)
+  ctx.font='22px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🦖',cx,cy);
 }
 
 window.doSpin=async function(){
@@ -990,8 +1351,8 @@ window.doSpin=async function(){
   btn.disabled=true; btn.textContent='Spinning...';
   const wi=Math.floor(Math.random()*SEGS.length), w=SEGS[wi];
   const arcSz=(Math.PI*2)/SEGS.length;
-  const target=(Math.PI*2*5)-(wi*arcSz)-arcSz/2;
-  const dur=4000, t0=performance.now();
+  const target=(Math.PI*2*6)-(wi*arcSz+arcSz/2);
+  const dur=4500, t0=performance.now();
   const anim=now=>{
     const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,4);
     drawWheel(e*target);
@@ -1003,7 +1364,7 @@ window.doSpin=async function(){
 async function spinDone(w){
   hap('heavy'); S.spinning=false;
   const btn=document.getElementById('spinbtn');
-  btn.disabled=false; btn.textContent='SPIN NOW!';
+  btn.disabled=false; btn.textContent='🎯 SPIN NOW!';
   const uid=S.user.uid;
   if(w.val>0){
     confetti();
@@ -1015,14 +1376,15 @@ async function spinDone(w){
     });
     db.ref('spins/'+uid).push({reward:w.val,label:w.label,ts:Date.now()});
     toast('You won '+w.label+'!');
-    popup('Lucky Spin!',`<div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:28px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;font-size:15px;">Awesome!</button></div>`);
+    popup('🎉 Lucky Spin!',`<div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:28px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;font-size:15px;">Awesome!</button></div>`);
   } else {
     await db.ref('users/'+uid).update({spinsUsed:firebase.database.ServerValue.increment(1),lastSpin:Date.now()});
     db.ref('spins/'+uid).push({reward:0,label:w.label,ts:Date.now()});
     toast('Better luck next time!');
+    popup('😔 Try Again',`<div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">😔</div><div style="font-weight:800;font-size:18px;">Sorry!</div><div style="color:#666;font-weight:600;margin-top:8px;">Better luck next time!</div><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:16px;font-size:15px;">OK</button></div>`);
   }
   const sc=document.getElementById('spinct');
-  if(sc) sc.textContent='Next spin in 24 hours';
+  if(sc) sc.textContent='⏳ Next spin available in 24 hours';
   loadSH();
 }
 
@@ -1030,11 +1392,14 @@ async function loadSH(){
   const el=document.getElementById('shinst'); if(!el) return;
   try{
     const snap=await db.ref('spins/'+S.user?.uid).once('value');
-    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;font-weight:600;">No spins yet</div>';return;}
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;font-weight:600;padding:10px;">No spins yet. Try your luck!</div>';return;}
     const sp=Object.values(snap.val()).slice(-10).reverse();
-    el.innerHTML=sp.map(s=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <span style="font-weight:600;">${s.label}</span>
-      <span style="color:#888;font-size:12px;">${new Date(s.ts).toLocaleDateString()}</span>
+    el.innerHTML=sp.map(s=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;align-items:center;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:${s.reward>0?'#dcfce7':'#fee2e2'};border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;">${s.reward>0?'🎉':'😔'}</div>
+        <span style="font-weight:700;">${s.label}</span>
+      </div>
+      <span style="color:#888;font-size:12px;font-weight:600;">${new Date(s.ts).toLocaleDateString()}</span>
     </div>`).join('');
   }catch(e){}
 }
@@ -1106,7 +1471,6 @@ window.doWithdraw=async function(){
   try{
     await db.ref('withdraws').push(w);
     await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(-amt)});
-    // Notify admin via Telegram
     tgSend(`💸 <b>New Withdrawal</b>\n\nUser: ${u.name}\nMethod: ${w.method.toUpperCase()}\nAmount: ${amt} coins\n≈ ${w.amtUsdt} USDT\nAddress: ${addr}`);
     toast('Withdrawal submitted!');
     document.getElementById('wamt').value='';
@@ -1138,10 +1502,13 @@ async function loadRefs(){
   const el=document.getElementById('myref'); if(!el||!S.user) return;
   try{
     const snap=await db.ref('referrals/'+S.user.uid).once('value');
-    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No referrals yet</div>';return;}
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No referrals yet. Share your link!</div>';return;}
     const refs=Object.values(snap.val()).slice(-20).reverse();
-    el.innerHTML=refs.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <div><div style="font-weight:700;">Friend joined</div><div style="font-size:12px;color:#888;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
+    el.innerHTML=refs.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--yellow);border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;">👤</div>
+        <div><div style="font-weight:700;font-size:13px;">Friend joined</div><div style="font-size:12px;color:#888;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
+      </div>
       <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
     </div>`).join('');
   }catch(e){}
@@ -1171,17 +1538,6 @@ window.shareRef=function(){
   else navigator.clipboard.writeText(l);
 };
 
-// ===== ADS =====
-window.adClick=function(){
-  const now=Math.floor(Date.now()/60000);
-  if(now!==S.adMin){S.adMin=now;S.adCount=0;}
-  if(S.adCount>=2){toast('Ad limit reached. Come back later!');return;}
-  S.adCount++; hap();
-  db.ref('users/'+S.user?.uid).update({coins:firebase.database.ServerValue.increment(5)});
-  db.ref('transactions/'+S.user?.uid).push({type:'ad',amount:5,ts:Date.now()});
-  toast('+5 coins from ad!'); floatCoins();
-};
-
 // ===== NOTIFICATIONS =====
 window.showNotifs=function(){
   popup('Notifications','<div style="text-align:center;padding:10px;"><div class="ic-bell" style="margin:0 auto 12px;width:32px;height:36px;"></div><div style="font-weight:700;">No new notifications</div><div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div></div>');
@@ -1203,18 +1559,28 @@ function addAdminBtn(){
   const b=document.createElement('button');
   b.id='abtn'; b.className='btn';
   b.style.cssText='position:fixed;bottom:85px;right:16px;z-index:200;background:#ffe94a;padding:10px 18px;font-size:13px;border-radius:50px;';
-  b.innerHTML='Admin';
+  b.innerHTML='🛡️ Admin';
   b.onclick=openAdmin;
   document.body.appendChild(b);
 }
 
 window.openAdmin=async function(){
-  if(!S.isAdmin){toast('Access denied!');return;}
+  if(!S.isAdmin){
+    // Try setting admin flag via TG ID match
+    const tgU = tg?.initDataUnsafe?.user;
+    if(String(tgU?.id||'') !== ADMIN_TG_ID){
+      toast('Access denied!'); return;
+    }
+    S.isAdmin = true;
+    // Set admin flag in DB for future
+    if(S.user) await db.ref('users/'+S.user.uid).update({isAdmin:true});
+  }
   document.getElementById('up').style.display='none';
   document.getElementById('bnav') && (document.getElementById('bnav').style.display='none');
   const ab=document.getElementById('abtn'); if(ab) ab.style.display='none';
   document.getElementById('ap').style.display='block';
   await loadAdminData();
+  loadAdSettingsUI();
 };
 
 window.adminLogout=function(){
@@ -1229,6 +1595,7 @@ window.aTab=function(tab,btn){
   document.getElementById('at-'+tab).style.display='block';
   document.querySelectorAll('.at').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
+  if(tab==='ads') loadAdSettingsUI();
 };
 
 async function loadAdminData(){
