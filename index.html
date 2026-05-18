@@ -1,3 +1,5 @@
+--- START OF FILE Paste May 18, 2026 - 11:35AM ---
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -103,6 +105,8 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 /* TOAST */
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 22px;border-radius:14px;font-weight:700;z-index:9000;transition:transform .3s;white-space:nowrap;font-size:14px;}
 #toast.on{transform:translateX(-50%) translateY(0);}
+#toast.err{background:var(--red);} /* Added error toast style for consistency */
+
 
 /* CONFETTI */
 .cf{position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;animation:cf 2.5s linear forwards;pointer-events:none;z-index:8000;}
@@ -485,8 +489,10 @@ const BOT_TOKEN = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
 const ADMIN_CHAT = '8601120665';
 
 firebase.initializeApp(FB_CFG);
-const auth = firebase.auth();
-const db   = firebase.database();
+const app = firebase.app(); // Get the initialized app instance
+const auth = app.auth();     // Use app.auth()
+const db   = app.database(); // Use app.database()
+
 
 // ===== STATE =====
 const S = {
@@ -499,11 +505,20 @@ const S = {
   adsgramInstance:null
 };
 
+// Helper to get CSS variable values
+function getCssVarValue(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
 const DEFAULT_SEGS=[
-  {label:'Sorry!',val:0,color:'#1a1a2e'},{label:'50 Coins',val:50,color:'#ffe94a'},
-  {label:'Try Again',val:0,color:'#00d4e8'},{label:'Sorry!',val:0,color:'#ff6eb4'},
-  {label:'100 Coins',val:100,color:'#7c3aed'},{label:'50 Coins',val:50,color:'#22c55e'},
-  {label:'Try Again',val:0,color:'#f97316'},{label:'200 Coins',val:200,color:'#06b6d4'},
+  {label:'Sorry',val:0,color:'#111'}, // Black
+  {label:'$0.01',val:100,color:getCssVarValue('--yellow')}, // Yellow
+  {label:'$0.00',val:0,color:getCssVarValue('--cyan')}, // Cyan (Greenish in image)
+  {label:'Sorry',val:0,color:getCssVarValue('--pink')}, // Pink
+  {label:'$0.00',val:0,color:getCssVarValue('--purple')}, // Purple (Looks different in image)
+  {label:'$0.01',val:100,color:getCssVarValue('--orange')}, // Orange
+  {label:'$0.00',val:0,color:getCssVarValue('--purple')}, // Purple
+  {label:'Sorry',val:0,color:getCssVarValue('--pink')}, // Pink
 ];
 
 const tg = window.Telegram?.WebApp;
@@ -522,7 +537,11 @@ function tryHideLoad(){
 // ===== AUTH =====
 auth.onAuthStateChanged(async u=>{
   if(u){S.user=u;await init(u.uid);}
-  else auth.signInAnonymously().catch(e=>{dataReady=true;tryHideLoad();document.getElementById('up').style.display='block';});
+  else auth.signInAnonymously().catch(e=>{
+    console.error("Anonymous sign-in failed:", e);
+    dataReady=true;tryHideLoad();document.getElementById('up').style.display='block';
+    // Potentially show an error message to the user or retry
+  });
 });
 
 async function init(uid){
@@ -551,23 +570,35 @@ async function init(uid){
       return;
     }
 
-    db.ref('users/'+uid).on('value',s=>{if(s.exists()){S.data=s.val();updateUI();}});
+    // Listen for real-time updates to user data
+    db.ref('users/'+uid).on('value',s=>{
+        if(s.exists()){
+            S.data=s.val();
+            updateUI();
+        } else {
+            // Handle case where user data might be deleted
+            console.warn("User data not found for UID:", uid);
+            // Maybe force re-login or show an error
+        }
+    });
 
     await Promise.all([loadSets(),loadAdSettingsFromDB(),loadSpinConfig(),loadQuizzes()]);
     await loadLBPreview();
-    loadWH();loadSH();loadRefs();updateUI();drawWheel();initAdSystem();
-
+    loadWH();loadSH();loadRefs();updateUI();drawWheel();initAdSystem(); // Initial draw for wheel
+    
     document.getElementById('up').style.display='block';
     dataReady=true;tryHideLoad();
   }catch(e){
-    console.error(e);dataReady=true;tryHideLoad();
-    document.getElementById('up').style.display='block';
+    console.error("Initialization failed:", e);
+    dataReady=true;tryHideLoad();
+    document.getElementById('up').style.display='block'; // Still show panel, but data might be missing
+    // Show a user-friendly error message if critical data failed to load
   }
 }
 
 // ===== SETTINGS =====
 async function loadSets(){
-  try{const s=(await db.ref('settings').once('value')).val();if(s)S.sets={...S.sets,...s};}catch(e){}
+  try{const s=(await db.ref('settings').once('value')).val();if(s)S.sets={...S.sets,...s};}catch(e){console.error("Failed to load settings:", e);}
   const w=document.getElementById('wmintxt');if(w)w.textContent='Minimum: '+S.sets.minWd+' Coins';
   const r=document.getElementById('rbinfo');if(r)r.textContent='You earn '+S.sets.refBonus+' coins per referral!';
 }
@@ -581,7 +612,7 @@ async function loadSpinConfig(){
       if(!Array.isArray(S.spinConfig.segments)||!S.spinConfig.segments.length)
         S.spinConfig.segments=[...DEFAULT_SEGS];
     } else { S.spinConfig.segments=[...DEFAULT_SEGS]; }
-  }catch(e){S.spinConfig.segments=[...DEFAULT_SEGS];}
+  }catch(e){console.error("Failed to load spin config:", e);S.spinConfig.segments=[...DEFAULT_SEGS];}
   // Update cooldown badge
   const badge=document.getElementById('spin-cd-badge');
   if(badge) badge.textContent='⏱️ '+S.spinConfig.cooldownHours+'h cooldown';
@@ -589,7 +620,7 @@ async function loadSpinConfig(){
 
 // ===== AD SYSTEM =====
 async function loadAdSettingsFromDB(){
-  try{const snap=await db.ref('adSettings').once('value');if(snap.exists())S.adSettings={...S.adSettings,...snap.val()};}catch(e){}
+  try{const snap=await db.ref('adSettings').once('value');if(snap.exists())S.adSettings={...S.adSettings,...snap.val()};}catch(e){console.error("Failed to load ad settings:", e);}
 }
 
 function initAdSystem(){
@@ -604,7 +635,10 @@ function initAdSystem(){
     if(!frame||!content) return;
     if(ads.activeNetwork==='monetag'&&ads.monetagBanner&&ads.monetagZone){
       frame.style.display='flex';
-      if(pg==='home') injectMonetagBanner(content,ads.monetagZone);
+      // Only inject Monetag script once per unique zone ID or for specific page to avoid multiple injections
+      if(!content.querySelector('script[data-zone="'+ads.monetagZone+'"]')) {
+         injectMonetagBanner(content,ads.monetagZone);
+      }
     } else if(ads.bannerHtml&&ads.bannerHtml.trim()){
       frame.style.display='flex'; content.innerHTML=ads.bannerHtml;
     } else { frame.style.display='none'; }
@@ -613,32 +647,45 @@ function initAdSystem(){
   if(ads.activeNetwork==='adsgram'&&ads.adsgramBlock){
     const wrap=document.getElementById('adsgram-ad-btn-wrap');
     if(wrap)wrap.style.display='block';
-    loadAdsgramSDK(ads.adsgramBlock);
+    if(!S.adsgramInstance) loadAdsgramSDK(ads.adsgramBlock); // Load SDK only once
   }
   if(ads.activeNetwork==='monetag'&&ads.monetagZone)
     injectMonetagSDK(ads.monetagZone,ads.monetagPopup,ads.monetagInterstitial);
-  if(ads.popupHtml&&ads.popupHtml.trim())
-    setTimeout(()=>showPopupAd(),180000);
+  
+  // Set up popup ad timer, clear any existing one
+  if (S.popupAdTimer) clearInterval(S.popupAdTimer);
+  if(ads.popupHtml&&ads.popupHtml.trim()){
+    S.popupAdTimer = setInterval(() => showPopupAd(), 180000); // Every 3 minutes
+  }
 }
 
 function injectMonetagBanner(container,zoneId){
+  if (container.querySelector('script[data-zone="'+zoneId+'"]')) return; // Avoid re-injection
   const s=document.createElement('script');
   s.src='//libtl.com/sdk.js';s.setAttribute('data-zone',zoneId);
   s.setAttribute('data-sdk','show_'+zoneId);container.appendChild(s);
 }
 function injectMonetagSDK(zoneId,popup,interstitial){
   if(!popup&&!interstitial)return;
+  if (document.head.querySelector('script[data-zone="'+zoneId+'"]')) return; // Avoid re-injection
   const s=document.createElement('script');
   s.src='//libtl.com/sdk.js';s.setAttribute('data-zone',zoneId);
   s.setAttribute('data-sdk','show_'+zoneId);document.head.appendChild(s);
 }
 function loadAdsgramSDK(blockId){
+  if (document.head.querySelector('script[src="https://sad.adsgram.ai/js/sad.min.js"]')) {
+      // If already loaded, try to init again if instance is null
+      if(!S.adsgramInstance) {
+          try{S.adsgramInstance=window.Adsgram?.init({blockId:String(blockId)});}catch(e){console.error("Adsgram re-init failed:", e);}
+      }
+      return;
+  }
   const s=document.createElement('script'); s.src='https://sad.adsgram.ai/js/sad.min.js';
-  s.onload=()=>{ try{S.adsgramInstance=window.Adsgram?.init({blockId:String(blockId)});}catch(e){} };
+  s.onload=()=>{ try{S.adsgramInstance=window.Adsgram?.init({blockId:String(blockId)});}catch(e){console.error("Adsgram init failed:", e);} };
   document.head.appendChild(s);
 }
 window.showAdsgramAd=async function(){
-  if(!S.adsgramInstance){toast('Ad not ready!');return;}
+  if(!S.adsgramInstance){toast('Ad not ready, please wait or check settings.','err');return;}
   try{
     const result=await S.adsgramInstance.show();
     if(result.done){
@@ -646,8 +693,13 @@ window.showAdsgramAd=async function(){
       await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(reward),totalEarned:firebase.database.ServerValue.increment(reward)});
       db.ref('transactions/'+S.user.uid).push({type:'adsgram',amount:reward,ts:Date.now()});
       confetti();floatCoins();toast('🎬 +'+reward+' coins earned!');
+    } else {
+        toast('Ad not completed. No reward.','err');
     }
-  }catch(e){}
+  }catch(e){
+      console.error("Error showing Adsgram ad:", e);
+      toast('Failed to show ad.','err');
+  }
 };
 function showPopupAd(){
   const ads=S.adSettings; if(!ads.popupHtml) return;
@@ -680,6 +732,28 @@ function updateUI(){
   const ds=document.getElementById('dbs'),db2=document.getElementById('dbb');
   if(today!==ld){if(ds)ds.textContent='Tap to claim!';if(db2){db2.disabled=false;db2.style.opacity='1';}}
   else{if(ds)ds.textContent='Claimed today ✓';if(db2){db2.disabled=true;db2.style.opacity='.5';}}
+
+  // Update Spin Cooldown text
+  const spinCdTxt = document.getElementById('spinct');
+  if (spinCdTxt) {
+    const cd = (S.spinConfig.cooldownHours || 24) * 60 * 60 * 1000;
+    const remainingTime = cd - (now - (u.lastSpin || 0));
+    if (remainingTime > 0) {
+      const hours = Math.floor(remainingTime / 3600000);
+      const minutes = Math.ceil((remainingTime % 3600000) / 60000);
+      if (hours > 0) {
+          spinCdTxt.textContent = `⏳ Next spin in ${hours}h ${minutes}min`;
+      } else {
+          spinCdTxt.textContent = `⏳ Next spin in ${minutes}min`;
+      }
+      document.getElementById('spinbtn').disabled = true;
+      document.getElementById('spinbtn').style.opacity = '.5';
+    } else {
+      spinCdTxt.textContent = `Ready to spin!`;
+      document.getElementById('spinbtn').disabled = false;
+      document.getElementById('spinbtn').style.opacity = '1';
+    }
+  }
 }
 
 function animNum(id,target){
@@ -701,7 +775,7 @@ window.gp=function(page){
   if(page==='lb')loadLB();
   if(page==='cash')loadWH();
   if(page==='refer')loadRefs();
-  if(page==='spin')loadSH();
+  if(page==='spin'){loadSH();drawWheel();} // Redraw wheel on spin page view
 };
 
 // ===== QUIZ =====
@@ -739,7 +813,7 @@ async function loadQuizzes(){
     const snap=await db.ref('quizzes').once('value');
     if(snap.exists()){S.quizzes=Object.entries(snap.val()).map(([id,q])=>({id,...q})).filter(q=>!q.deleted);}
     else{S.quizzes=defQuizzes();S.quizzes.forEach(q=>db.ref('quizzes').push(q));}
-  }catch(e){S.quizzes=defQuizzes();}
+  }catch(e){console.error("Failed to load quizzes:", e);S.quizzes=defQuizzes();}
   renderQCards();renderFeatQ();renderQCats();
 }
 
@@ -809,7 +883,7 @@ window.pickA=function(sel){
   clearInterval(S.timer);hap();
   const q=S.curQuiz.qs[S.curQ];
   document.querySelectorAll('.ans-btn').forEach(b=>b.onclick=null);
-  if(sel===q.a){S.score+=Math.floor(S.curQuiz.reward/S.curQuiz.qs.length);S.correct++;hap('medium');floatCoins();}
+  if(sel===q.a){S.score+=Math.floor(S.curQuiz.reward/S.curQZ.qs.length);S.correct++;hap('medium');floatCoins();}
   else{S.wrong++;hap('heavy');}
   hilite(sel,q.a);setTimeout(nextQ,1200);
 };
@@ -821,7 +895,7 @@ async function endQ(){
   try{
     await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(earned),totalEarned:firebase.database.ServerValue.increment(earned),quizzesPlayed:firebase.database.ServerValue.increment(1)});
     db.ref('transactions/'+S.user.uid).push({type:'quiz',amount:earned,title:quiz.title,ts:Date.now()});
-  }catch(e){}
+  }catch(e){console.error("Failed to update user/transactions after quiz:", e);}
   document.getElementById('qgame').style.display='none';
   document.getElementById('qresult').style.display='block';
   const pct=Math.round((S.correct/quiz.qs.length)*100);
@@ -842,33 +916,81 @@ window.exitQ=function(){
 // ===== SPIN WHEEL =====
 function drawWheel(rot=0){
   const c=document.getElementById('wcanvas'); if(!c) return;
-  const segs=S.spinConfig.segments; if(!segs||!segs.length) return;
+  const segs=S.spinConfig.segments;
+  if(!segs||!segs.length) {
+      const ctx=c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.fillStyle='#888';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.font='16px Nunito,sans-serif';
+      ctx.fillText('No Spin Segments',c.width/2,c.height/2);
+      return;
+  }
   const ctx=c.getContext('2d'),sz=300,cx=sz/2,cy=sz/2,r=sz/2-6;
   const arc=(Math.PI*2)/segs.length;
   ctx.clearRect(0,0,sz,sz);
+  
+  // Draw segments
   segs.forEach((seg,i)=>{
     const s=rot+i*arc-Math.PI/2,e=s+arc;
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
     ctx.fillStyle=seg.color;ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=2;ctx.stroke();
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);
-    ctx.textAlign='right';
-    ctx.fillStyle='#fff';
-    ctx.font=`bold ${Math.max(9,14-segs.length)}px Nunito,sans-serif`;
-    ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=4;
-    ctx.fillText(seg.label,r-10,5);ctx.restore();
-    // Divider dot
-    ctx.beginPath();
-    ctx.arc(cx+(r-4)*Math.cos(rot+i*arc-Math.PI/2),cy+(r-4)*Math.sin(rot+i*arc-Math.PI/2),4,0,Math.PI*2);
-    ctx.fillStyle='#ffe94a';ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.stroke(); // Stronger border for segments
   });
-  // Center
-  ctx.beginPath();ctx.arc(cx,cy,32,0,Math.PI*2);
-  const g=ctx.createRadialGradient(cx-6,cy-6,3,cx,cy,32);
-  g.addColorStop(0,'#ffe94a');g.addColorStop(1,'#f59e0b');
+
+  // Draw segment labels and dots
+  segs.forEach((seg,i)=>{
+    const s=rot+i*arc-Math.PI/2,e=s+arc;
+    ctx.save();
+    ctx.translate(cx,cy);
+    // Rotate to the center of the segment
+    let textRotation = s + arc / 2;
+    // Adjust text orientation to be readable (not upside down)
+    if (textRotation > Math.PI / 2 && textRotation < 3 * Math.PI / 2) {
+        textRotation += Math.PI; // Rotate 180 degrees
+    }
+    ctx.rotate(textRotation);
+    
+    ctx.textAlign='left'; // Align text from left
+    ctx.fillStyle='#fff'; // Text color
+    ctx.font=`bold ${Math.max(12, 18 - segs.length)}px Fredoka One, cursive`; // Use Fredoka One for segment labels
+    ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=4;
+    
+    // Position text further from the center, slightly rotated for effect as in image
+    let textX = r * 0.55; // Adjust distance from center
+    let textY = 0; // Center vertically in current rotation context
+    
+    // Slight vertical offset for visual appeal (as seen in image)
+    if (seg.label === 'Sorry') {
+        ctx.fillText(seg.label, textX, textY);
+    } else { // For dollar amounts, slight tilt
+        ctx.save();
+        ctx.translate(textX, textY);
+        ctx.rotate(-Math.PI / 16); // Small counter-clockwise tilt
+        ctx.fillText(seg.label, 0, 0);
+        ctx.restore();
+    }
+    
+    ctx.restore();
+
+    // Divider dot at the outer edge
+    const dotR = r + 2; // Slightly outside the wheel border
+    const dotX = cx + dotR * Math.cos(s);
+    const dotY = cy + dotR * Math.sin(s);
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, 4, 0, Math.PI * 2); // Radius 4 for the dots
+    ctx.fillStyle=getCssVarValue('--yellow');ctx.fill(); // Yellow dots as in image
+    ctx.strokeStyle='#111';ctx.lineWidth=2;ctx.stroke(); // Stronger border for dots
+  });
+
+  // Center circle
+  ctx.beginPath();ctx.arc(cx,cy,40,0,Math.PI*2); // Slightly larger center circle
+  const g=ctx.createRadialGradient(cx-8,cy-8,3,cx,cy,40); // Adjusted gradient for larger circle
+  g.addColorStop(0,getCssVarValue('--yellow'));g.addColorStop(1,'#f59e0b');
   ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=4;ctx.stroke();
-  ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.shadowBlur=0;ctx.fillText('🦖',cx,cy);
+  ctx.font='24px serif';ctx.textAlign='center';ctx.textBaseline='middle'; // Adjusted font size
+  ctx.shadowBlur=0;ctx.fillText('🐸',cx,cy+2); // Changed icon to frog for image resemblance
 }
 
 window.doSpin=async function(){
@@ -876,21 +998,47 @@ window.doSpin=async function(){
   const u=S.data,now=Date.now();
   const cd=(S.spinConfig.cooldownHours||24)*60*60*1000;
   if(now-(u.lastSpin||0)<cd){
-    const h=Math.ceil((cd-(now-(u.lastSpin||0)))/3600000);
-    const m=Math.ceil((cd-(now-(u.lastSpin||0)))/60000);
-    toast(`⏳ Come back in ${h>1?h+'h':m+'min'}!`);return;
+    const h=Math.floor((cd-(now-(u.lastSpin||0)))/3600000);
+    const m=Math.ceil(((cd-(now-(u.lastSpin||0)))%3600000)/60000);
+    toast(`⏳ Come back in ${h>0?h+'h ':''}${m}min!`);return;
   }
   hap('medium');S.spinning=true;
   const btn=document.getElementById('spinbtn');
   btn.disabled=true;btn.textContent='Spinning...';
   const segs=S.spinConfig.segments;
-  const wi=Math.floor(Math.random()*segs.length),w=segs[wi];
+  // Filter out 'Sorry' segments if there's a chance to win something
+  const winnableSegs = segs.filter(s => s.val > 0);
+  let chosenSegIndex;
+  if (winnableSegs.length > 0) {
+      // 70% chance to win something, 30% chance for 'Sorry' if both exist
+      if (Math.random() < 0.7 && winnableSegs.length > 0) {
+          const winnable = winnableSegs[Math.floor(Math.random() * winnableSegs.length)];
+          chosenSegIndex = segs.indexOf(winnable);
+      } else {
+          // Fallback to 'Sorry' if no winnable or random says so
+          const sorrySegs = segs.filter(s => s.val === 0);
+          chosenSegIndex = segs.indexOf(sorrySegs[Math.floor(Math.random() * sorrySegs.length)]);
+      }
+  } else {
+      // If only 'Sorry' segments exist, pick any
+      chosenSegIndex = Math.floor(Math.random() * segs.length);
+  }
+
+  const w = segs[chosenSegIndex];
+
   const arcSz=(Math.PI*2)/segs.length;
-  const target=(Math.PI*2*6)-(wi*arcSz+arcSz/2);
+  // Calculate target rotation to land on the chosen segment
+  // Add multiple full rotations (e.g., 6) to make it spin
+  // Then position in the middle of the segment
+  let targetRotation = (Math.PI*2*6) - (chosenSegIndex * arcSz + arcSz / 2);
+  // Adjust so pointer points to the center of the segment, considering initial offset
+  targetRotation += Math.PI/2; // This compensates for the canvas 0-degree being to the right
+
   const dur=4500,t0=performance.now();
-  const anim=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4);drawWheel(e*target);if(p<1)requestAnimationFrame(anim);else spinDone(w);};
+  const anim=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4);drawWheel(e*targetRotation);if(p<1)requestAnimationFrame(anim);else spinDone(w);};
   requestAnimationFrame(anim);
 };
+
 
 async function spinDone(w){
   hap('heavy');S.spinning=false;
@@ -908,9 +1056,9 @@ async function spinDone(w){
     toast('Better luck next time!');
     popup('😔 Try Again',`<div style="text-align:center;"><div style="font-size:40px;margin-bottom:10px;">😔</div><div style="font-weight:800;font-size:18px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Better luck next spin!</div><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:16px;font-size:15px;">OK</button></div>`);
   }
-  const sc=document.getElementById('spinct');
-  const cd=S.spinConfig.cooldownHours||24;
-  if(sc)sc.textContent=`⏳ Next spin in ${cd} hours`;
+  // The updateUI function will handle setting the cooldown text on the button
+  // as it now fetches the latest `lastSpin` from `S.data`
+  updateUI();
   loadSH();
 }
 
@@ -927,7 +1075,7 @@ async function loadSH(){
       </div>
       <span style="color:#888;font-size:12px;font-weight:600;">${new Date(s.ts).toLocaleDateString()}</span>
     </div>`).join('');
-  }catch(e){}
+  }catch(e){console.error("Failed to load spin history:", e);}
 }
 
 // ===== DAILY BONUS =====
@@ -954,7 +1102,7 @@ async function loadLBPreview(){
       <div style="flex:1;font-weight:700;font-size:14px;">${u.name||'User'}</div>
       <div style="font-weight:800;color:var(--purple);">${(u.coins||0).toLocaleString()}</div>
     </div>`).join('');
-  }catch(e){}
+  }catch(e){console.error("Failed to load LB preview:", e);}
 }
 
 window.loadLB=async function(){
@@ -967,12 +1115,12 @@ window.loadLB=async function(){
     const medals=['🥇','🥈','🥉'];
     el.innerHTML=users.map((u,i)=>`<div class="card" style="padding:14px;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:${i===0?'var(--yellow)':i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:${i<3?'18px':'12px'};">${i<3?medals[i]:'#'+(i+1)}</div>
+        <div style="width:36px;height:36px;border-radius:10px;background:${i===0?getCssVarValue('--yellow'):i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:${i<3?'18px':'12px'};">${i<3?medals[i]:'#'+(i+1)}</div>
         <div style="flex:1;"><div style="font-weight:800;">${u.name||'User'}</div><div style="font-size:12px;color:#666;">${(u.totalEarned||0).toLocaleString()} total earned</div></div>
         <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;">${(u.coins||0).toLocaleString()}</div>
       </div>
     </div>`).join('');
-  }catch(e){el.innerHTML='<div style="color:#888;text-align:center;padding:20px;">Error loading</div>';}
+  }catch(e){console.error("Failed to load full LB:", e);el.innerHTML='<div style="color:#888;text-align:center;padding:20px;">Error loading</div>';}
 };
 
 // ===== WITHDRAW =====
@@ -980,20 +1128,20 @@ window.selM=function(m){S.method=m;document.querySelectorAll('.mc').forEach(c=>c
 window.doWithdraw=async function(){
   const u=S.data,amt=parseInt(document.getElementById('wamt').value)||0;
   const addr=document.getElementById('waddr').value.trim();
-  if(!addr){toast('Enter account address!');return;}
-  if(amt<S.sets.minWd){toast('Minimum '+S.sets.minWd+' coins!');return;}
-  if((u.coins||0)<amt){toast('Not enough coins!');return;}
+  if(!addr){toast('Enter account address!','err');return;}
+  if(amt<S.sets.minWd){toast('Minimum '+S.sets.minWd+' coins!','err');return;}
+  if((u.coins||0)<amt){toast('Not enough coins!','err');return;}
   hap('medium');
   const s=S.sets;
   const w={uid:S.user.uid,amount:amt,address:addr,method:S.method,status:'pending',ts:Date.now(),amtUsdt:(amt/s.coinUsdt).toFixed(4),amtBdt:(amt/s.coinBdt).toFixed(2),userName:u.name};
   try{
     await db.ref('withdraws').push(w);
     await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(-amt)});
-    tgSend(`💸 <b>New Withdrawal</b>\n\nUser: ${u.name}\nMethod: ${w.method.toUpperCase()}\nAmount: ${amt} coins\n≈ ${w.amtUsdt} USDT\nAddress: ${addr}`);
+    tgSend(`💸 <b>New Withdrawal</b>\n\nUser: ${u.name}\nMethod: ${(w.method || '').toUpperCase()}\nAmount: ${amt} coins\n≈ ${w.amtUsdt} USDT\nAddress: ${addr}`);
     toast('✅ Withdrawal submitted!');
     document.getElementById('wamt').value='';document.getElementById('waddr').value='';
     loadWH();
-  }catch(e){toast('Error! Try again.');}
+  }catch(e){console.error("Failed to submit withdrawal:", e);toast('Error! Try again.','err');}
 };
 async function loadWH(){
   const el=document.getElementById('whist'); if(!el||!S.user) return;
@@ -1010,7 +1158,7 @@ async function loadWH(){
         <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${sc[w.status]||'#888'}22;color:${sc[w.status]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${(w.status||'PENDING').toUpperCase()}</div></div>
       </div>
     </div>`).join('');
-  }catch(e){}
+  }catch(e){console.error("Failed to load withdrawal history:", e);}
 }
 
 // ===== REFERRALS =====
@@ -1027,7 +1175,7 @@ async function loadRefs(){
       </div>
       <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
     </div>`).join('');
-  }catch(e){}
+  }catch(e){console.error("Failed to load referrals:", e);}
 }
 async function applyRef(refUid,newUid){
   try{
@@ -1036,24 +1184,26 @@ async function applyRef(refUid,newUid){
       await db.ref('users/'+refUid).update({coins:firebase.database.ServerValue.increment(S.sets.refBonus),referrals:firebase.database.ServerValue.increment(1),referralEarnings:firebase.database.ServerValue.increment(S.sets.refBonus)});
       db.ref('referrals/'+refUid).push({uid:newUid,timestamp:Date.now(),bonus:S.sets.refBonus});
     }
-  }catch(e){}
+  }catch(e){console.error("Failed to apply referral bonus:", e);}
 }
-window.copyRef=function(){navigator.clipboard.writeText(refLink()).catch(()=>{});toast('✅ Link copied!');hap();};
+window.copyRef=function(){navigator.clipboard.writeText(refLink()).catch(err=>console.error("Failed to copy:",err));toast('✅ Link copied!');hap();};
 window.shareRef=function(){
   const l=refLink();
-  if(tg)tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Join CashZilla & earn coins! 🎰'));
-  else navigator.clipboard.writeText(l);
+  if(tg)tg.openLink('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Join CashZilla & earn coins! 🎰'));
+  else navigator.clipboard.writeText(l).catch(err=>console.error("Failed to copy:",err)); // Fallback to copy
 };
 
 // ===== NOTIFICATIONS =====
 window.showNotifs=function(){
+  // Fetch real notifications from DB if available, otherwise show static message
+  // Example: db.ref('notifications').orderByChild('ts').limitToLast(5).once('value', snapshot => { ... });
   popup('Notifications','<div style="text-align:center;padding:10px;"><div style="font-size:40px;margin-bottom:10px;">🔔</div><div style="font-weight:700;">No new notifications</div><div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div></div>');
 };
 
 // ===== TELEGRAM =====
 async function tgSend(text){
   try{await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:ADMIN_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true})});}
-  catch(e){}
+  catch(e){console.error("Failed to send Telegram message:", e);}
 }
 
 // ===== POPUP =====
@@ -1080,11 +1230,16 @@ function welcomePopup(u){
 }
 
 // ===== TOAST =====
-window.toast=function(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),3000);};
+window.toast=function(msg, type='ok'){ // Added type parameter for consistency
+    const e=document.getElementById('toast');
+    e.textContent=msg;
+    e.className=type==='err'?'on err':'on'; // Apply 'err' class if type is 'err'
+    setTimeout(()=>e.classList.remove('on'),3000);
+};
 
 // ===== CONFETTI =====
 window.confetti=function(){
-  const cs=['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
+  const cs=[getCssVarValue('--yellow'),getCssVarValue('--cyan'),getCssVarValue('--purple'),getCssVarValue('--pink'),getCssVarValue('--green'),getCssVarValue('--orange')];
   for(let i=0;i<40;i++)setTimeout(()=>{const e=document.createElement('div');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=cs[Math.floor(Math.random()*cs.length)];e.style.animationDuration=(1.5+Math.random())+'s';e.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(e);setTimeout(()=>e.remove(),3000);},i*30);
 };
 window.floatCoins=function(){
