@@ -1,351 +1,881 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StreamX - Pro Admin Panel</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root { --primary: #ff003c; --bg: #0d0d12; --card: #181820; --input-bg: #22222a; --text: #ffffff; --text-muted: #a0a0b0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
-        
-        header { background: var(--card); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        header h2 { font-size: 22px; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 10px; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>CashZilla — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--bd:#2a2a4a;
+  --cyan:#00d4e8;--yellow:#ffe94a;--purple:#a855f7;
+  --pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;--red:#ef4444;
+  --text:#f0f0ff;--muted:#888aaa;
+  --sh:4px 4px 0 rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
+body{background:var(--bg);min-height:100vh;color:var(--text);padding-bottom:20px;}
+.fredoka{font-family:'Fredoka One',cursive;}
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 25px; }
-        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid #2a2a35; }
-        .card-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a2a35; padding-bottom: 15px; margin-bottom: 20px; }
-        .card-header .title-group { display: flex; align-items: center; gap: 12px; }
-        .card-header i { font-size: 24px; color: var(--primary); background: rgba(255,0,60,0.1); padding: 10px; border-radius: 10px; }
-        
-        .live-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
-        .live-box span { font-size: 36px; font-weight: bold; color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.4); margin-top: 5px; }
+/* CARDS */
+.card{background:var(--card);border:2px solid var(--bd);border-radius:16px;}
+.card2{background:var(--card2);border:2px solid var(--bd);border-radius:12px;}
+.btn{border:2px solid rgba(255,255,255,.2);border-radius:12px;font-weight:800;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;}
+.btn:active{transform:scale(.96);}
+.btn:hover{filter:brightness(1.1);}
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px; font-weight: bold; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i { position: absolute; left: 15px; color: var(--text-muted); font-size: 16px; z-index: 10; }
-        .input-wrapper input, .input-wrapper select { width: 100%; padding: 14px 14px 14px 45px; background: var(--input-bg); border: 1px solid #333; color: white; border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; }
-        .input-wrapper input:focus, .input-wrapper select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,0,60,0.2); }
+input,select,textarea{
+  background:var(--card2);border:2px solid var(--bd);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-weight:600;font-size:14px;width:100%;
+  transition:border-color .2s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--purple);}
+label{font-size:13px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;}
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media(max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+/* HEADER */
+.topbar{background:linear-gradient(135deg,#1a1a2e,#16213e);border-bottom:2px solid var(--bd);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;}
+.logo-badge{width:40px;height:40px;border-radius:12px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#111;border:2px solid rgba(255,255,255,.2);}
+.topbar-user{font-size:11px;color:var(--muted);font-weight:600;}
 
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; color: white; }
-        .btn-primary { background: var(--primary); } .btn-primary:hover { background: #d60032; }
-        .btn-success { background: #00c853; } .btn-success:hover { background: #009624; }
-        .btn-info { background: #007bff; } .btn-danger { background: #ff1744; }
-        .btn-warning { background: #f39c12; }
+/* TABS */
+.tab-scroll{display:flex;gap:6px;overflow-x:auto;padding:14px 16px 6px;scrollbar-width:none;}
+.tab-scroll::-webkit-scrollbar{display:none;}
+.tab-btn{padding:8px 16px;border:2px solid var(--bd);border-radius:30px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;background:var(--card2);color:var(--muted);transition:all .2s;}
+.tab-btn.active{background:var(--purple);border-color:var(--purple);color:#fff;}
 
-        .cat-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #007bff; }
-        .cat-item button { background: #ff1744; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+/* PAGES */
+.pg{display:none;padding:0 14px 14px;}
+.pg.on{display:block;}
 
-        .video-item { background: var(--input-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--primary); display: flex; flex-direction: column; gap: 15px; }
-        .v-title { font-size: 16px; font-weight: bold; }
-        .v-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-        .badge { background: #111; padding: 5px 10px; border-radius: 8px; font-size: 12px; color: #ccc; border: 1px solid #333; }
-        .v-actions { display: flex; flex-wrap: wrap; gap: 10px; } .v-actions .btn { padding: 10px; font-size: 13px; flex: 1; min-width: 100px; }
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-card{padding:14px;border-radius:14px;border:2px solid var(--bd);}
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 600px; border-radius: 16px; padding: 25px; border: 1px solid var(--primary); position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; }
-        
-        .adm-comment { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 3px solid #00c853; }
-        .adm-comment strong { color: var(--primary); display: block; margin-bottom: 5px; }
-        .adm-comment p { margin: 8px 0; font-size: 14px; }
-        .adm-comment-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .adm-comment-actions button { background: #222; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-        .admin-reply-box { margin-top: 10px; background: rgba(0,200,83,0.1); padding: 10px; border-radius: 5px; border-left: 3px solid #00c853; font-size: 13px; }
-    </style>
+/* TABLE */
+.user-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--card2);border:1px solid var(--bd);margin-bottom:8px;}
+.avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;}
+
+/* SPIN SEGMENT EDITOR */
+.seg-editor{border:2px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:8px;background:var(--card2);}
+.seg-row{display:grid;grid-template-columns:1fr 1fr 60px 36px;gap:8px;align-items:center;}
+.color-pick{width:100%;height:38px;border:2px solid var(--bd);border-radius:8px;cursor:pointer;background:none;padding:2px;}
+
+/* STATUS PILLS */
+.pill{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;display:inline-block;}
+.pill.pending{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;}
+.pill.approved{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;}
+.pill.rejected{background:#ef444422;color:#ef4444;border:1px solid #ef444444;}
+
+/* AD NETWORK CARDS */
+.net-card{border:2px solid var(--bd);border-radius:12px;padding:12px;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.net-card.sel{border-color:var(--purple);background:rgba(168,85,247,.1);}
+
+/* SWITCH */
+.sw{position:relative;width:44px;height:24px;cursor:pointer;}
+.sw input{opacity:0;width:0;height:0;}
+.sw-track{position:absolute;inset:0;background:var(--bd);border-radius:24px;transition:.3s;}
+.sw input:checked+.sw-track{background:var(--green);}
+.sw-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s;}
+.sw input:checked~.sw-thumb,.sw input:checked+.sw-track+.sw-thumb{left:23px;}
+
+/* WHEEL PREVIEW */
+#wheel-preview{border:3px solid var(--bd);border-radius:50%;box-shadow:0 0 30px rgba(168,85,247,.3);}
+
+/* TOAST */
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--green);color:#fff;padding:10px 20px;border-radius:12px;font-weight:800;z-index:9999;transition:transform .3s;white-space:nowrap;font-size:13px;}
+#toast.on{transform:translateX(-50%) translateY(0);}
+#toast.err{background:var(--red);}
+
+/* SPINNER */
+.spin-loader{width:28px;height:28px;border:3px solid var(--bd);border-top:3px solid var(--purple);border-radius:50%;animation:ro .7s linear infinite;margin:auto;}
+@keyframes ro{to{transform:rotate(360deg);}}
+
+/* SECTION TITLE */
+.sec-title{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:16px;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;}
+.login-box{background:var(--card);border:2px solid var(--bd);border-radius:24px;padding:28px;width:100%;max-width:340px;text-align:center;}
+
+/* NOTIFICATION badge */
+.badge{background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;}
+</style>
 </head>
 <body>
 
-<header>
-    <h2><i class="fa-solid fa-video"></i> STREAMX ADMIN</h2>
-</header>
+<div id="toast"></div>
 
-<div class="container">
-    <div class="card live-box">
-        <p style="color: var(--text-muted); font-size: 14px;"><i class="fa-solid fa-circle-dot" style="color: #00e676;"></i> রিয়েল-টাইম লাইভ ইউজার</p>
-        <span id="live-count">0</span>
-    </div>
-
-    <!-- Website & General Ad Settings -->
-    <div class="card">
-        <div class="card-header"><div class="title-group"><i class="fa-solid fa-gears"></i><h3>ওয়েবসাইট ও অ্যাড সেটিংস</h3></div></div>
-        <div class="grid-2">
-            <div class="input-group"><label>ওয়েবসাইটের নাম</label><div class="input-wrapper"><i class="fa-solid fa-globe"></i><input type="text" id="set-site-name" placeholder="STREAMX 🎥"></div></div>
-            <div class="input-group"><label>টেলিগ্রাম মিনি অ্যাপ লিংক</label><div class="input-wrapper"><i class="fa-brands fa-telegram"></i><input type="text" id="set-tg-app-url" placeholder="https://t.me/Bot/App"></div></div>
-        </div>
-        
-        <h4 style="margin:15px 0 10px; border-bottom:1px solid #333; padding-bottom:5px; color:#ff003c;">ভিডিও মিড-রোল অ্যাড (ভিডিও দেখার সময়)</h4>
-        <div class="grid-2">
-            <div class="input-group"><label>অ্যাড টাইম (কমা দিয়ে সেকেন্ড লিখুন)</label><div class="input-wrapper"><i class="fa-solid fa-stopwatch"></i><input type="text" id="set-ad-interval" placeholder="যেমন: 10, 45, 120"></div></div>
-            <div class="input-group"><label>ভিডিও Adsgram Block ID</label><div class="input-wrapper"><i class="fa-solid fa-ad"></i><input type="text" id="set-adsgram-id" placeholder="Adsgram ID"></div></div>
-        </div>
-        <div class="input-group"><label>Monetag (libtl) Zone ID</label><div class="input-wrapper"><i class="fa-solid fa-bullhorn"></i><input type="text" id="set-monetag-zone" placeholder="Zone ID (e.g. 9326895)"></div></div>
-
-        <h4 style="margin:15px 0 10px; border-bottom:1px solid #333; padding-bottom:5px; color:#00e676;">আইডল অ্যাড (ভিডিও না দেখলে বা অপেক্ষা করলে)</h4>
-        <div class="grid-2">
-            <div class="input-group"><label>আইডল অ্যাড টাইম (সেকেন্ড)</label><div class="input-wrapper"><i class="fa-regular fa-clock"></i><input type="number" id="set-idle-time" placeholder="যেমন: 30"></div></div>
-            <div class="input-group"><label>আইডল Adsgram Block ID</label><div class="input-wrapper"><i class="fa-solid fa-rectangle-ad"></i><input type="text" id="set-idle-adsgram-id" placeholder="Idle Adsgram ID"></div></div>
-        </div>
-
-        <button class="btn btn-success" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i> সেটিংস সেভ করুন</button>
-    </div>
-
-    <!-- Category Management -->
-    <div class="card">
-        <div class="card-header"><div class="title-group"><i class="fa-solid fa-layer-group"></i><h3>ক্যাটাগরি ম্যানেজমেন্ট</h3></div></div>
-        <div class="input-group">
-            <label>নতুন ক্যাটাগরি তৈরি করুন</label>
-            <div style="display:flex; gap:10px;">
-                <div class="input-wrapper" style="flex:1;"><i class="fa-solid fa-plus"></i><input type="text" id="new-cat-name" placeholder="যেমন: Movie, Funny"></div>
-                <button class="btn btn-info" style="width:120px;" onclick="addCategory()">Add</button>
-            </div>
-        </div>
-        <div id="category-list" style="margin-top:15px;"></div>
-    </div>
-
-    <!-- Upload Video -->
-    <div class="card">
-        <div class="card-header"><div class="title-group"><i class="fa-solid fa-cloud-arrow-up"></i><h3>নতুন ভিডিও আপলোড করুন</h3></div></div>
-        <div class="grid-2">
-            <div class="input-group"><label>ভিডিওর শিরোনাম</label><div class="input-wrapper"><i class="fa-solid fa-heading"></i><input type="text" id="add-title" placeholder="ভিডিওর নাম দিন"></div></div>
-            <div class="input-group">
-                <label>ক্যাটাগরি</label>
-                <div class="input-wrapper">
-                    <i class="fa-solid fa-list"></i>
-                    <select id="add-category">
-                        <option value="Others">Others</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="input-group"><label>থাম্বনেইল লিংক (Image URL)</label><div class="input-wrapper"><i class="fa-solid fa-image"></i><input type="text" id="add-thumb" placeholder="ছবির লিংক"></div></div>
-        <div class="input-group"><label>ভিডিও লিংক (YT/TG/MP4)</label><div class="input-wrapper"><i class="fa-solid fa-video"></i><input type="text" id="add-url" placeholder="ভিডিওর লিংক"></div></div>
-        
-        <h4 style="margin:15px 0 10px; border-bottom:1px solid #333; padding-bottom:5px; color:#f39c12;">ফুল কালেকশন আনলক সেটিংস (ঐচ্ছিক)</h4>
-        <div class="grid-2">
-            <div class="input-group"><label>ফুল কালেকশন লিংক</label><div class="input-wrapper"><i class="fa-solid fa-link"></i><input type="text" id="add-fc-url" placeholder="লিংক না দিলে বাটন শো করবে না"></div></div>
-            <div class="input-group"><label>কতটি অ্যাড দেখতে হবে?</label><div class="input-wrapper"><i class="fa-solid fa-eye"></i><input type="number" id="add-fc-ads" placeholder="যেমন: 5"></div></div>
-        </div>
-
-        <button class="btn btn-primary" onclick="uploadVideo()"><i class="fa-solid fa-paper-plane"></i> ভিডিও পাবলিশ করুন</button>
-    </div>
-
-    <!-- Video Management -->
-    <div class="card">
-        <div class="card-header"><div class="title-group"><i class="fa-solid fa-server"></i><h3>ভিডিও ম্যানেজমেন্ট</h3></div></div>
-        <div id="video-manage-list"><p style="text-align:center; color:#777;">ডেটা লোড হচ্ছে...</p></div>
-    </div>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div style="font-size:40px;margin-bottom:10px;">🛡️</div>
+    <div class="fredoka" style="font-size:26px;color:var(--yellow);margin-bottom:4px;">CashZilla</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:24px;font-weight:600;">Admin Control Panel</div>
+    <input id="admin-pass" type="password" placeholder="Admin Password" style="margin-bottom:12px;text-align:center;font-size:16px;"/>
+    <button class="btn" onclick="doLogin()" style="background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;width:100%;padding:12px;font-size:15px;border:none;">Login →</button>
+    <div id="login-err" style="color:var(--red);font-size:12px;margin-top:10px;font-weight:700;display:none;">Wrong password!</div>
+  </div>
 </div>
 
-<!-- Edit Video Modal -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <i class="fa-solid fa-xmark close-btn" onclick="document.getElementById('editModal').style.display='none'"></i>
-        <h3 style="color:var(--primary); margin-bottom:20px;"><i class="fa-solid fa-pen"></i> ভিডিও আপডেট</h3>
-        <input type="hidden" id="edit-id">
-        <div class="input-group"><label>শিরোনাম</label><div class="input-wrapper"><i class="fa-solid fa-heading"></i><input type="text" id="edit-title"></div></div>
-        <div class="input-group"><label>ক্যাটাগরি</label><div class="input-wrapper"><i class="fa-solid fa-list"></i><select id="edit-category"></select></div></div>
-        <div class="input-group"><label>থাম্বনেইল লিংক</label><div class="input-wrapper"><i class="fa-solid fa-image"></i><input type="text" id="edit-thumb"></div></div>
-        <div class="input-group"><label>ভিডিও লিংক</label><div class="input-wrapper"><i class="fa-solid fa-video"></i><input type="text" id="edit-url"></div></div>
-        
-        <h4 style="margin:15px 0 10px; border-bottom:1px solid #333; padding-bottom:5px; color:#f39c12;">ফুল কালেকশন আনলক সেটিংস</h4>
-        <div class="input-group"><label>ফুল কালেকশন লিংক</label><div class="input-wrapper"><i class="fa-solid fa-link"></i><input type="text" id="edit-fc-url"></div></div>
-        <div class="input-group" style="margin-bottom:20px;"><label>কতটি অ্যাড দেখতে হবে?</label><div class="input-wrapper"><i class="fa-solid fa-eye"></i><input type="number" id="edit-fc-ads"></div></div>
+<!-- ADMIN PANEL -->
+<div id="admin-panel" style="display:none;">
 
-        <button class="btn btn-info" onclick="saveEditVideo()"><i class="fa-solid fa-arrows-rotate"></i> আপডেট সেভ করুন</button>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo-badge">$</div>
+    <div>
+      <div class="fredoka" style="font-size:18px;color:var(--yellow);">CashZilla Admin</div>
+      <div class="topbar-user" id="admin-status">Loading...</div>
     </div>
-</div>
+    <button onclick="doLogout()" class="btn" style="margin-left:auto;background:var(--red);color:#fff;padding:7px 14px;font-size:12px;border:none;">Logout</button>
+  </div>
 
-<!-- Comment Management Modal -->
-<div id="commentModal" class="modal">
-    <div class="modal-content">
-        <i class="fa-solid fa-xmark close-btn" onclick="document.getElementById('commentModal').style.display='none'"></i>
-        <h3 style="color:var(--primary); margin-bottom:20px;"><i class="fa-solid fa-comments"></i> কমেন্ট ম্যানেজমেন্ট</h3>
-        <div id="admin-comment-list"></div>
+  <!-- TABS -->
+  <div class="tab-scroll">
+    <button class="tab-btn active" onclick="aTab('dash',this)">📊 Dashboard</button>
+    <button class="tab-btn" onclick="aTab('users',this)">👥 Users</button>
+    <button class="tab-btn" onclick="aTab('quiz',this)">🧠 Quizzes</button>
+    <button class="tab-btn" onclick="aTab('spin',this)">🎰 Spin Wheel</button>
+    <button class="tab-btn" onclick="aTab('wd',this)">💸 Withdrawals</button>
+    <button class="tab-btn" onclick="aTab('ads',this)">📢 Ads</button>
+    <button class="tab-btn" onclick="aTab('notify',this)">🔔 Notify</button>
+    <button class="tab-btn" onclick="aTab('sets',this)">⚙️ Settings</button>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="at-dash" class="pg on">
+    <div class="sec-title">Overview</div>
+    <div class="stat-grid">
+      <div class="stat-card" style="background:linear-gradient(135deg,#0e4d5a,#1a6a7a);">
+        <div style="font-size:11px;font-weight:700;color:#80cfe0;margin-bottom:4px;">TOTAL USERS</div>
+        <div class="fredoka" style="font-size:32px;color:#fff;" id="a-tu">—</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,#4a3800,#7a6000);">
+        <div style="font-size:11px;font-weight:700;color:#ffe094;margin-bottom:4px;">ONLINE NOW</div>
+        <div class="fredoka" style="font-size:32px;color:#fff;" id="a-on">—</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,#3d1a6e,#5b2a9e);">
+        <div style="font-size:11px;font-weight:700;color:#d4a8ff;margin-bottom:4px;">TOTAL COINS</div>
+        <div class="fredoka" style="font-size:32px;color:#fff;" id="a-tc">—</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,#6e1a1a,#9e2a2a);">
+        <div style="font-size:11px;font-weight:700;color:#ffb4b4;margin-bottom:4px;">WITHDRAWALS</div>
+        <div class="fredoka" style="font-size:32px;color:#fff;" id="a-tw">—</div>
+      </div>
     </div>
-</div>
+    <div class="sec-title">Recent Activity</div>
+    <div id="recent-activity" class="card" style="padding:14px;">
+      <div class="spin-loader"></div>
+    </div>
+  </div>
+
+  <!-- ===== USERS ===== -->
+  <div id="at-users" class="pg" style="display:none;">
+    <div class="sec-title">User Management</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input id="usearch" type="text" placeholder="Search name or UID..." style="flex:1;"/>
+      <button class="btn" onclick="searchUsers()" style="background:var(--purple);color:#fff;padding:10px 14px;border:none;flex-shrink:0;">Go</button>
+    </div>
+    <div id="ulist"><div class="spin-loader"></div></div>
+  </div>
+
+  <!-- ===== QUIZZES ===== -->
+  <div id="at-quiz" class="pg" style="display:none;">
+    <div class="sec-title">Quiz Management</div>
+    <button class="btn" onclick="showNewQuiz()" style="background:var(--green);color:#fff;padding:12px;width:100%;margin-bottom:14px;font-size:14px;border:none;">+ New Quiz</button>
+    <div id="qlist"></div>
+  </div>
+
+  <!-- ===== SPIN WHEEL ===== -->
+  <div id="at-spin" class="pg" style="display:none;">
+    <div class="sec-title">Spin Wheel Configuration</div>
+
+    <!-- Wheel Preview -->
+    <div class="card" style="padding:16px;margin-bottom:14px;text-align:center;">
+      <div style="font-weight:800;margin-bottom:12px;font-size:15px;">Live Preview</div>
+      <canvas id="wheel-preview" width="260" height="260"></canvas>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+        <button class="btn" onclick="drawWheelPreview()" style="background:var(--purple);color:#fff;padding:8px 16px;border:none;font-size:13px;">🔄 Refresh Preview</button>
+        <button class="btn" onclick="saveSpinConfig()" style="background:var(--green);color:#fff;padding:8px 16px;border:none;font-size:13px;">💾 Save Wheel</button>
+      </div>
+    </div>
+
+    <!-- Cooldown Settings -->
+    <div class="card" style="padding:16px;margin-bottom:14px;">
+      <div style="font-weight:800;margin-bottom:12px;font-size:15px;">⏱️ Spin Cooldown</div>
+      <label>Cooldown Hours (between spins)</label>
+      <input id="spin-cooldown" type="number" value="24" min="1" max="168" style="margin-bottom:8px;"/>
+      <div style="font-size:12px;color:var(--muted);font-weight:600;">Default: 24 hours. Set lower for testing.</div>
+    </div>
+
+    <!-- Segments -->
+    <div class="card" style="padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-weight:800;font-size:15px;">🎯 Wheel Segments</div>
+        <button class="btn" onclick="addSegment()" style="background:var(--cyan);color:#111;padding:7px 14px;font-size:12px;border:none;">+ Add</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 60px 36px;gap:6px;margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);">LABEL</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);">COINS</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);">COLOR</div>
+        <div></div>
+      </div>
+      <div id="seg-list"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;font-weight:600;">💡 Set Coins = 0 for "Sorry/Try Again" segments</div>
+    </div>
+  </div>
+
+  <!-- ===== WITHDRAWALS ===== -->
+  <div id="at-wd" class="pg" style="display:none;">
+    <div class="sec-title">Withdrawal Requests</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+      <button class="btn" onclick="filterWD('all',this)" style="background:var(--purple);color:#fff;padding:7px 14px;font-size:12px;border:none;" id="wd-f-all">All</button>
+      <button class="btn" onclick="filterWD('pending',this)" style="background:var(--card2);color:var(--muted);padding:7px 14px;font-size:12px;border:2px solid var(--bd);">Pending</button>
+      <button class="btn" onclick="filterWD('approved',this)" style="background:var(--card2);color:var(--muted);padding:7px 14px;font-size:12px;border:2px solid var(--bd);">Approved</button>
+      <button class="btn" onclick="filterWD('rejected',this)" style="background:var(--card2);color:var(--muted);padding:7px 14px;font-size:12px;border:2px solid var(--bd);">Rejected</button>
+    </div>
+    <div id="wdlist"><div class="spin-loader"></div></div>
+  </div>
+
+  <!-- ===== ADS ===== -->
+  <div id="at-ads" class="pg" style="display:none;">
+    <div class="sec-title">Ad Network</div>
+    <div class="card" style="padding:16px;margin-bottom:12px;">
+      <div style="font-weight:800;margin-bottom:12px;">Active Network</div>
+      <div class="net-card sel" id="net-none" data-net="none" onclick="selNet('none')">
+        <div style="font-weight:800;">None (Off)</div>
+        <div style="font-size:12px;color:var(--muted);">Disable all network ads</div>
+      </div>
+      <div class="net-card" id="net-monetag" data-net="monetag" onclick="selNet('monetag')">
+        <div style="font-weight:800;color:var(--purple);">🟣 Monetag</div>
+        <div style="font-size:12px;color:var(--muted);">Zone ID based banner/popup</div>
+      </div>
+      <div class="net-card" id="net-adsgram" data-net="adsgram" onclick="selNet('adsgram')">
+        <div style="font-weight:800;color:var(--cyan);">🔵 Adsgram</div>
+        <div style="font-size:12px;color:var(--muted);">Rewarded video ads</div>
+      </div>
+
+      <!-- Monetag -->
+      <div id="monetag-settings" style="display:none;margin-top:12px;">
+        <div style="font-weight:800;color:var(--purple);margin-bottom:10px;">Monetag Settings</div>
+        <label>Zone ID</label>
+        <input id="monetag-zone" type="text" placeholder="e.g. 9288208" style="margin-bottom:10px;"/>
+        <label>Ad Types</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:8px;color:var(--text);"><input type="checkbox" id="mg-banner"> Banner (Header)</label>
+          <label style="display:flex;align-items:center;gap:8px;color:var(--text);"><input type="checkbox" id="mg-popup"> Pop-up Ad</label>
+          <label style="display:flex;align-items:center;gap:8px;color:var(--text);"><input type="checkbox" id="mg-interstitial"> Interstitial</label>
+        </div>
+      </div>
+
+      <!-- Adsgram -->
+      <div id="adsgram-settings" style="display:none;margin-top:12px;">
+        <div style="font-weight:800;color:var(--cyan);margin-bottom:10px;">Adsgram Settings</div>
+        <label>Block ID</label>
+        <input id="adsgram-block" type="text" placeholder="e.g. 12345" style="margin-bottom:10px;"/>
+        <label>Reward Coins per Ad View</label>
+        <input id="adsgram-reward" type="number" placeholder="e.g. 10" style="margin-bottom:0;"/>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px;margin-bottom:12px;">
+      <div style="font-weight:800;margin-bottom:12px;">Custom Ad Content</div>
+      <label>Banner Ad HTML</label>
+      <textarea id="banner-html" rows="3" placeholder="<a href='...'><img src='...'></a>" style="margin-bottom:10px;resize:none;"></textarea>
+      <label>1-Click Ad URL</label>
+      <input id="oneclick-url" type="text" placeholder="https://..." style="margin-bottom:10px;"/>
+      <label>Pop-up Ad HTML (shown every 3 min)</label>
+      <textarea id="popup-html" rows="3" placeholder="HTML content..." style="margin-bottom:0;resize:none;"></textarea>
+    </div>
+
+    <button class="btn" onclick="saveAdSettings()" style="background:var(--green);color:#fff;width:100%;padding:13px;font-size:15px;border:none;margin-bottom:12px;">💾 Save Ad Settings</button>
+
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:800;margin-bottom:10px;">Preview</div>
+      <div id="ad-preview-area" style="border:2px dashed var(--bd);border-radius:10px;padding:12px;min-height:60px;background:var(--card2);">
+        <div style="color:var(--muted);text-align:center;font-size:13px;">Save settings to see preview</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFY ===== -->
+  <div id="at-notify" class="pg" style="display:none;">
+    <div class="sec-title">Telegram Notification</div>
+    <div class="card" style="padding:16px;margin-bottom:12px;">
+      <select id="nt" style="margin-bottom:10px;">
+        <option value="info">ℹ️ Info</option>
+        <option value="bonus">💰 Bonus Alert</option>
+        <option value="warning">⚠️ Warning</option>
+        <option value="update">🔔 Update</option>
+      </select>
+      <label>Title</label>
+      <input id="ntitle" type="text" placeholder="Notification title" style="margin-bottom:10px;"/>
+      <label>Message</label>
+      <textarea id="nmsg" rows="4" placeholder="Your message..." style="margin-bottom:12px;resize:none;"></textarea>
+      <button class="btn" onclick="sendTGNotif()" style="background:var(--cyan);color:#111;width:100%;padding:12px;font-size:14px;font-weight:800;border:none;">📤 Send to Telegram</button>
+      <div id="nstatus" style="text-align:center;font-size:12px;font-weight:700;margin-top:8px;"></div>
+    </div>
+
+    <div class="sec-title">In-App Notification</div>
+    <div class="card" style="padding:16px;">
+      <label>Title</label>
+      <input id="iatitle" type="text" placeholder="Notification title" style="margin-bottom:10px;"/>
+      <label>Message</label>
+      <textarea id="iamsg" rows="3" placeholder="Message to all users" style="margin-bottom:12px;resize:none;"></textarea>
+      <button class="btn" onclick="sendInApp()" style="background:var(--purple);color:#fff;width:100%;padding:12px;font-size:14px;border:none;">🔔 Send In-App</button>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div id="at-sets" class="pg" style="display:none;">
+    <div class="sec-title">Coin & Economy Settings</div>
+    <div class="card" style="padding:16px;margin-bottom:12px;">
+      <label>Coins per 1 USDT</label>
+      <input id="cusd" type="number" style="margin-bottom:10px;"/>
+      <label>Coins per 1 USD</label>
+      <input id="cusd2" type="number" style="margin-bottom:10px;"/>
+      <label>Coins per 1 BDT</label>
+      <input id="cbdt" type="number" style="margin-bottom:10px;"/>
+      <label>Minimum Withdraw (Coins)</label>
+      <input id="mwd" type="number" style="margin-bottom:10px;"/>
+      <label>Referral Bonus (Coins)</label>
+      <input id="rb" type="number" style="margin-bottom:10px;"/>
+      <label>Daily Bonus (Coins)</label>
+      <input id="dbonus" type="number" style="margin-bottom:14px;"/>
+      <button class="btn" onclick="saveSet()" style="background:var(--green);color:#fff;width:100%;padding:13px;font-size:15px;border:none;">💾 Save Settings</button>
+    </div>
+
+    <div class="sec-title">Admin Credentials</div>
+    <div class="card" style="padding:16px;">
+      <label>Change Admin Password</label>
+      <input id="new-pass" type="password" placeholder="New password" style="margin-bottom:10px;"/>
+      <button class="btn" onclick="changePass()" style="background:var(--orange);color:#fff;width:100%;padding:12px;font-size:14px;border:none;">🔑 Update Password</button>
+    </div>
+  </div>
+
+</div><!-- /admin-panel -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-    const firebaseConfig = {
-          apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
-  authDomain: "ai-tools-9f9a3.firebaseapp.com",
-  projectId: "ai-tools-9f9a3",
-  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
-  messagingSenderId: "839431476061",
-  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
+// ===== CONFIG =====
+const FB_CFG = {
+  apiKey:"AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+  authDomain:"ai-tools-9f9a3.firebaseapp.com",
+  databaseURL:"https://ai-tools-9f9a3-default-rtdb.firebaseio.com",
+  projectId:"ai-tools-9f9a3",
+  storageBucket:"ai-tools-9f9a3.firebasestorage.app",
+  messagingSenderId:"839431476061",
+  appId:"1:839431476061:web:c6e9ce5af6e01eb8584eb4"
 };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+const BOT_TOKEN = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
+const ADMIN_CHAT = '8601120665';
+const DEFAULT_PASS = 'admin2024'; // Change this!
 
-    db.ref('online_users').on('value', (snapshot) => { document.getElementById('live-count').innerText = snapshot.numChildren() || 0; });
+firebase.initializeApp(FB_CFG);
+const auth = firebase.auth();
+const db   = firebase.database();
 
-    // Load Settings
-    db.ref('settings').on('value', (snap) => {
-        if (snap.exists()) {
-            const data = snap.val();
-            document.getElementById('set-site-name').value = data.siteName || "";
-            document.getElementById('set-tg-app-url').value = data.tgAppUrl || "";
-            document.getElementById('set-ad-interval').value = data.adInterval || "";
-            document.getElementById('set-adsgram-id').value = data.adsgramId || "";
-            document.getElementById('set-monetag-zone').value = data.monetagZone || "";
-            document.getElementById('set-idle-time').value = data.idleAdInterval || "";
-            document.getElementById('set-idle-adsgram-id').value = data.idleAdsgramId || "";
-        }
+// ===== STATE =====
+const S = {
+  sets:{coinUsdt:10000,coinUsd:10000,coinBdt:833,minWd:5000,refBonus:500,dailyBonus:100},
+  quizzes:[],
+  adSettings:{activeNetwork:'none',monetagZone:'',monetagBanner:false,monetagPopup:false,monetagInterstitial:false,adsgramBlock:'',adsgramReward:10,bannerHtml:'',oneclickUrl:'',popupHtml:''},
+  spinConfig:{cooldownHours:24,segments:[]},
+  allWithdrawals:[], wdFilter:'all',
+  allUsers:[]
+};
+
+const DEFAULT_SEGS = [
+  {label:'Sorry!',val:0,color:'#1a1a2e'},
+  {label:'50 Coins',val:50,color:'#ffe94a'},
+  {label:'Try Again',val:0,color:'#00d4e8'},
+  {label:'Sorry!',val:0,color:'#ff6eb4'},
+  {label:'100 Coins',val:100,color:'#7c3aed'},
+  {label:'50 Coins',val:50,color:'#22c55e'},
+  {label:'Try Again',val:0,color:'#f97316'},
+  {label:'200 Coins',val:200,color:'#06b6d4'},
+];
+
+// ===== LOGIN =====
+function doLogin(){
+  const pass = document.getElementById('admin-pass').value;
+  const storedPass = localStorage.getItem('cz_admin_pass') || DEFAULT_PASS;
+  if(pass === storedPass){
+    localStorage.setItem('cz_admin_auth','1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    initAdmin();
+  } else {
+    const err = document.getElementById('login-err');
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',2500);
+  }
+}
+document.getElementById('admin-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+
+function doLogout(){
+  localStorage.removeItem('cz_admin_auth');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-pass').value='';
+}
+
+// Auto-login if saved
+if(localStorage.getItem('cz_admin_auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
+  initAdmin();
+}
+
+// ===== INIT =====
+async function initAdmin(){
+  auth.signInAnonymously().catch(()=>{});
+  document.getElementById('admin-status').textContent = 'Connected · '+new Date().toLocaleTimeString();
+  await Promise.all([loadSets(), loadAdSettingsFromDB(), loadSpinConfig(), loadQuizzes()]);
+  loadAdminDashboard();
+  loadUsersTab();
+  loadWDTab();
+  renderSegList();
+  loadAdSettingsUI();
+  drawWheelPreview();
+  loadASet();
+}
+
+// ===== SETTINGS =====
+async function loadSets(){
+  try{
+    const s = (await db.ref('settings').once('value')).val();
+    if(s) S.sets = {...S.sets,...s};
+  }catch(e){}
+}
+function loadASet(){
+  const flds = {cusd:S.sets.coinUsdt,cusd2:S.sets.coinUsd,cbdt:S.sets.coinBdt,mwd:S.sets.minWd,rb:S.sets.refBonus,dbonus:S.sets.dailyBonus||100};
+  Object.entries(flds).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v;});
+}
+window.saveSet = async function(){
+  const g = id => parseInt(document.getElementById(id)?.value)||0;
+  const s = {coinUsdt:g('cusd')||10000,coinUsd:g('cusd2')||10000,coinBdt:g('cbdt')||833,minWd:g('mwd')||5000,refBonus:g('rb')||500,dailyBonus:g('dbonus')||100};
+  await db.ref('settings').set(s); S.sets=s; toast('✅ Settings saved!');
+};
+window.changePass = function(){
+  const np = document.getElementById('new-pass').value.trim();
+  if(!np||np.length<4){toast('❌ Password too short!','err');return;}
+  localStorage.setItem('cz_admin_pass',np);
+  document.getElementById('new-pass').value='';
+  toast('✅ Password updated!');
+};
+
+// ===== SPIN CONFIG =====
+async function loadSpinConfig(){
+  try{
+    const snap = await db.ref('spinConfig').once('value');
+    if(snap.exists()){
+      S.spinConfig = {...S.spinConfig,...snap.val()};
+      if(!Array.isArray(S.spinConfig.segments)||!S.spinConfig.segments.length)
+        S.spinConfig.segments = [...DEFAULT_SEGS];
+    } else {
+      S.spinConfig.segments = [...DEFAULT_SEGS];
+    }
+  }catch(e){ S.spinConfig.segments = [...DEFAULT_SEGS]; }
+  const cd = document.getElementById('spin-cooldown');
+  if(cd) cd.value = S.spinConfig.cooldownHours||24;
+}
+
+function renderSegList(){
+  const el = document.getElementById('seg-list'); if(!el) return;
+  el.innerHTML = '';
+  S.spinConfig.segments.forEach((seg,i)=>{
+    const row = document.createElement('div');
+    row.className = 'seg-editor';
+    row.innerHTML = `<div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">Segment ${i+1}</div>
+    <div class="seg-row">
+      <input type="text" value="${seg.label}" placeholder="Label" onchange="updateSeg(${i},'label',this.value)" style=""/>
+      <input type="number" value="${seg.val}" placeholder="Coins" min="0" onchange="updateSeg(${i},'val',parseInt(this.value)||0)" style=""/>
+      <input type="color" class="color-pick" value="${seg.color}" onchange="updateSeg(${i},'color',this.value)" style="padding:2px;height:40px;"/>
+      <button onclick="removeSeg(${i})" style="background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;font-size:16px;font-weight:900;width:36px;height:40px;">×</button>
+    </div>`;
+    el.appendChild(row);
+  });
+}
+
+window.updateSeg = function(i,key,val){
+  if(S.spinConfig.segments[i]) S.spinConfig.segments[i][key]=val;
+  drawWheelPreview();
+};
+window.removeSeg = function(i){
+  if(S.spinConfig.segments.length<=2){toast('❌ Minimum 2 segments!','err');return;}
+  S.spinConfig.segments.splice(i,1);
+  renderSegList(); drawWheelPreview();
+};
+window.addSegment = function(){
+  if(S.spinConfig.segments.length>=12){toast('❌ Max 12 segments!','err');return;}
+  S.spinConfig.segments.push({label:'New',val:0,color:'#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0')});
+  renderSegList(); drawWheelPreview();
+};
+
+window.saveSpinConfig = async function(){
+  const cd = parseInt(document.getElementById('spin-cooldown')?.value)||24;
+  S.spinConfig.cooldownHours = cd;
+  await db.ref('spinConfig').set(S.spinConfig);
+  toast('✅ Spin wheel saved!');
+};
+
+function drawWheelPreview(){
+  const c = document.getElementById('wheel-preview'); if(!c) return;
+  const segs = S.spinConfig.segments; if(!segs||!segs.length) return;
+  const ctx = c.getContext('2d'), sz=260, cx=sz/2, cy=sz/2, r=sz/2-8;
+  const arc = (Math.PI*2)/segs.length;
+  ctx.clearRect(0,0,sz,sz);
+
+  segs.forEach((seg,i)=>{
+    const s=i*arc-Math.PI/2, e=s+arc;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
+    ctx.fillStyle=seg.color; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=2; ctx.stroke();
+    ctx.save();
+    ctx.translate(cx,cy); ctx.rotate(s+arc/2);
+    ctx.textAlign='right'; ctx.fillStyle='#fff';
+    ctx.font=`bold ${Math.max(9,13-segs.length)}px Nunito,sans-serif`;
+    ctx.shadowColor='rgba(0,0,0,.7)'; ctx.shadowBlur=4;
+    ctx.fillText(seg.label, r-10, 4);
+    ctx.restore();
+  });
+
+  // Center
+  ctx.beginPath(); ctx.arc(cx,cy,30,0,Math.PI*2);
+  const g=ctx.createRadialGradient(cx-6,cy-6,3,cx,cy,30);
+  g.addColorStop(0,'#ffe94a'); g.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.4)'; ctx.lineWidth=3; ctx.stroke();
+  ctx.font='18px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.shadowBlur=0; ctx.fillText('🦖',cx,cy);
+
+  // Pointer
+  ctx.beginPath();
+  ctx.moveTo(cx-10,8); ctx.lineTo(cx+10,8); ctx.lineTo(cx,30);
+  ctx.fillStyle='#ef4444'; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+}
+
+// ===== DASHBOARD =====
+async function loadAdminDashboard(){
+  try{
+    const snap = await db.ref('users').once('value');
+    let tu=0,on=0,tc=0;
+    const recent=[];
+    if(snap.exists()) snap.forEach(c=>{
+      const u=c.val(); tu++; tc+=u.coins||0;
+      if(Date.now()-(u.lastSeen||0)<300000) on++;
+      recent.push({name:u.name||'User',coins:u.coins||0,joined:u.joinedAt||0});
     });
+    document.getElementById('a-tu').textContent=tu;
+    document.getElementById('a-on').textContent=on;
+    document.getElementById('a-tc').textContent=tc.toLocaleString();
 
-    function saveSettings() {
-        db.ref('settings').set({
-            siteName: document.getElementById('set-site-name').value,
-            tgAppUrl: document.getElementById('set-tg-app-url').value,
-            adInterval: document.getElementById('set-ad-interval').value,
-            adsgramId: document.getElementById('set-adsgram-id').value,
-            monetagZone: document.getElementById('set-monetag-zone').value,
-            idleAdInterval: document.getElementById('set-idle-time').value,
-            idleAdsgramId: document.getElementById('set-idle-adsgram-id').value
-        }).then(() => alert("✅ সেটিংস সেভ হয়েছে!"));
-    }
+    recent.sort((a,b)=>b.joined-a.joined);
+    const ra=document.getElementById('recent-activity');
+    if(ra) ra.innerHTML = recent.slice(0,8).map(u=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="avatar" style="width:28px;height:28px;font-size:11px;">${(u.name||'U').charAt(0).toUpperCase()}</div>
+        <span style="font-weight:700;font-size:13px;">${u.name||'User'}</span>
+      </div>
+      <span style="font-size:12px;color:var(--muted);">${u.coins.toLocaleString()} coins</span>
+    </div>`).join('') || '<div style="color:var(--muted);text-align:center;padding:10px;">No users yet</div>';
+  }catch(e){ console.error(e); }
 
-    // Category Logic
-    db.ref('categories').on('value', snap => {
-        const catList = document.getElementById('category-list');
-        const uploadSelect = document.getElementById('add-category');
-        const editSelect = document.getElementById('edit-category');
-        
-        catList.innerHTML = ''; uploadSelect.innerHTML = '<option value="Others">Others</option>'; editSelect.innerHTML = '<option value="Others">Others</option>';
-        
-        const cats = snap.val();
-        if(cats) {
-            Object.keys(cats).forEach(id => {
-                const name = cats[id].name;
-                catList.innerHTML += `<div class="cat-item"><span><i class="fa-solid fa-folder"></i> ${name}</span><button onclick="deleteCat('${id}')"><i class="fa-solid fa-trash"></i></button></div>`;
-                uploadSelect.innerHTML += `<option value="${name}">${name}</option>`;
-                editSelect.innerHTML += `<option value="${name}">${name}</option>`;
-            });
-        }
+  try{
+    const snap = await db.ref('withdraws').once('value');
+    let tw=0; if(snap.exists()) snap.forEach(()=>tw++);
+    document.getElementById('a-tw').textContent=tw;
+  }catch(e){}
+}
+
+// ===== USERS =====
+async function loadUsersTab(){
+  const el=document.getElementById('ulist'); if(!el) return;
+  try{
+    const snap = await db.ref('users').once('value');
+    S.allUsers=[];
+    if(snap.exists()) snap.forEach(c=>S.allUsers.push({id:c.key,...c.val()}));
+    renderUsers(S.allUsers);
+  }catch(e){el.innerHTML='<div style="color:var(--muted);text-align:center;">Error loading users</div>';}
+}
+
+function renderUsers(users){
+  const el=document.getElementById('ulist'); if(!el) return;
+  if(!users.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">No users found</div>';return;}
+  el.innerHTML=users.map(u=>`<div class="user-row">
+    <div class="avatar">${(u.name||'U').charAt(0).toUpperCase()}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name||'User'}</div>
+      <div style="font-size:11px;color:var(--muted);">${(u.coins||0).toLocaleString()} coins · ${u.tgId||u.id?.slice(0,8)+'...'}</div>
+    </div>
+    ${u.banned?'<span class="pill rejected">Banned</span>':'<span class="pill approved">Active</span>'}
+    <div style="display:flex;gap:5px;flex-shrink:0;">
+      <button onclick="aAddCoins('${u.id}')" style="background:var(--green);border:none;color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:800;font-size:12px;">+Coins</button>
+      <button onclick="aBan('${u.id}','${!!u.banned}')" style="background:${u.banned?'#2a2a4a':'var(--red)'};border:none;color:${u.banned?'var(--muted)':'#fff'};border-radius:8px;padding:5px 8px;cursor:pointer;font-weight:800;font-size:12px;">${u.banned?'Unban':'Ban'}</button>
+    </div>
+  </div>`).join('');
+}
+
+window.searchUsers = function(){
+  const q=document.getElementById('usearch').value.toLowerCase().trim();
+  if(!q){renderUsers(S.allUsers);return;}
+  renderUsers(S.allUsers.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.id||'').includes(q)||(u.tgId||'').includes(q)));
+};
+
+window.aAddCoins = async function(uid){
+  const n=parseInt(prompt('Coins to add (use negative to deduct):')||'0'); if(!n) return;
+  await db.ref('users/'+uid).update({coins:firebase.database.ServerValue.increment(n)});
+  toast('✅ '+(n>0?'+':'')+n+' coins updated');
+  loadUsersTab();
+};
+window.aBan = async function(uid,isBanned){
+  const banned=isBanned==='true';
+  await db.ref('users/'+uid).update({banned:!banned});
+  toast(!banned?'🔒 User banned':'✅ User unbanned');
+  loadUsersTab();
+};
+
+// ===== QUIZZES =====
+async function loadQuizzes(){
+  try{
+    const snap = await db.ref('quizzes').once('value');
+    if(snap.exists()) S.quizzes=Object.entries(snap.val()).map(([id,q])=>({id,...q})).filter(q=>!q.deleted);
+    renderAdminQuizList();
+  }catch(e){}
+}
+
+function renderAdminQuizList(){
+  const el=document.getElementById('qlist'); if(!el) return;
+  if(!S.quizzes.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">No quizzes. Add one!</div>';return;}
+  const dc={Easy:var('--green'),Medium:'#f59e0b',Hard:'var(--red)'};
+  el.innerHTML=S.quizzes.map(q=>`<div class="card" style="padding:12px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="background:var(--card2);border:2px solid var(--bd);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--muted);flex-shrink:0;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:800;font-size:14px;">${q.title}</div>
+        <div style="font-size:12px;color:var(--muted);">${q.qs?.length||0} questions · +${q.reward} coins · ${q.diff||'Medium'}</div>
+      </div>
+      <button onclick="aDelQ('${q.id}')" style="background:var(--red);border:none;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0;">Delete</button>
+    </div>
+  </div>`).join('');
+}
+
+function var_(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
+function var(n){return `var(${n})`;}
+
+window.showNewQuiz = function(){
+  const modal = document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML=`<div class="card" style="padding:20px;max-width:360px;width:100%;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-weight:800;font-size:16px;">New Quiz</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:var(--card2);border:2px solid var(--bd);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:700;">×</button>
+    </div>
+    <label>Title</label><input id="nqt" type="text" placeholder="Quiz Title" style="margin-bottom:10px;"/>
+    <label>Category</label><input id="nqc" type="text" placeholder="General, Math, Science..." style="margin-bottom:10px;"/>
+    <label>Difficulty</label>
+    <select id="nqd" style="margin-bottom:10px;"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
+    <label>Reward Coins</label><input id="nqr" type="number" placeholder="50" style="margin-bottom:10px;"/>
+    <label>Time per Question (sec)</label><input id="nqtm" type="number" placeholder="30" style="margin-bottom:14px;"/>
+    <button onclick="saveNewQ()" class="btn" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:14px;border:none;">Create Quiz</button>
+  </div>`;
+  document.body.appendChild(modal);
+};
+
+window.saveNewQ = async function(){
+  const t=document.getElementById('nqt')?.value?.trim();
+  if(!t){toast('❌ Title required!','err');return;}
+  await db.ref('quizzes').push({
+    title:t, cat:document.getElementById('nqc')?.value||'General',
+    reward:parseInt(document.getElementById('nqr')?.value)||50,
+    time:parseInt(document.getElementById('nqtm')?.value)||30,
+    diff:document.getElementById('nqd')?.value||'Medium', qs:[]
+  });
+  toast('✅ Quiz created!');
+  document.querySelector('[style*="rgba(0,0,0,.7)"]')?.remove();
+  loadQuizzes();
+};
+
+window.aDelQ = async function(id){
+  if(!confirm('Delete this quiz permanently?')) return;
+  await db.ref('quizzes/'+id).update({deleted:true});
+  S.quizzes=S.quizzes.filter(q=>q.id!==id);
+  renderAdminQuizList(); toast('✅ Quiz deleted');
+};
+
+// ===== WITHDRAWALS =====
+let allWDData = [];
+window.filterWD = function(f,btn){
+  S.wdFilter=f;
+  document.querySelectorAll('#at-wd .btn').forEach(b=>{ b.style.background='var(--card2)';b.style.color='var(--muted)'; });
+  if(btn){btn.style.background='var(--purple)';btn.style.color='#fff';}
+  renderWD();
+};
+
+async function loadWDTab(){
+  const el=document.getElementById('wdlist'); if(!el) return;
+  try{
+    const snap=await db.ref('withdraws').once('value');
+    allWDData=[];
+    if(snap.exists()) snap.forEach(c=>allWDData.push({id:c.key,...c.val()}));
+    allWDData.sort((a,b)=>b.ts-a.ts);
+    renderWD();
+  }catch(e){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">No withdrawals</div>';}
+}
+
+function renderWD(){
+  const el=document.getElementById('wdlist'); if(!el) return;
+  const f=S.wdFilter;
+  const data=f==='all'?allWDData:allWDData.filter(w=>w.status===f);
+  if(!data.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">No '+(f==='all'?'':f)+' withdrawals</div>';return;}
+  el.innerHTML=data.map(w=>`<div class="card" style="padding:14px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div>
+        <div style="font-weight:800;font-size:14px;">${w.userName||'User'}</div>
+        <div style="font-size:12px;color:var(--muted);">${(w.method||'').toUpperCase()} · ${(w.amount||0).toLocaleString()} coins</div>
+      </div>
+      <span class="pill ${w.status||'pending'}">${(w.status||'PENDING').toUpperCase()}</span>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;word-break:break-all;">📍 ${w.address||'—'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📅 ${new Date(w.ts||0).toLocaleString()}</div>
+    ${(!w.status||w.status==='pending')?`<div style="display:flex;gap:8px;">
+      <button onclick="aApp('${w.id}')" style="flex:1;background:var(--green);border:none;color:#fff;border-radius:10px;padding:9px;font-weight:800;cursor:pointer;font-size:13px;">✅ Approve</button>
+      <button onclick="aRej('${w.id}')" style="flex:1;background:var(--red);border:none;color:#fff;border-radius:10px;padding:9px;font-weight:800;cursor:pointer;font-size:13px;">❌ Reject</button>
+    </div>`:''}
+  </div>`).join('');
+}
+
+window.aApp = async function(id){
+  const snap=await db.ref('withdraws/'+id).once('value');
+  if(snap.exists()){
+    const w=snap.val();
+    await db.ref('withdraws/'+id).update({status:'approved'});
+    tgSend(`✅ <b>Withdrawal Approved</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins\nMethod: ${(w.method||'').toUpperCase()}\nAddress: ${w.address}`);
+  }
+  toast('✅ Approved!'); loadWDTab();
+};
+window.aRej = async function(id){
+  const snap=await db.ref('withdraws/'+id).once('value');
+  if(snap.exists()){
+    const w=snap.val();
+    await db.ref('withdraws/'+id).update({status:'rejected'});
+    await db.ref('users/'+w.uid).update({coins:firebase.database.ServerValue.increment(w.amount)});
+    tgSend(`❌ <b>Withdrawal Rejected</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins refunded`);
+  }
+  toast('✅ Rejected & refunded!'); loadWDTab();
+};
+
+// ===== AD SETTINGS =====
+async function loadAdSettingsFromDB(){
+  try{
+    const snap=await db.ref('adSettings').once('value');
+    if(snap.exists()) S.adSettings={...S.adSettings,...snap.val()};
+  }catch(e){}
+}
+function loadAdSettingsUI(){
+  const ads=S.adSettings;
+  document.querySelectorAll('[data-net]').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('net-'+(ads.activeNetwork||'none'))?.classList.add('sel');
+  document.getElementById('monetag-settings').style.display=ads.activeNetwork==='monetag'?'block':'none';
+  document.getElementById('adsgram-settings').style.display=ads.activeNetwork==='adsgram'?'block':'none';
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)typeof v==='boolean'?e.checked=v:e.value=v;};
+  set('monetag-zone',ads.monetagZone||'');
+  set('mg-banner',!!ads.monetagBanner);
+  set('mg-popup',!!ads.monetagPopup);
+  set('mg-interstitial',!!ads.monetagInterstitial);
+  set('adsgram-block',ads.adsgramBlock||'');
+  set('adsgram-reward',ads.adsgramReward||10);
+  set('banner-html',ads.bannerHtml||'');
+  set('oneclick-url',ads.oneclickUrl||'');
+  set('popup-html',ads.popupHtml||'');
+}
+window.selNet=function(net){
+  S.adSettings.activeNetwork=net;
+  document.querySelectorAll('[data-net]').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('net-'+net)?.classList.add('sel');
+  document.getElementById('monetag-settings').style.display=net==='monetag'?'block':'none';
+  document.getElementById('adsgram-settings').style.display=net==='adsgram'?'block':'none';
+};
+window.saveAdSettings=async function(){
+  const g=id=>{const e=document.getElementById(id);return e?e.type==='checkbox'?e.checked:e.value:'';};
+  const ads={
+    activeNetwork:S.adSettings.activeNetwork,
+    monetagZone:g('monetag-zone'),monetagBanner:g('mg-banner'),monetagPopup:g('mg-popup'),monetagInterstitial:g('mg-interstitial'),
+    adsgramBlock:g('adsgram-block'),adsgramReward:parseInt(g('adsgram-reward'))||10,
+    bannerHtml:g('banner-html'),oneclickUrl:g('oneclick-url'),popupHtml:g('popup-html')
+  };
+  await db.ref('adSettings').set(ads); S.adSettings=ads;
+  const prev=document.getElementById('ad-preview-area');
+  if(prev){
+    if(ads.bannerHtml) prev.innerHTML=ads.bannerHtml;
+    else if(ads.activeNetwork==='monetag') prev.innerHTML=`<div style="background:rgba(168,85,247,.2);padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;color:var(--purple);">Monetag Zone: ${ads.monetagZone||'—'}</div>`;
+    else if(ads.activeNetwork==='adsgram') prev.innerHTML=`<div style="background:rgba(0,212,232,.2);padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;color:var(--cyan);">Adsgram Block: ${ads.adsgramBlock||'—'}</div>`;
+    else prev.innerHTML='<div style="color:var(--muted);text-align:center;font-size:13px;">No active ad</div>';
+  }
+  toast('✅ Ad settings saved!');
+};
+
+// ===== NOTIFICATIONS =====
+window.sendTGNotif=async function(){
+  const title=document.getElementById('ntitle').value.trim();
+  const msg=document.getElementById('nmsg').value.trim();
+  const type=document.getElementById('nt').value;
+  const st=document.getElementById('nstatus');
+  if(!title||!msg){toast('❌ Fill all fields!','err');return;}
+  const icons={info:'ℹ️',bonus:'💰',warning:'⚠️',update:'🔔'};
+  st.textContent='Sending...';st.style.color='var(--muted)';
+  try{
+    const r=await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:ADMIN_CHAT,parse_mode:'HTML',disable_web_page_preview:true,
+        text:`${icons[type]||'ℹ️'} <b>CashZilla Notification</b>\n\n<b>${title}</b>\n\n${msg}\n\n<i>— CashZilla Team</i>`})
     });
+    const d=await r.json();
+    if(d.ok){st.textContent='✅ Sent!';st.style.color='var(--green)';document.getElementById('ntitle').value='';document.getElementById('nmsg').value='';toast('✅ Sent to Telegram!');}
+    else{st.textContent='Failed: '+d.description;st.style.color='var(--red)';}
+  }catch(e){st.textContent='Network error';st.style.color='var(--red)';}
+};
+window.sendInApp=async function(){
+  const t=document.getElementById('iatitle').value.trim();
+  const m=document.getElementById('iamsg').value.trim();
+  if(!t||!m){toast('❌ Fill all fields!','err');return;}
+  await db.ref('notifications').push({title:t,message:m,ts:Date.now()});
+  toast('✅ In-app notification sent!');
+  document.getElementById('iatitle').value='';document.getElementById('iamsg').value='';
+};
 
-    function addCategory() {
-        const name = document.getElementById('new-cat-name').value.trim();
-        if(name === '') return alert("ক্যাটাগরির নাম লিখুন!");
-        db.ref('categories').push({ name: name }).then(() => { document.getElementById('new-cat-name').value = ''; });
-    }
-    function deleteCat(id) { if(confirm("এই ক্যাটাগরি ডিলিট করবেন?")) db.ref('categories/'+id).remove(); }
+// ===== TABS =====
+window.aTab=function(tab,btn){
+  document.querySelectorAll('.pg').forEach(e=>e.style.display='none');
+  document.getElementById('at-'+tab).style.display='block';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(tab==='ads') loadAdSettingsUI();
+  if(tab==='spin'){renderSegList();drawWheelPreview();}
+  if(tab==='users') loadUsersTab();
+  if(tab==='wd') loadWDTab();
+  if(tab==='dash') loadAdminDashboard();
+};
 
-    function uploadVideo() {
-        const t = document.getElementById('add-title').value; const c = document.getElementById('add-category').value || "Others";
-        const th = document.getElementById('add-thumb').value; const u = document.getElementById('add-url').value;
-        const fcUrl = document.getElementById('add-fc-url').value; const fcAds = parseInt(document.getElementById('add-fc-ads').value) || 0;
-        
-        if(!t || !u) return alert("⚠️ শিরোনাম এবং ভিডিও লিংক দিন!");
-        db.ref('videos').push({ 
-            title: t, category: c, thumb: th, url: u, 
-            fullCollectionUrl: fcUrl, fullCollectionAds: fcAds,
-            views: 0, likes: 0, dislikes: 0, timestamp: Date.now() 
-        })
-        .then(() => { 
-            alert("✅ আপলোড সম্পন্ন!"); 
-            document.getElementById('add-title').value = ""; document.getElementById('add-thumb').value = ""; 
-            document.getElementById('add-url').value = ""; document.getElementById('add-fc-url').value = ""; document.getElementById('add-fc-ads').value = "";
-        });
-    }
+// ===== TELEGRAM =====
+async function tgSend(text){
+  try{ await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:ADMIN_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true})}); }
+  catch(e){}
+}
 
-    db.ref('videos').on('value', (snapshot) => {
-        const container = document.getElementById('video-manage-list');
-        const data = snapshot.val(); container.innerHTML = '';
-        if(!data) return container.innerHTML = '<p style="text-align:center; color:#777;">কোনো ভিডিও নেই!</p>';
-        
-        Object.keys(data).reverse().forEach((id) => {
-            const v = data[id];
-            let cCount = v.comments ? Object.keys(v.comments).length : 0;
-            container.innerHTML += `
-                <div class="video-item">
-                    <div class="v-title">${v.title}</div>
-                    <div class="v-stats">
-                        <span class="badge" style="color:#00e676; border-color:#00e676"><i class="fa-solid fa-folder"></i> ${v.category || 'Others'}</span>
-                        <span class="badge"><i class="fa-solid fa-eye"></i> ${v.views || 0}</span>
-                        <span class="badge"><i class="fa-solid fa-thumbs-up"></i> ${v.likes || 0}</span>
-                        <span class="badge" style="color:#007bff; border-color:#007bff"><i class="fa-solid fa-comments"></i> ${cCount} Comments</span>
-                        ${v.fullCollectionUrl ? `<span class="badge" style="color:#f39c12; border-color:#f39c12"><i class="fa-solid fa-link"></i> FC Active</span>` : ''}
-                    </div>
-                    <div class="v-actions">
-                        <button class="btn btn-warning" onclick="manageComments('${id}')"><i class="fa-solid fa-comments"></i> কমেন্টস</button>
-                        <button class="btn btn-info" onclick="openEditModal('${id}')"><i class="fa-solid fa-pen"></i> এডিট</button>
-                        <button class="btn btn-danger" onclick="deleteVideo('${id}')"><i class="fa-solid fa-trash"></i> ডিলিট</button>
-                    </div>
-                </div>`;
-        });
-    });
-
-    function deleteVideo(id) { if(confirm("⚠️ ডিলিট করবেন?")) db.ref('videos/' + id).remove(); }
-
-    function openEditModal(id) {
-        db.ref('videos/' + id).once('value').then(snap => {
-            let v = snap.val();
-            document.getElementById('edit-id').value = id; 
-            document.getElementById('edit-title').value = v.title;
-            document.getElementById('edit-category').value = v.category || "Others"; 
-            document.getElementById('edit-thumb').value = v.thumb;
-            document.getElementById('edit-url').value = v.url; 
-            document.getElementById('edit-fc-url').value = v.fullCollectionUrl || ""; 
-            document.getElementById('edit-fc-ads').value = v.fullCollectionAds || ""; 
-            document.getElementById('editModal').style.display = 'flex';
-        });
-    }
-
-    function saveEditVideo() {
-        const id = document.getElementById('edit-id').value;
-        db.ref('videos/' + id).update({
-            title: document.getElementById('edit-title').value, 
-            category: document.getElementById('edit-category').value || "Others",
-            thumb: document.getElementById('edit-thumb').value, 
-            url: document.getElementById('edit-url').value,
-            fullCollectionUrl: document.getElementById('edit-fc-url').value,
-            fullCollectionAds: parseInt(document.getElementById('edit-fc-ads').value) || 0
-        }).then(() => { alert("✅ আপডেট হয়েছে!"); document.getElementById('editModal').style.display = 'none'; });
-    }
-
-    let activeVideoForComment = null;
-    function manageComments(vidId) {
-        activeVideoForComment = vidId; document.getElementById('commentModal').style.display = 'flex';
-        db.ref('videos/' + vidId + '/comments').on('value', snap => {
-            if(activeVideoForComment !== vidId) return;
-            const list = document.getElementById('admin-comment-list'); list.innerHTML = '';
-            const comments = snap.val();
-            if(!comments) return list.innerHTML = '<p style="text-align:center; color:#777;">এই ভিডিওতে কোনো কমেন্ট নেই।</p>';
-            Object.keys(comments).reverse().forEach(cid => {
-                let c = comments[cid];
-                list.innerHTML += `
-                    <div class="adm-comment">
-                        <strong><i class="fa-solid fa-user"></i> ${c.userName}</strong>
-                        <p>${c.text}</p>
-                        ${c.adminReply ? `<div class="admin-reply-box"><strong>Admin Reply:</strong> ${c.adminReply}</div>` : ''}
-                        <div class="adm-comment-actions">
-                            <button onclick="editComment('${vidId}', '${cid}', '${c.text.replace(/'/g, "\\'")}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button onclick="replyComment('${vidId}', '${cid}', '${(c.adminReply||'').replace(/'/g, "\\'")}')"><i class="fa-solid fa-reply"></i> Reply</button>
-                            <button onclick="deleteComment('${vidId}', '${cid}')" style="color:#ff1744;"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    function editComment(vidId, cid, oldText) { let newText = prompt("কমেন্ট এডিট করুন:", oldText); if(newText !== null && newText.trim() !== "") db.ref(`videos/${vidId}/comments/${cid}`).update({ text: newText.trim() }); }
-    function replyComment(vidId, cid, oldReply) { let reply = prompt("অ্যাডমিন রিপ্লাই দিন:", oldReply); if(reply !== null) db.ref(`videos/${vidId}/comments/${cid}`).update({ adminReply: reply.trim() }); }
-    function deleteComment(vidId, cid) { if(confirm("এই কমেন্টটি ডিলিট করতে চান?")) db.ref(`videos/${vidId}/comments/${cid}`).remove(); }
+// ===== TOAST =====
+window.toast=function(msg,type='ok'){
+  const e=document.getElementById('toast');
+  e.textContent=msg; e.className=type==='err'?'on err':'on';
+  setTimeout(()=>e.className='',3000);
+};
 </script>
 </body>
 </html>
