@@ -3,463 +3,388 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>CashZilla – Quiz & Earn</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>CashZilla</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#f7f8ff;--card:#fff;--border:#111;--cyan:#00d4e8;--yellow:#ffe94a;
-  --purple:#a855f7;--pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;
-  --shadow:4px 4px 0 #111;--shadow-lg:6px 6px 0 #111;
+  --bg:#f7f8ff;--card:#fff;--bd:#111;
+  --cyan:#00d4e8;--yellow:#ffe94a;--purple:#a855f7;
+  --pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;
+  --sh:4px 4px 0 #111;--sh2:6px 6px 0 #111;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
 body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
 .fredoka{font-family:'Fredoka One',cursive;}
 
-/* ===== CSS ICON SYSTEM (emoji replacement) ===== */
-.ico{display:inline-flex;align-items:center;justify-content:center;font-style:normal;line-height:1;flex-shrink:0;}
-/* Coin */
-.ico-coin{width:1em;height:1em;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;position:relative;}
-.ico-coin::after{content:'$';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.55em;font-weight:900;color:#92400e;}
-/* Trophy */
-.ico-trophy{width:.9em;height:.9em;background:#ffe94a;border:2px solid #92400e;border-radius:4px 4px 2px 2px;position:relative;}
-.ico-trophy::before{content:'';position:absolute;bottom:-.3em;left:50%;transform:translateX(-50%);width:.4em;height:.3em;background:#f59e0b;border:2px solid #92400e;}
-.ico-trophy::after{content:'';position:absolute;top:-.15em;left:-.2em;right:-.2em;height:.2em;background:#f59e0b;border:2px solid #92400e;border-radius:4px;}
-/* Star */
-.ico-star{width:1em;height:1em;background:#ffe94a;border:2px solid #92400e;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
-/* Check */
-.ico-check{width:1em;height:1em;border-radius:50%;background:#22c55e;border:2px solid #166534;position:relative;}
-.ico-check::after{content:'';position:absolute;left:20%;top:45%;width:35%;height:20%;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);}
-/* Cross */
-.ico-cross{width:1em;height:1em;border-radius:50%;background:#ef4444;border:2px solid #991b1b;position:relative;}
-.ico-cross::before,.ico-cross::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:3px;background:#fff;border-radius:2px;}
-.ico-cross::before{transform:translate(-50%,-50%) rotate(45deg);}
-.ico-cross::after{transform:translate(-50%,-50%) rotate(-45deg);}
-/* Brain */
-.ico-brain{width:1em;height:1em;border-radius:50% 50% 45% 45%;background:#a855f7;border:2px solid #581c87;position:relative;overflow:hidden;}
-.ico-brain::before{content:'';position:absolute;top:20%;left:50%;width:2px;height:60%;background:#581c87;}
-/* Spin / wheel */
-.ico-wheel{width:1em;height:1em;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ffe94a 25% 50%,#ff6eb4 50% 75%,#22c55e 75% 100%);}
-/* Refer */
-.ico-refer{width:1em;height:.8em;position:relative;}
-.ico-refer::before{content:'';position:absolute;left:0;top:0;width:.5em;height:.5em;border-radius:50%;background:#a855f7;border:2px solid #111;}
-.ico-refer::after{content:'';position:absolute;right:0;top:0;width:.5em;height:.5em;border-radius:50%;background:#00d4e8;border:2px solid #111;}
-/* Cash arrow */
-.ico-cash{width:1em;height:.7em;position:relative;}
-.ico-cash::before{content:'';position:absolute;left:0;right:.3em;top:50%;height:3px;background:#22c55e;transform:translateY(-50%);}
-.ico-cash::after{content:'';position:absolute;right:0;top:0;width:.4em;height:.7em;border-top:3px solid transparent;border-bottom:3px solid transparent;border-left:6px solid #22c55e;}
-/* Home */
-.ico-home{width:.9em;height:.9em;position:relative;}
-.ico-home::before{content:'';position:absolute;bottom:0;left:10%;width:80%;height:55%;background:#111;border-radius:2px 2px 0 0;}
-.ico-home::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:.5em solid transparent;border-right:.5em solid transparent;border-bottom:.5em solid #111;}
-/* Bell */
-.ico-bell{width:.8em;height:.9em;position:relative;}
-.ico-bell::before{content:'';position:absolute;top:.15em;left:50%;transform:translateX(-50%);width:.7em;height:.6em;border-radius:.35em .35em 0 0;background:#111;}
-.ico-bell::after{content:'';position:absolute;bottom:.05em;left:50%;transform:translateX(-50%);width:.3em;height:.15em;border-radius:0 0 .15em .15em;background:#111;}
-/* Money bag */
-.ico-bag{width:.9em;height:1em;border-radius:50% 50% 40% 40%;background:#ffe94a;border:2px solid #92400e;position:relative;}
-.ico-bag::before{content:'$';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.5em;font-weight:900;color:#92400e;}
-/* Lightning bolt */
-.ico-bolt{width:.7em;height:1em;background:#ffe94a;border:2px solid #92400e;clip-path:polygon(60% 0%,30% 50%,55% 50%,40% 100%,70% 50%,45% 50%);}
-/* Shield (admin) */
-.ico-shield{width:.8em;height:1em;background:linear-gradient(180deg,#a855f7,#7c3aed);border:2px solid #4c1d95;clip-path:polygon(50% 0%,100% 25%,100% 60%,50% 100%,0% 60%,0% 25%);}
-/* Gift */
-.ico-gift{width:1em;height:.9em;background:#ff6eb4;border:2px solid #9d174d;border-radius:2px;position:relative;}
-.ico-gift::before{content:'';position:absolute;top:-.2em;left:50%;transform:translateX(-50%);width:1em;height:.2em;background:#ec4899;border:2px solid #9d174d;}
-.ico-gift::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:100%;background:#9d174d;}
-/* Refresh */
-.ico-refresh{width:1em;height:1em;border-radius:50%;border:3px solid #00d4e8;border-top-color:transparent;animation:spin .8s linear infinite;}
-/* Person */
-.ico-person{width:.8em;height:1em;position:relative;}
-.ico-person::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:.5em;height:.5em;border-radius:50%;background:#a855f7;border:2px solid #111;}
-.ico-person::after{content:'';position:absolute;bottom:0;left:0;right:0;height:.45em;border-radius:.3em .3em 0 0;background:#a855f7;border:2px solid #111;}
-/* Up arrow for earning */
-.ico-up{width:.8em;height:.8em;position:relative;}
-.ico-up::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:70%;background:#22c55e;}
-.ico-up::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:.4em solid transparent;border-right:.4em solid transparent;border-bottom:.4em solid #22c55e;}
+/* ===== LOADING ===== */
+#ls{position:fixed;inset:0;background:#ffe94a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
+#ls.hide{opacity:0;pointer-events:none;}
+.lc{width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#f59e0b,#ffe94a);border:4px solid #92400e;box-shadow:0 6px 0 #92400e;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#92400e;animation:lb 1s ease-in-out infinite;margin-bottom:20px;}
+@keyframes lb{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+.ld{display:flex;gap:8px;margin-top:24px;}
+.ldot{width:10px;height:10px;border-radius:50%;background:#111;animation:dp 1.2s ease-in-out infinite;}
+.ldot:nth-child(2){animation-delay:.2s;}
+.ldot:nth-child(3){animation-delay:.4s;}
+@keyframes dp{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+.lpb{width:200px;height:6px;background:rgba(0,0,0,.15);border-radius:6px;margin-top:16px;overflow:hidden;}
+.lpbf{height:100%;background:#111;border-radius:6px;animation:lpf 5s linear forwards;}
+@keyframes lpf{from{width:0%;}to{width:100%;}}
 
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* CARDS */
-.card{background:var(--card);border:3px solid var(--border);border-radius:20px;box-shadow:var(--shadow);}
-.card-lg{background:var(--card);border:3px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);}
-.btn{border:3px solid var(--border);border-radius:14px;font-weight:800;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;}
+/* ===== CARDS & BUTTONS ===== */
+.card{background:#fff;border:3px solid #111;border-radius:20px;box-shadow:var(--sh);}
+.btn{border:3px solid #111;border-radius:14px;font-weight:800;box-shadow:var(--sh);cursor:pointer;transition:transform .1s,box-shadow .1s;display:inline-flex;align-items:center;justify-content:center;}
 .btn:active{transform:translate(3px,3px);box-shadow:none;}
 
-/* NAV */
-#bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;transition:background .15s;gap:3px;}
-.nav-item.active{background:var(--yellow);}
-.nav-icon-wrap{font-size:22px;line-height:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
-.nav-label{font-size:10px;font-weight:800;color:#111;}
+/* ===== NAV ===== */
+#bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;gap:4px;}
+.ni.active{background:var(--yellow);}
+.nl{font-size:10px;font-weight:800;color:#111;}
 
-/* BALANCE CARD */
-.balance-card{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;color:#fff;padding:20px;}
+/* ===== CSS ICONS ===== */
+/* Home */
+.ic-home{width:22px;height:22px;position:relative;}
+.ic-home::before{content:'';position:absolute;bottom:2px;left:5px;width:12px;height:10px;background:#111;border-radius:2px 2px 0 0;}
+.ic-home::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:10px solid #111;}
+/* Brain/Quiz */
+.ic-brain{width:22px;height:20px;position:relative;}
+.ic-brain::before{content:'';position:absolute;top:2px;left:2px;width:18px;height:14px;border-radius:9px 9px 4px 4px;background:#111;}
+.ic-brain::after{content:'';position:absolute;bottom:0;left:7px;width:8px;height:6px;border-radius:0 0 4px 4px;background:#111;}
+/* Wheel/Spin */
+.ic-wheel{width:22px;height:22px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ff6eb4 25% 50%,#ffe94a 50% 75%,#22c55e 75% 100%);position:relative;}
+.ic-wheel::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#111;}
+/* People/Refer */
+.ic-ref{width:24px;height:20px;position:relative;}
+.ic-ref::before{content:'';position:absolute;top:0;left:1px;width:9px;height:9px;border-radius:50%;background:#111;}
+.ic-ref::after{content:'';position:absolute;bottom:0;left:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#111;}
+.ic-ref2{position:absolute;top:0;right:1px;width:9px;height:9px;border-radius:50%;background:#a855f7;border:2px solid #111;}
+.ic-ref3{position:absolute;bottom:0;right:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#a855f7;border:2px solid #111;}
+/* Cash arrow */
+.ic-cash{width:22px;height:18px;position:relative;}
+.ic-cash::before{content:'';position:absolute;top:50%;left:0;right:8px;height:3px;background:#22c55e;transform:translateY(-50%);border-radius:2px;}
+.ic-cash::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #22c55e;}
 
-/* SPIN WHEEL */
-#spin-canvas{border:4px solid #111;border-radius:50%;box-shadow:6px 6px 0 #111;}
+/* Coin */
+.ic-coin{width:1em;height:1em;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;display:inline-flex;align-items:center;justify-content:center;font-size:.55em;font-weight:900;color:#92400e;flex-shrink:0;}
+/* Check */
+.ic-check{width:1em;height:1em;border-radius:50%;background:#22c55e;border:2px solid #166534;position:relative;flex-shrink:0;}
+.ic-check::after{content:'';position:absolute;left:22%;top:48%;width:33%;height:18%;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);}
+/* Cross */
+.ic-x{width:1em;height:1em;border-radius:50%;background:#ef4444;border:2px solid #991b1b;position:relative;flex-shrink:0;}
+.ic-x::before,.ic-x::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2.5px;background:#fff;border-radius:2px;}
+.ic-x::before{transform:translate(-50%,-50%) rotate(45deg);}
+.ic-x::after{transform:translate(-50%,-50%) rotate(-45deg);}
+/* Bell */
+.ic-bell{width:20px;height:22px;position:relative;}
+.ic-bell::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:14px;height:12px;border-radius:7px 7px 0 0;background:#111;}
+.ic-bell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:8px;height:5px;border-radius:0 0 4px 4px;background:#111;}
+/* Trophy */
+.ic-trophy{width:22px;height:22px;position:relative;}
+.ic-trophy::before{content:'';position:absolute;top:0;left:3px;width:16px;height:13px;border-radius:10px 10px 4px 4px;background:#f59e0b;border:2px solid #92400e;}
+.ic-trophy::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:12px;height:9px;background:#f59e0b;border:2px solid #92400e;border-radius:0 0 4px 4px;}
+/* Gift */
+.ic-gift{width:20px;height:20px;position:relative;}
+.ic-gift::before{content:'';position:absolute;top:4px;left:1px;width:18px;height:14px;background:#ff6eb4;border:2px solid #9d174d;border-radius:2px;}
+.ic-gift::after{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:2px;height:14px;background:#9d174d;}
+/* Shield (admin) */
+.ic-shield{width:18px;height:22px;background:#a855f7;border:2px solid #4c1d95;clip-path:polygon(50% 0%,100% 20%,100% 60%,50% 100%,0% 60%,0% 20%);}
+/* Star */
+.ic-star{width:20px;height:20px;background:#ffe94a;border:2px solid #92400e;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+/* Up arrow */
+.ic-up{width:16px;height:16px;position:relative;}
+.ic-up::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:65%;background:#22c55e;}
+.ic-up::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:6px solid #22c55e;}
 
-/* QUIZ */
-.answer-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;transition:all .15s;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;}
-.answer-btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #111;}
-.answer-btn.correct{background:#bbf7d0;border-color:#16a34a;}
-.answer-btn.wrong{background:#fecaca;border-color:#dc2626;}
+/* ===== BALANCE CARD ===== */
+.balcard{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);color:#fff;padding:20px;}
 
-/* CONFETTI */
-.confetti-piece{position:fixed;width:10px;height:10px;top:-10px;border-radius:2px;animation:confetti-fall 2.5s linear forwards;pointer-events:none;z-index:9999;}
-@keyframes confetti-fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+/* ===== QUIZ ===== */
+.ans-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;width:100%;transition:transform .1s;}
+.ans-btn:hover{transform:translate(-2px,-2px);}
+.ans-btn.ok{background:#bbf7d0;border-color:#16a34a;}
+.ans-btn.no{background:#fecaca;border-color:#dc2626;}
 
-@keyframes countUp{from{transform:scale(1.4);color:#ff6eb4;}to{transform:scale(1);}}
-.count-anim{animation:countUp .4s ease;}
+/* ===== PROGRESS ===== */
+.pbar{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden;}
+.pfill{height:100%;border-radius:6px;transition:width .4s;}
 
-/* TOAST */
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 24px;border-radius:14px;font-weight:700;z-index:9999;transition:transform .3s;white-space:nowrap;}
-#toast.show{transform:translateX(-50%) translateY(0);}
+/* ===== METHOD CARDS ===== */
+.mc{border:3px solid #e5e7eb;border-radius:16px;padding:12px;cursor:pointer;background:#fff;transition:.15s;}
+.mc.sel{border-color:#111;background:var(--yellow);box-shadow:3px 3px 0 #111;}
 
-/* LOADER */
-.spinner{width:40px;height:40px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
+/* ===== PILLS ===== */
+.pill{padding:8px 16px;border:2px solid #111;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;background:#fff;}
+.pill.active{background:#111;color:#fff;}
 
-/* SLIDE */
-.page{display:none;animation:slideIn .25s ease;}
-.page.active{display:block;}
-@keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* ===== PAGES ===== */
+.pg{display:none;}
+.pg.on{display:block;animation:si .2s ease;}
+@keyframes si{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-/* AD FRAME */
-.ad-frame{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:4px 4px 0 #111;cursor:pointer;overflow:hidden;position:relative;}
+/* ===== POPUP ===== */
+.pov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;}
+.pbox{background:#fff;border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);padding:24px;margin:20px;max-width:380px;width:100%;animation:pi .25s ease;}
+@keyframes pi{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
 
-/* POPUP */
-.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;}
-.popup-box{background:#fff;border:3px solid #111;border-radius:24px;box-shadow:6px 6px 0 #111;padding:24px;margin:20px;max-width:380px;width:100%;animation:popIn .3s ease;}
-@keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+/* ===== TOAST ===== */
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#111;color:#fff;padding:12px 22px;border-radius:14px;font-weight:700;z-index:9000;transition:transform .3s;white-space:nowrap;font-size:14px;}
+#toast.on{transform:translateX(-50%) translateY(0);}
 
-/* FLOATING COINS */
-.floating-coin{position:fixed;pointer-events:none;animation:floatUp 1.2s ease-out forwards;z-index:999;}
-@keyframes floatUp{from{transform:translateY(0);opacity:1;}to{transform:translateY(-120px);opacity:0;}}
+/* ===== CONFETTI ===== */
+.cf{position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;animation:cf 2.5s linear forwards;pointer-events:none;z-index:8000;}
+@keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
 
-/* ADMIN */
-#admin-panel{display:none;}
-.admin-stat-card{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;padding:16px;}
-.admin-tab{padding:10px 18px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;}
-.admin-tab.active{background:var(--yellow);}
+/* ===== FLOAT COIN ===== */
+.fc{position:fixed;width:18px;height:18px;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;pointer-events:none;animation:fu 1.2s ease-out forwards;z-index:8000;}
+@keyframes fu{from{transform:translateY(0);opacity:1;}to{transform:translateY(-110px);opacity:0;}}
 
-/* PROGRESS BAR */
-.progress-bar{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:6px;transition:width .5s ease;}
+/* ===== SPINNER ===== */
+.spin{width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:ro .7s linear infinite;}
+@keyframes ro{to{transform:rotate(360deg);}}
 
-/* CATEGORY PILLS */
-.cat-pill{padding:8px 16px;border:2px solid #111;border-radius:30px;font-weight:700;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap;}
-.cat-pill.active{background:#111;color:#fff;}
+/* ===== ADMIN ===== */
+#ap{display:none;}
+.at{padding:10px 16px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;font-size:13px;}
+.at.active{background:var(--yellow);}
+.asc{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:var(--sh);padding:16px;}
 
-/* WITHDRAW METHODS */
-.method-card{border:3px solid #e5e7eb;border-radius:16px;padding:14px;cursor:pointer;transition:.15s;background:#fff;}
-.method-card.selected{border-color:#111;background:var(--yellow);box-shadow:3px 3px 0 #111;}
-
-/* CSS ICON SIZES */
-.icon-sm{font-size:16px;}
-.icon-md{font-size:22px;}
-.icon-lg{font-size:32px;}
-.icon-xl{font-size:48px;}
-
-/* Decorative icon wrappers */
-.icon-box{border:2px solid #111;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+/* ===== AD FRAME ===== */
+.adf{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:var(--sh);cursor:pointer;}
 
 ::-webkit-scrollbar{width:0;}
-
-/* Loading screen custom */
-#loading-screen{position:fixed;inset:0;background:#ffe94a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
-.load-coin{width:64px;height:64px;border-radius:50%;background:linear-gradient(145deg,#f59e0b,#ffe94a);border:4px solid #92400e;box-shadow:0 4px 0 #92400e;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#92400e;animation:loadBounce 1s ease-in-out infinite;margin-bottom:16px;}
-@keyframes loadBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
-.load-dots{display:flex;gap:6px;margin-top:20px;}
-.load-dot{width:8px;height:8px;border-radius:50%;background:#111;animation:dotPulse 1.2s ease-in-out infinite;}
-.load-dot:nth-child(2){animation-delay:.2s;}
-.load-dot:nth-child(3){animation-delay:.4s;}
-@keyframes dotPulse{0%,80%,100%{transform:scale(.6);opacity:.5;}40%{transform:scale(1);opacity:1;}}
-
-/* Nav CSS icons */
-.nav-home-icon,.nav-quiz-icon,.nav-spin-icon,.nav-refer-icon,.nav-cash-icon{width:24px;height:24px;position:relative;}
-/* Home icon */
-.nav-home-icon::before{content:'';position:absolute;bottom:2px;left:4px;width:16px;height:12px;background:#111;border-radius:2px 2px 0 0;}
-.nav-home-icon::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:12px solid #111;}
-/* Quiz/Brain icon */
-.nav-quiz-icon::before{content:'';position:absolute;top:3px;left:3px;width:18px;height:15px;border-radius:9px 9px 5px 5px;background:#111;}
-.nav-quiz-icon::after{content:'';position:absolute;top:8px;left:11px;width:2px;height:10px;background:#111;}
-/* Spin/Wheel icon */
-.nav-spin-icon::before{content:'';position:absolute;inset:2px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 33%,#ff6eb4 33% 66%,#ffe94a 66% 100%);}
-.nav-spin-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:#111;}
-/* Refer people icon */
-.nav-refer-icon::before{content:'';position:absolute;top:0;left:2px;width:9px;height:9px;border-radius:50%;background:#111;}
-.nav-refer-icon::after{content:'';position:absolute;bottom:0;left:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#111;}
-/* Cash arrow icon */
-.nav-cash-icon::before{content:'';position:absolute;bottom:4px;left:2px;right:6px;height:3px;background:#111;border-radius:2px;}
-.nav-cash-icon::after{content:'';position:absolute;right:2px;top:4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:10px solid #111;}
-/* Second person for refer */
-.nav-refer-icon2{position:absolute;top:0;right:2px;width:9px;height:9px;border-radius:50%;background:#a855f7;border:1.5px solid #111;}
-.nav-refer-wrap{position:relative;width:24px;height:24px;}
-.nr-p1::before{content:'';position:absolute;top:0;left:2px;width:8px;height:8px;border-radius:50%;background:#111;}
-.nr-p1::after{content:'';position:absolute;bottom:0;left:0;width:10px;height:7px;border-radius:4px 4px 0 0;background:#111;}
-.nr-p2{position:absolute;top:0;right:2px;width:8px;height:8px;border-radius:50%;background:#a855f7;border:1.5px solid #111;}
-.nr-p2b{position:absolute;bottom:0;right:0;width:10px;height:7px;border-radius:4px 4px 0 0;background:#a855f7;border:1.5px solid #111;}
 </style>
 </head>
 <body>
 
+<!-- TOAST -->
 <div id="toast"></div>
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen">
-  <div class="load-coin">$</div>
-  <div class="fredoka" style="font-size:36px;color:#111;">CashZilla</div>
-  <div style="color:#555;font-weight:700;margin-bottom:4px;">Quiz &amp; Earn Platform</div>
-  <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
+<!-- POPUP -->
+<div id="pov" class="pov" style="display:none;"><div id="pbox" class="pbox"></div></div>
+
+<!-- LOADING -->
+<div id="ls">
+  <div class="lc">$</div>
+  <div class="fredoka" style="font-size:38px;color:#111;letter-spacing:-1px;">CashZilla</div>
+  <div style="font-size:14px;font-weight:700;color:#555;margin-top:4px;">Quiz &amp; Earn Platform</div>
+  <div class="lpb"><div class="lpbf"></div></div>
+  <div class="ld"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
 </div>
 
-<!-- POPUP OVERLAY -->
-<div id="popup-overlay" class="popup-overlay" style="display:none;">
-  <div id="popup-box" class="popup-box"></div>
-</div>
-
-<!-- =================== ADMIN PANEL =================== -->
-<div id="admin-panel">
-  <div style="background:linear-gradient(135deg,#111,#1f2937);padding:20px;color:#fff;position:sticky;top:0;z-index:50;">
+<!-- ====== ADMIN PANEL ====== -->
+<div id="ap">
+  <div style="background:linear-gradient(135deg,#111,#1f2937);padding:18px;color:#fff;position:sticky;top:0;z-index:50;">
     <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#ffe94a;display:flex;align-items:center;justify-content:center;">
-        <span class="ico-shield" style="font-size:22px;"></span>
+      <div style="width:42px;height:42px;border-radius:12px;background:#ffe94a;display:flex;align-items:center;justify-content:center;">
+        <div class="ic-shield"></div>
       </div>
       <div>
-        <div class="fredoka" style="font-size:22px;">Admin Panel</div>
-        <div style="font-size:12px;opacity:.7;">CashZilla Control Center</div>
+        <div class="fredoka" style="font-size:20px;">Admin Panel</div>
+        <div style="font-size:11px;opacity:.6;">CashZilla Control</div>
       </div>
       <button onclick="adminLogout()" class="btn" style="margin-left:auto;background:#ef4444;color:#fff;padding:8px 14px;font-size:13px;">Logout</button>
     </div>
-    <div style="display:flex;gap:8px;margin-top:14px;overflow-x:auto;padding-bottom:4px;">
-      <button class="admin-tab active" onclick="showAdminTab('dashboard',this)">Dashboard</button>
-      <button class="admin-tab" onclick="showAdminTab('users',this)">Users</button>
-      <button class="admin-tab" onclick="showAdminTab('quizzes',this)">Quizzes</button>
-      <button class="admin-tab" onclick="showAdminTab('withdrawals',this)">Withdrawals</button>
-      <button class="admin-tab" onclick="showAdminTab('notify',this)">Notify</button>
-      <button class="admin-tab" onclick="showAdminTab('ads',this)">Ads</button>
-      <button class="admin-tab" onclick="showAdminTab('settings',this)">Settings</button>
+    <div style="display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px;">
+      <button class="at active" onclick="aTab('dash',this)">Dashboard</button>
+      <button class="at" onclick="aTab('users',this)">Users</button>
+      <button class="at" onclick="aTab('quiz',this)">Quizzes</button>
+      <button class="at" onclick="aTab('wd',this)">Withdrawals</button>
+      <button class="at" onclick="aTab('notify',this)">Notify</button>
+      <button class="at" onclick="aTab('sets',this)">Settings</button>
     </div>
   </div>
 
   <div style="padding:16px;">
-    <!-- DASHBOARD -->
-    <div id="admin-tab-dashboard">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#e0f7fa,#b2ebf2);">
+    <!-- DASH -->
+    <div id="at-dash">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="asc" style="background:linear-gradient(135deg,#e0f7fa,#b2ebf2);">
           <div style="font-size:11px;font-weight:700;color:#006064;">TOTAL USERS</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-total-users">0</div>
+          <div class="fredoka" style="font-size:30px;" id="a-tu">0</div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#fffde7,#fff176);">
-          <div style="font-size:11px;font-weight:700;color:#f57f17;">ONLINE NOW</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-online-users">0</div>
+        <div class="asc" style="background:linear-gradient(135deg,#fffde7,#fff176);">
+          <div style="font-size:11px;font-weight:700;color:#f57f17;">ONLINE</div>
+          <div class="fredoka" style="font-size:30px;" id="a-on">0</div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);">
+        <div class="asc" style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);">
           <div style="font-size:11px;font-weight:700;color:#4a148c;">TOTAL COINS</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-total-coins">0</div>
+          <div class="fredoka" style="font-size:30px;" id="a-tc">0</div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);">
+        <div class="asc" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);">
           <div style="font-size:11px;font-weight:700;color:#880e4f;">WITHDRAWALS</div>
-          <div class="fredoka" style="font-size:28px;" id="admin-total-withdrawals">0</div>
+          <div class="fredoka" style="font-size:30px;" id="a-tw">0</div>
         </div>
       </div>
     </div>
-
     <!-- USERS -->
-    <div id="admin-tab-users" style="display:none;">
-      <div style="margin-bottom:12px;display:flex;gap:8px;">
-        <input id="user-search" type="text" placeholder="Search user..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;"/>
-        <button class="btn" style="background:var(--yellow);padding:10px 14px;" onclick="adminSearchUser()">Search</button>
+    <div id="at-users" style="display:none;">
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="usearch" type="text" placeholder="Search..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;font-size:14px;"/>
+        <button class="btn" onclick="searchUsers()" style="background:var(--yellow);padding:10px 14px;">Go</button>
       </div>
-      <div id="admin-users-list"></div>
+      <div id="ulist"></div>
     </div>
-
     <!-- QUIZZES -->
-    <div id="admin-tab-quizzes" style="display:none;">
-      <button class="btn" onclick="showCreateQuizForm()" style="background:var(--green);color:#fff;padding:12px 20px;width:100%;margin-bottom:14px;font-size:15px;">+ Create New Quiz</button>
-      <div id="admin-quizzes-list"></div>
+    <div id="at-quiz" style="display:none;">
+      <button class="btn" onclick="showNewQuiz()" style="background:var(--green);color:#fff;padding:12px;width:100%;margin-bottom:14px;font-size:15px;">+ New Quiz</button>
+      <div id="qlist"></div>
     </div>
-
     <!-- WITHDRAWALS -->
-    <div id="admin-tab-withdrawals" style="display:none;">
-      <div id="admin-withdrawals-list"></div>
-    </div>
-
-    <!-- TELEGRAM NOTIFY -->
-    <div id="admin-tab-notify" style="display:none;">
+    <div id="at-wd" style="display:none;"><div id="wdlist"></div></div>
+    <!-- NOTIFY -->
+    <div id="at-notify" style="display:none;">
       <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;margin-bottom:4px;font-size:16px;">Send Telegram Notification</div>
-        <div style="font-size:12px;color:#666;font-weight:600;margin-bottom:12px;">Sends message directly to your Telegram bot channel</div>
-        <input id="notif-title" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
-        <textarea id="notif-msg" placeholder="Message body..." rows="4" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;margin-bottom:8px;"></textarea>
-        <select id="notif-type" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;">
+        <div style="font-weight:800;font-size:16px;margin-bottom:4px;">Telegram Notification</div>
+        <div style="font-size:12px;color:#666;font-weight:600;margin-bottom:12px;">Direct message to admin Telegram chat</div>
+        <select id="nt" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;font-size:14px;margin-bottom:8px;">
           <option value="info">Info</option>
           <option value="bonus">Bonus Alert</option>
           <option value="warning">Warning</option>
-          <option value="maintenance">Maintenance</option>
+          <option value="update">Update</option>
         </select>
-        <button class="btn" onclick="adminSendTelegramNotification()" style="background:var(--cyan);width:100%;padding:12px;margin-top:4px;font-size:15px;">Send via Telegram Bot</button>
-        <div id="notif-status" style="margin-top:8px;font-size:13px;font-weight:600;text-align:center;"></div>
-      </div>
-      <!-- Also save to Firebase for in-app -->
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">In-App Notification (Firebase)</div>
-        <input id="inapp-notif-title" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
-        <textarea id="inapp-notif-msg" placeholder="Message" rows="3" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;"></textarea>
-        <button class="btn" onclick="adminSendInAppNotification()" style="background:#a855f7;color:#fff;width:100%;padding:12px;margin-top:8px;font-size:15px;">Send In-App</button>
-      </div>
-    </div>
-
-    <!-- ADS -->
-    <div id="admin-tab-ads" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;margin-bottom:12px;">Adsgram Config</div>
-        <input id="adsgram-block-id" type="text" placeholder="Block ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <input id="adsgram-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <button class="btn" onclick="saveAdsgramConfig()" style="background:var(--cyan);width:100%;padding:11px;">Save Adsgram</button>
+        <input id="ntitle" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
+        <textarea id="nmsg" rows="4" placeholder="Message..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;margin-bottom:8px;"></textarea>
+        <button class="btn" onclick="sendTGNotif()" style="background:var(--cyan);width:100%;padding:12px;font-size:15px;">Send to Telegram</button>
+        <div id="nstatus" style="text-align:center;font-size:13px;font-weight:600;margin-top:8px;"></div>
       </div>
       <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:12px;">Monetag Config</div>
-        <input id="monetag-zone-id" type="text" placeholder="Zone ID" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <input id="monetag-smartlink" type="text" placeholder="Smartlink URL" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-        <button class="btn" onclick="saveMonetag()" style="background:var(--purple);color:#fff;width:100%;padding:11px;">Save Monetag</button>
+        <div style="font-weight:800;margin-bottom:10px;">In-App Notification</div>
+        <input id="iatitle" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
+        <textarea id="iamsg" rows="3" placeholder="Message" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;"></textarea>
+        <button class="btn" onclick="sendInApp()" style="background:#a855f7;color:#fff;width:100%;padding:12px;margin-top:8px;font-size:15px;">Send In-App</button>
       </div>
     </div>
-
     <!-- SETTINGS -->
-    <div id="admin-tab-settings" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
+    <div id="at-sets" style="display:none;">
+      <div class="card" style="padding:16px;">
         <div style="font-weight:800;margin-bottom:12px;">Coin Conversion</div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USDT</label><input id="coin-usdt" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USD</label><input id="coin-usd" type="number" placeholder="e.g. 10000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 BDT</label><input id="coin-bdt" type="number" placeholder="e.g. 833" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Min Withdraw (Coins)</label><input id="min-withdraw" type="number" placeholder="e.g. 5000" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:12px;"><label style="font-weight:700;font-size:13px;">Referral Bonus (Coins)</label><input id="referral-bonus" type="number" placeholder="e.g. 500" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <button class="btn" onclick="saveSettings()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Save Settings</button>
+        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USDT</label><input id="cusd" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USD</label><input id="cusd2" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 BDT</label><input id="cbdt" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Min Withdraw (Coins)</label><input id="mwd" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        <div style="margin-bottom:14px;"><label style="font-weight:700;font-size:13px;">Referral Bonus (Coins)</label><input id="rb" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
+        <button class="btn" onclick="saveSet()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- =================== USER PANEL =================== -->
-<div id="user-panel" style="display:none;">
+<!-- ====== USER PANEL ====== -->
+<div id="up" style="display:none;">
 
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page active">
+  <!-- HOME -->
+  <div id="pg-home" class="pg on">
     <div style="padding:16px;">
-      <!-- Header -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div id="user-avatar" style="width:48px;height:48px;border-radius:14px;border:3px solid #111;background:var(--yellow);display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #111;">
-            <div class="ico-person" style="font-size:24px;"></div>
-          </div>
+          <div style="width:48px;height:48px;border-radius:14px;border:3px solid #111;background:var(--yellow);display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #111;font-size:22px;font-weight:900;color:#111;" id="uav">?</div>
           <div>
-            <div style="font-weight:800;font-size:16px;" id="user-name-display">Loading...</div>
-            <div style="font-size:12px;color:#666;font-weight:600;" id="user-rank-display">Rank #—</div>
+            <div style="font-weight:800;font-size:16px;" id="uname">Loading...</div>
+            <div style="font-size:12px;color:#666;font-weight:600;" id="urank">Rank #—</div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <div style="background:#dcfce7;border:2px solid #111;border-radius:10px;padding:6px 10px;font-size:11px;font-weight:800;color:#166534;">Online</div>
-          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;" onclick="showNotifications()">
-            <div class="ico-bell" style="font-size:18px;"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:#dcfce7;border:2px solid #111;border-radius:10px;padding:5px 10px;font-size:11px;font-weight:800;color:#166534;">Online</div>
+          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 9px;cursor:pointer;" onclick="showNotifs()">
+            <div class="ic-bell"></div>
           </div>
         </div>
       </div>
 
-      <!-- Balance Card -->
-      <div class="balance-card" style="margin-bottom:16px;">
+      <!-- Balance -->
+      <div class="balcard" style="margin-bottom:16px;">
         <div style="font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px;">YOUR BALANCE</div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
-          <span class="fredoka" style="font-size:44px;" id="balance-coins-display">0</span>
+          <span class="fredoka" style="font-size:44px;" id="bcoins">0</span>
           <span style="font-size:16px;font-weight:700;">Coins</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
             <div style="font-size:10px;opacity:.8;font-weight:700;">USDT</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-usdt-display">0.00</div>
+            <div style="font-weight:800;font-size:15px;" id="busdt">0.00</div>
           </div>
           <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
             <div style="font-size:10px;opacity:.8;font-weight:700;">USD</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-usd-display">0.00</div>
+            <div style="font-weight:800;font-size:15px;" id="busd">0.00</div>
           </div>
           <div style="background:rgba(255,255,255,.2);border-radius:12px;padding:10px;text-align:center;">
             <div style="font-size:10px;opacity:.8;font-weight:700;">BDT</div>
-            <div style="font-weight:800;font-size:16px;" id="balance-bdt-display">0.00</div>
+            <div style="font-weight:800;font-size:15px;" id="bbdt">0.00</div>
           </div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Actions -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <button class="btn" onclick="goToQuiz()" style="background:var(--cyan);padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#a855f7;border:2px solid #111;"></span> Start Quiz
+        <button class="btn" onclick="gp('quiz')" style="background:var(--cyan);padding:15px;font-size:15px;gap:8px;">
+          <div class="ic-brain"></div> Start Quiz
         </button>
-        <button class="btn" onclick="goToSpin()" style="background:var(--yellow);padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <span style="display:inline-block;width:20px;height:20px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 33%,#ff6eb4 33% 66%,#ffe94a 66% 100%);"></span> Daily Spin
+        <button class="btn" onclick="gp('spin')" style="background:var(--yellow);padding:15px;font-size:15px;gap:8px;">
+          <div class="ic-wheel" style="width:20px;height:20px;"></div> Daily Spin
         </button>
       </div>
 
       <!-- Daily Bonus -->
-      <div id="daily-bonus-card" class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
+      <div class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
         <div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-            <div class="ico-gift" style="font-size:16px;"></div>
+            <div class="ic-gift"></div>
             <span style="font-weight:800;font-size:15px;">Daily Bonus</span>
           </div>
-          <div style="font-size:12px;color:#666;font-weight:600;" id="daily-bonus-status">Tap to claim!</div>
+          <div style="font-size:12px;color:#666;font-weight:600;" id="dbs">Tap to claim!</div>
         </div>
-        <button class="btn" id="claim-daily-btn" onclick="claimDailyBonus()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
+        <button class="btn" id="dbb" onclick="claimDaily()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
       </div>
 
-      <!-- Ad Banner -->
-      <div class="ad-frame" style="margin-bottom:16px;" onclick="handleAdClick('banner-home')" id="ad-banner-home">
+      <!-- Ad -->
+      <div class="adf" style="margin-bottom:16px;" onclick="adClick()">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <span style="background:#ffe94a;border:2px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;">AD</span>
-          <span style="font-size:12px;color:#666;font-weight:600;">Sponsored</span>
+          <span style="font-size:12px;color:#888;font-weight:600;">Sponsored</span>
         </div>
-        <div style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;gap:8px;">
-          <div class="ico-bolt" style="font-size:20px;"></div>
+        <div style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;gap:8px;">
+          <div class="ic-star" style="width:20px;height:20px;"></div>
           Earn More with CashZilla Premium
         </div>
-        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Tap to view offer — Earn 5 coins</div>
+        <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Tap to view — Earn 5 coins</div>
       </div>
 
-      <!-- Leaderboard Preview -->
+      <!-- Leaderboard preview -->
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <div class="ico-trophy" style="font-size:16px;"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="ic-trophy"></div>
             <span style="font-weight:800;font-size:16px;">Leaderboard</span>
           </div>
-          <button onclick="goToPage('leaderboard')" style="background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-size:13px;">See All</button>
+          <button onclick="gp('lb')" style="background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-size:13px;">See All</button>
         </div>
-        <div id="leaderboard-preview"></div>
+        <div id="lbprev"></div>
       </div>
 
-      <!-- Featured Quizzes -->
+      <!-- Featured -->
       <div style="margin-bottom:16px;">
         <div style="font-weight:800;font-size:16px;margin-bottom:10px;">Featured Quizzes</div>
-        <div id="featured-quizzes" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div id="fquiz" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
 
-      <!-- Stats Row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div class="card" style="padding:12px;text-align:center;">
-          <div class="ico-check" style="font-size:20px;margin:0 auto 4px;"></div>
-          <div style="font-weight:800;font-size:18px;" id="stat-quizzes">0</div>
+          <div class="ic-check" style="font-size:20px;margin:0 auto 4px;"></div>
+          <div style="font-weight:800;font-size:18px;" id="stq">0</div>
           <div style="font-size:11px;color:#666;font-weight:600;">Quizzes</div>
         </div>
         <div class="card" style="padding:12px;text-align:center;">
-          <div style="width:20px;height:20px;margin:0 auto 4px;position:relative;">
-            <div style="position:absolute;top:0;left:0;width:10px;height:10px;border-radius:50%;background:#a855f7;border:2px solid #111;"></div>
-            <div style="position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:#00d4e8;border:2px solid #111;"></div>
+          <div style="width:20px;height:20px;position:relative;margin:0 auto 4px;">
+            <div style="position:absolute;top:0;left:0;width:10px;height:10px;border-radius:50%;background:#111;"></div>
+            <div style="position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:#a855f7;border:1.5px solid #111;"></div>
           </div>
-          <div style="font-weight:800;font-size:18px;" id="stat-refs">0</div>
+          <div style="font-weight:800;font-size:18px;" id="str">0</div>
           <div style="font-size:11px;color:#666;font-weight:600;">Referrals</div>
         </div>
         <div class="card" style="padding:12px;text-align:center;">
-          <div style="width:20px;height:20px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ff6eb4 25% 50%,#ffe94a 50% 75%,#22c55e 75% 100%);margin:0 auto 4px;"></div>
-          <div style="font-weight:800;font-size:18px;" id="stat-spins">0</div>
+          <div class="ic-wheel" style="width:20px;height:20px;margin:0 auto 4px;"></div>
+          <div style="font-weight:800;font-size:18px;" id="sts">0</div>
           <div style="font-size:11px;color:#666;font-weight:600;">Spins</div>
         </div>
       </div>
@@ -467,1356 +392,1076 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
   </div>
 
   <!-- QUIZ PAGE -->
-  <div id="page-quiz" class="page">
+  <div id="pg-quiz" class="pg">
     <div style="padding:16px;">
-      <div id="quiz-list-view">
-        <div class="fredoka" style="font-size:20px;margin-bottom:14px;">Quiz Arena</div>
-        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;" id="quiz-categories"></div>
-        <div id="quiz-cards-container" style="display:flex;flex-direction:column;gap:12px;"></div>
+      <div id="qlistview">
+        <div class="fredoka" style="font-size:22px;margin-bottom:14px;">Quiz Arena</div>
+        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;" id="qcats"></div>
+        <div id="qcards" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
-      <div id="quiz-game-view" style="display:none;">
+      <div id="qgame" style="display:none;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <button onclick="exitQuiz()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
-          <div style="flex:1;" class="progress-bar"><div class="progress-fill" id="quiz-progress-fill" style="background:var(--cyan);width:0%;"></div></div>
-          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;" id="quiz-timer-display">30s</div>
+          <button onclick="exitQ()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
+          <div style="flex:1;" class="pbar"><div class="pfill" id="qprog" style="background:var(--cyan);width:0%;"></div></div>
+          <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;" id="qtimer">30s</div>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-          <span style="font-weight:700;color:#666;" id="quiz-q-num">Q 1/10</span>
-          <span style="font-weight:800;color:var(--purple);" id="quiz-score-display">Score: 0</span>
+          <span style="font-weight:700;color:#666;" id="qqnum">Q 1/5</span>
+          <span style="font-weight:800;color:var(--purple);" id="qscore">Score: 0</span>
         </div>
-        <div class="card-lg" style="padding:20px;margin-bottom:16px;min-height:120px;">
-          <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;" id="quiz-category-label">CATEGORY</div>
-          <div style="font-size:18px;font-weight:800;line-height:1.4;" id="quiz-question-text">Loading...</div>
+        <div class="card" style="padding:20px;margin-bottom:16px;border-radius:24px;box-shadow:var(--sh2);min-height:120px;">
+          <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:8px;" id="qcat">GENERAL</div>
+          <div style="font-size:18px;font-weight:800;line-height:1.4;" id="qtext">Loading...</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;" id="quiz-answers"></div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="qopts"></div>
       </div>
-      <div id="quiz-result-view" style="display:none;text-align:center;padding:20px 0;">
-        <div style="margin-bottom:12px;" id="result-icon">
-          <div class="ico-trophy" style="font-size:56px;margin:0 auto;"></div>
-        </div>
-        <div class="fredoka" style="font-size:28px;margin-bottom:8px;" id="result-title">Quiz Complete!</div>
-        <div style="font-size:16px;color:#666;margin-bottom:20px;" id="result-subtitle">Well done!</div>
-        <div class="balance-card" style="margin-bottom:20px;text-align:left;">
+      <div id="qresult" style="display:none;text-align:center;padding:20px 0;">
+        <div class="ic-trophy" style="font-size:56px;width:56px;height:56px;margin:0 auto 12px;"></div>
+        <div class="fredoka" style="font-size:28px;margin-bottom:8px;" id="rtitle">Quiz Complete!</div>
+        <div style="font-size:15px;color:#666;margin-bottom:20px;" id="rsub">Great job!</div>
+        <div class="balcard" style="margin-bottom:20px;text-align:left;">
           <div style="font-size:13px;opacity:.8;margin-bottom:4px;">COINS EARNED</div>
-          <div class="fredoka" style="font-size:40px;" id="result-coins">+0</div>
+          <div class="fredoka" style="font-size:40px;" id="rcoins">+0</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
           <div class="card" style="padding:14px;text-align:center;">
-            <div class="ico-check" style="font-size:24px;margin:0 auto 4px;"></div>
-            <div style="font-weight:800;font-size:20px;" id="result-correct">0</div>
+            <div class="ic-check" style="font-size:24px;margin:0 auto 4px;"></div>
+            <div style="font-weight:800;font-size:20px;" id="rcor">0</div>
             <div style="font-size:12px;color:#666;">Correct</div>
           </div>
           <div class="card" style="padding:14px;text-align:center;">
-            <div class="ico-cross" style="font-size:24px;margin:0 auto 4px;"></div>
-            <div style="font-weight:800;font-size:20px;" id="result-wrong">0</div>
+            <div class="ic-x" style="font-size:24px;margin:0 auto 4px;"></div>
+            <div style="font-weight:800;font-size:20px;" id="rwrong">0</div>
             <div style="font-size:12px;color:#666;">Wrong</div>
           </div>
         </div>
-        <button class="btn" onclick="exitQuiz()" style="background:var(--cyan);padding:14px;width:100%;font-size:16px;">Play Again</button>
+        <button class="btn" onclick="exitQ()" style="background:var(--cyan);padding:14px;width:100%;font-size:16px;">Play Again</button>
       </div>
     </div>
   </div>
 
   <!-- SPIN PAGE -->
-  <div id="page-spin" class="page">
+  <div id="pg-spin" class="pg">
     <div style="padding:16px;text-align:center;">
       <div class="fredoka" style="font-size:26px;margin-bottom:6px;">Lucky Wheel</div>
-      <div style="color:#666;font-weight:600;margin-bottom:16px;" id="spin-status-text">Spin to win amazing prizes!</div>
+      <div style="color:#666;font-weight:600;margin-bottom:16px;" id="spintxt">Spin to win prizes!</div>
       <div style="position:relative;display:inline-block;margin-bottom:20px;">
-        <div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);z-index:10;">
-          <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:24px solid #111;"></div>
-        </div>
-        <canvas id="spin-canvas" width="280" height="280"></canvas>
+        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid #111;"></div>
+        <canvas id="wcanvas" width="280" height="280" style="border:4px solid #111;border-radius:50%;box-shadow:var(--sh2);"></canvas>
       </div>
-      <button class="btn" id="spin-btn" onclick="spinWheel()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;max-width:280px;">SPIN NOW!</button>
-      <div style="margin-top:10px;font-size:13px;color:#888;font-weight:600;" id="spin-cooldown-text"></div>
+      <br/>
+      <button class="btn" id="spinbtn" onclick="doSpin()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:280px;margin-top:4px;">SPIN NOW!</button>
+      <div style="font-size:13px;color:#888;font-weight:600;margin-top:10px;" id="spinct"></div>
       <div class="card" style="margin-top:16px;padding:14px;text-align:left;">
         <div style="font-weight:800;margin-bottom:10px;">Spin History</div>
-        <div id="spin-history-list"></div>
+        <div id="shinst"></div>
       </div>
     </div>
   </div>
 
   <!-- REFER PAGE -->
-  <div id="page-refer" class="page">
+  <div id="pg-refer" class="pg">
     <div style="padding:16px;">
       <div class="fredoka" style="font-size:26px;margin-bottom:16px;">Refer &amp; Earn</div>
       <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-        <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:4px;">YOUR REFERRAL LINK</div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="referral-link-input" readonly style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;" value="Loading..."/>
-          <button class="btn" onclick="copyReferralLink()" style="background:var(--green);color:#fff;padding:10px 14px;">Copy</button>
+        <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:8px;">YOUR REFERRAL LINK</div>
+        <div style="display:flex;gap:8px;">
+          <input id="rlink" readonly style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;" value="Loading..."/>
+          <button class="btn" onclick="copyRef()" style="background:var(--green);color:#fff;padding:10px 14px;">Copy</button>
         </div>
-        <button class="btn" onclick="shareReferralLink()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">Share on Telegram</button>
+        <button class="btn" onclick="shareRef()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">Share on Telegram</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#ffe4e6,#fecdd3);">
-          <div style="font-size:11px;font-weight:700;color:#9f1239;">TOTAL REFERRALS</div>
-          <div class="fredoka" style="font-size:32px;" id="total-referrals">0</div>
+          <div style="font-size:11px;font-weight:700;color:#9f1239;">TOTAL REFS</div>
+          <div class="fredoka" style="font-size:32px;" id="tref">0</div>
         </div>
         <div class="card" style="padding:14px;text-align:center;background:linear-gradient(135deg,#e0f2fe,#bae6fd);">
-          <div style="font-size:11px;font-weight:700;color:#0c4a6e;">REFERRAL EARNINGS</div>
-          <div class="fredoka" style="font-size:32px;" id="referral-earnings">0</div>
+          <div style="font-size:11px;font-weight:700;color:#0c4a6e;">REF EARNINGS</div>
+          <div class="fredoka" style="font-size:32px;" id="rearn">0</div>
           <div style="font-size:11px;color:#666;">Coins</div>
         </div>
       </div>
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="font-weight:800;margin-bottom:12px;">How It Works</div>
         <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--cyan);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">1</div>
-            <div style="font-weight:600;">Share your unique referral link</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">2</div>
-            <div style="font-weight:600;">Friend joins using your link</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:var(--pink);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">3</div>
-            <div style="font-weight:600;" id="referral-bonus-info">You earn 500 coins per referral!</div>
-          </div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--cyan);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">1</div><div style="font-weight:600;">Share your unique referral link</div></div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--yellow);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">2</div><div style="font-weight:600;">Friend joins using your link</div></div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="background:var(--pink);border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;">3</div><div style="font-weight:600;" id="rbinfo">You earn 500 coins!</div></div>
         </div>
       </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">My Referrals</div>
-        <div id="my-referrals-list"></div>
-      </div>
+      <div class="card" style="padding:16px;"><div style="font-weight:800;margin-bottom:10px;">My Referrals</div><div id="myref"></div></div>
     </div>
   </div>
 
   <!-- CASH PAGE -->
-  <div id="page-cash" class="page">
+  <div id="pg-cash" class="pg">
     <div style="padding:16px;">
       <div class="fredoka" style="font-size:26px;margin-bottom:16px;">Cash Out</div>
-      <div class="balance-card" style="margin-bottom:16px;">
+      <div class="balcard" style="margin-bottom:16px;">
         <div style="font-size:12px;opacity:.8;font-weight:700;">AVAILABLE BALANCE</div>
-        <div class="fredoka" style="font-size:40px;" id="cash-coins">0 Coins</div>
-        <div style="display:flex;gap:12px;margin-top:8px;">
-          <span style="font-size:13px;font-weight:700;">$<span id="cash-usd">0.00</span> USD</span>
-          <span style="font-size:13px;font-weight:700;">৳<span id="cash-bdt">0.00</span> BDT</span>
+        <div class="fredoka" style="font-size:40px;" id="ccoins">0 Coins</div>
+        <div style="display:flex;gap:14px;margin-top:8px;">
+          <span style="font-size:13px;font-weight:700;">$<span id="cusd2d">0.00</span> USD</span>
+          <span style="font-size:13px;font-weight:700;">৳<span id="cbdtd">0.00</span> BDT</span>
         </div>
       </div>
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="font-weight:800;margin-bottom:12px;">Withdraw Method</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;" id="payment-methods-grid">
-          <div class="method-card selected" data-method="bkash" onclick="selectMethod('bkash')"><div style="font-size:13px;font-weight:800;">bKash</div></div>
-          <div class="method-card" data-method="nagad" onclick="selectMethod('nagad')"><div style="font-size:13px;font-weight:800;">Nagad</div></div>
-          <div class="method-card" data-method="usdt" onclick="selectMethod('usdt')"><div style="font-size:13px;font-weight:800;">USDT TRC20</div></div>
-          <div class="method-card" data-method="binance" onclick="selectMethod('binance')"><div style="font-size:13px;font-weight:800;">Binance UID</div></div>
-          <div class="method-card" data-method="faucetpay" onclick="selectMethod('faucetpay')"><div style="font-size:13px;font-weight:800;">FaucetPay</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div class="mc sel" data-m="bkash" onclick="selM('bkash')"><div style="font-weight:800;font-size:13px;">bKash</div></div>
+          <div class="mc" data-m="nagad" onclick="selM('nagad')"><div style="font-weight:800;font-size:13px;">Nagad</div></div>
+          <div class="mc" data-m="usdt" onclick="selM('usdt')"><div style="font-weight:800;font-size:13px;">USDT TRC20</div></div>
+          <div class="mc" data-m="binance" onclick="selM('binance')"><div style="font-weight:800;font-size:13px;">Binance UID</div></div>
+          <div class="mc" data-m="faucet" onclick="selM('faucet')"><div style="font-weight:800;font-size:13px;">FaucetPay</div></div>
         </div>
-        <input id="withdraw-address" type="text" placeholder="Account number / Address / UID" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:8px;font-size:14px;"/>
-        <input id="withdraw-amount" type="number" placeholder="Amount in Coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:4px;font-size:14px;"/>
-        <div style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px;" id="withdraw-min-text">Minimum: 5000 Coins</div>
-        <button class="btn" onclick="submitWithdraw()" style="background:var(--green);color:#fff;width:100%;padding:14px;font-size:16px;">Submit Withdrawal</button>
+        <input id="waddr" type="text" placeholder="Account / Address / UID" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:8px;font-size:14px;"/>
+        <input id="wamt" type="number" placeholder="Amount in Coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:12px;font-weight:600;margin-bottom:4px;font-size:14px;"/>
+        <div style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px;" id="wmintxt">Minimum: 5000 Coins</div>
+        <button class="btn" onclick="doWithdraw()" style="background:var(--green);color:#fff;width:100%;padding:14px;font-size:16px;">Submit Withdrawal</button>
       </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">Withdraw History</div>
-        <div id="withdraw-history"></div>
-      </div>
+      <div class="card" style="padding:16px;"><div style="font-weight:800;margin-bottom:10px;">Withdraw History</div><div id="whist"></div></div>
     </div>
   </div>
 
   <!-- LEADERBOARD PAGE -->
-  <div id="page-leaderboard" class="page">
+  <div id="pg-lb" class="pg">
     <div style="padding:16px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-        <button onclick="goToPage('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
+        <button onclick="gp('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
         <div class="fredoka" style="font-size:22px;">Leaderboard</div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <button class="cat-pill active" onclick="loadLeaderboard('weekly',this)">Weekly</button>
-        <button class="cat-pill" onclick="loadLeaderboard('monthly',this)">Monthly</button>
-        <button class="cat-pill" onclick="loadLeaderboard('alltime',this)">All Time</button>
+        <button class="pill active" onclick="loadLB(this)">Weekly</button>
+        <button class="pill" onclick="loadLB(this)">Monthly</button>
+        <button class="pill" onclick="loadLB(this)">All Time</button>
       </div>
-      <div id="full-leaderboard-list"></div>
+      <div id="lbfull"></div>
     </div>
   </div>
 
   <!-- BOTTOM NAV -->
-  <nav id="bottom-nav">
-    <div class="nav-item active" onclick="goToPage('home')" id="nav-home">
-      <div style="width:24px;height:24px;position:relative;">
-        <div style="position:absolute;bottom:2px;left:4px;width:16px;height:12px;background:#111;border-radius:2px 2px 0 0;"></div>
-        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:12px solid #111;"></div>
-      </div>
-      <span class="nav-label">Home</span>
+  <nav id="bnav">
+    <div class="ni active" onclick="gp('home')" id="ni-home">
+      <div class="ic-home"></div><span class="nl">Home</span>
     </div>
-    <div class="nav-item" onclick="goToPage('quiz')" id="nav-quiz">
-      <div style="width:24px;height:24px;position:relative;">
-        <div style="position:absolute;top:3px;left:3px;width:18px;height:15px;border-radius:9px 9px 5px 5px;background:#111;"></div>
-        <div style="position:absolute;top:6px;left:11px;width:2px;height:11px;background:#f3f4f6;"></div>
-        <div style="position:absolute;top:6px;left:8px;width:5px;height:2px;background:#f3f4f6;border-radius:1px;"></div>
-      </div>
-      <span class="nav-label">Quiz</span>
+    <div class="ni" onclick="gp('quiz')" id="ni-quiz">
+      <div class="ic-brain"></div><span class="nl">Quiz</span>
     </div>
-    <div class="nav-item" onclick="goToPage('spin')" id="nav-spin">
-      <div style="width:24px;height:24px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ff6eb4 25% 50%,#ffe94a 50% 75%,#22c55e 75% 100%);position:relative;">
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:#111;"></div>
-      </div>
-      <span class="nav-label">Spin</span>
+    <div class="ni" onclick="gp('spin')" id="ni-spin">
+      <div class="ic-wheel"></div><span class="nl">Spin</span>
     </div>
-    <div class="nav-item" onclick="goToPage('refer')" id="nav-refer">
-      <div style="width:24px;height:24px;position:relative;">
-        <div style="position:absolute;top:0;left:2px;width:9px;height:9px;border-radius:50%;background:#111;"></div>
-        <div style="position:absolute;bottom:0;left:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#111;"></div>
-        <div style="position:absolute;top:0;right:2px;width:9px;height:9px;border-radius:50%;background:#a855f7;border:1.5px solid #111;"></div>
-        <div style="position:absolute;bottom:0;right:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#a855f7;border:1.5px solid #111;"></div>
+    <div class="ni" onclick="gp('refer')" id="ni-refer">
+      <div style="position:relative;width:24px;height:20px;">
+        <div class="ic-ref"></div>
+        <div class="ic-ref2"></div>
+        <div class="ic-ref3"></div>
       </div>
-      <span class="nav-label">Refer</span>
+      <span class="nl">Refer</span>
     </div>
-    <div class="nav-item" onclick="goToPage('cash')" id="nav-cash">
-      <div style="width:24px;height:24px;position:relative;">
-        <div style="position:absolute;top:50%;left:2px;right:8px;height:3px;background:#22c55e;border-radius:2px;transform:translateY(-50%);"></div>
-        <div style="position:absolute;right:2px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid #22c55e;"></div>
-        <div style="position:absolute;top:4px;left:2px;right:8px;height:2px;background:#22c55e;border-radius:1px;opacity:.5;"></div>
-        <div style="position:absolute;bottom:4px;left:2px;right:8px;height:2px;background:#22c55e;border-radius:1px;opacity:.5;"></div>
-      </div>
-      <span class="nav-label">Cash</span>
+    <div class="ni" onclick="gp('cash')" id="ni-cash">
+      <div class="ic-cash"></div><span class="nl">Cash</span>
     </div>
   </nav>
 </div>
 
-<!-- Firebase SDKs -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, get, update, push, onValue, increment, query, orderByChild, limitToLast }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
-  authDomain: "ai-tools-9f9a3.firebaseapp.com",
-  projectId: "ai-tools-9f9a3",
-  storageBucket: "ai-tools-9f9a3.firebasestorage.app",
-  messagingSenderId: "839431476061",
-  appId: "1:839431476061:web:c6e9ce5af6e01eb8584eb4",
-  databaseURL: "https://ai-tools-9f9a3-default-rtdb.firebaseio.com"
+<script>
+// ===== CONFIG =====
+const FB_CFG = {
+  apiKey:"AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
+  authDomain:"ai-tools-9f9a3.firebaseapp.com",
+  databaseURL:"https://ai-tools-9f9a3-default-rtdb.firebaseio.com",
+  projectId:"ai-tools-9f9a3",
+  storageBucket:"ai-tools-9f9a3.firebasestorage.app",
+  messagingSenderId:"839431476061",
+  appId:"1:839431476061:web:c6e9ce5af6e01eb8584eb4"
 };
+const ADMIN_TG_ID = '8601120665';
+const BOT_TOKEN   = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
+const ADMIN_CHAT  = '8601120665';
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+firebase.initializeApp(FB_CFG);
+const auth = firebase.auth();
+const db   = firebase.database();
 
-window._fb = { auth, db, ref, set, get, update, push, onValue, increment, query, orderByChild, limitToLast };
-
-// ======= ADMIN CONFIG =======
-// ONLY this Telegram UID can see admin panel
-const ADMIN_TELEGRAM_UID = '8601120665';
-const BOT_TOKEN = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
-const ADMIN_CHAT_ID = '8601120665';
-
-window.APP = {
-  user: null,
-  userData: null,
-  settings: { coinUsdt: 10000, coinUsd: 10000, coinBdt: 833, minWithdraw: 5000, referralBonus: 500 },
-  quizzes: [],
-  currentQuiz: null,
-  currentQ: 0,
-  quizScore: 0,
-  quizCorrect: 0,
-  quizWrong: 0,
-  quizTimer: null,
-  spinRunning: false,
-  selectedMethod: 'bkash',
-  adsgram: { blockId: '', zoneId: '', enabled: false },
-  monetag: { zoneId: '', smartlink: '', enabled: false },
-  isAdmin: false,
+// ===== STATE =====
+const S = {
+  user:null, data:null, isAdmin:false,
+  sets:{coinUsdt:10000,coinUsd:10000,coinBdt:833,minWd:5000,refBonus:500},
+  quizzes:[], curQuiz:null, curQ:0, score:0, correct:0, wrong:0, timer:null,
+  spinning:false, method:'bkash', adMin:0, adCount:0
 };
 
 const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); tg.enableClosingConfirmation(); }
-function haptic(t='light') { tg?.HapticFeedback?.impactOccurred(t); }
-window.haptic = haptic;
+if(tg){tg.ready();tg.expand();tg.enableClosingConfirmation();}
+const hap = t => tg?.HapticFeedback?.impactOccurred(t||'light');
 
-// ======= TELEGRAM BOT API =======
-async function sendTelegramMessage(chatId, text, parseMode = 'HTML') {
-  try {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: parseMode, disable_web_page_preview: true })
-    });
-    const data = await resp.json();
-    return data;
-  } catch(e) {
-    console.error('Telegram API error:', e);
-    return null;
+// ===== LOADING: show for at least 5s =====
+let loadReady = false, dataReady = false;
+setTimeout(()=>{ loadReady = true; tryHideLoad(); }, 5000);
+
+function tryHideLoad(){
+  if(loadReady && dataReady){
+    const ls = document.getElementById('ls');
+    ls.classList.add('hide');
+    setTimeout(()=>ls.style.display='none', 500);
   }
 }
-window.sendTelegramMessage = sendTelegramMessage;
 
-window.adminSendTelegramNotification = async function() {
-  const title = document.getElementById('notif-title').value.trim();
-  const msg = document.getElementById('notif-msg').value.trim();
-  const type = document.getElementById('notif-type').value;
-  const statusEl = document.getElementById('notif-status');
-
-  if (!title || !msg) { showToast('Fill all fields!'); return; }
-
-  const icons = { info: 'ℹ️', bonus: '💰', warning: '⚠️', maintenance: '🔧' };
-  const icon = icons[type] || 'ℹ️';
-
-  const text = `${icon} <b>CashZilla Notification</b>\n\n<b>${title}</b>\n\n${msg}\n\n<i>— CashZilla Team</i>`;
-
-  statusEl.textContent = 'Sending...';
-  statusEl.style.color = '#888';
-
-  const result = await sendTelegramMessage(ADMIN_CHAT_ID, text);
-
-  if (result && result.ok) {
-    statusEl.textContent = 'Sent successfully!';
-    statusEl.style.color = '#22c55e';
-    document.getElementById('notif-title').value = '';
-    document.getElementById('notif-msg').value = '';
-    showToast('Telegram notification sent!');
+// ===== AUTH =====
+auth.onAuthStateChanged(async u => {
+  if(u){
+    S.user = u;
+    await init(u.uid);
   } else {
-    statusEl.textContent = 'Failed to send. Check bot token.';
-    statusEl.style.color = '#ef4444';
-    showToast('Failed to send!');
-  }
-};
-
-window.adminSendInAppNotification = async function() {
-  const title = document.getElementById('inapp-notif-title').value.trim();
-  const msg = document.getElementById('inapp-notif-msg').value.trim();
-  if (!title || !msg) { showToast('Fill all fields!'); return; }
-  const { ref, push } = window._fb;
-  await push(ref(db, 'notifications'), { title, message: msg, timestamp: Date.now() });
-  showToast('In-app notification sent!');
-  document.getElementById('inapp-notif-title').value = '';
-  document.getElementById('inapp-notif-msg').value = '';
-};
-
-// ======= AUTH =======
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window.APP.user = user;
-    await loadUserData(user.uid);
-  } else {
-    signInAnonymously(auth).catch(e => {
-      console.error('Auth error:', e);
-      hideLoading();
+    auth.signInAnonymously().catch(e=>{
+      console.error(e);
+      dataReady = true; tryHideLoad();
+      document.getElementById('up').style.display='block';
     });
   }
 });
 
-function hideLoading() {
-  const ls = document.getElementById('loading-screen');
-  if (ls) ls.style.display = 'none';
-}
+async function init(uid){
+  try{
+    const snap = await db.ref('users/'+uid).once('value');
+    const tgU  = tg?.initDataUnsafe?.user;
+    const now  = Date.now();
 
-async function loadUserData(uid) {
-  const { ref, get, onValue } = window._fb;
-  const userRef = ref(db, `users/${uid}`);
+    // Admin check — Telegram UID only
+    const tgId = String(tgU?.id||'');
+    if(tgId === ADMIN_TG_ID) S.isAdmin = true;
+    // URL test override
+    if(new URLSearchParams(location.search).get('admin_uid') === ADMIN_TG_ID) S.isAdmin = true;
 
-  try {
-    const snap = await get(userRef);
-    let tgUser = tg?.initDataUnsafe?.user;
-    const now = Date.now();
-
-    // Check admin: Telegram UID must match
-    const tgUid = String(tgUser?.id || '');
-    if (tgUid === ADMIN_TELEGRAM_UID) {
-      window.APP.isAdmin = true;
-    }
-    // URL param admin override for testing
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('admin_uid') === ADMIN_TELEGRAM_UID) {
-      window.APP.isAdmin = true;
-    }
-
-    if (!snap.exists()) {
-      const refCode = new URLSearchParams(window.location.search).get('ref') || '';
-      const newUser = {
-        uid,
-        name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : ('User_' + uid.slice(0,6)),
-        username: tgUser?.username || '',
-        tgId: String(tgUser?.id || ''),
-        coins: 500,
-        totalEarned: 500,
-        quizzesPlayed: 0,
-        spinsUsed: 0,
-        referrals: 0,
-        referralEarnings: 0,
-        referredBy: refCode,
-        joinedAt: now,
-        lastSeen: now,
-        lastDailyBonus: 0,
-        lastSpin: 0,
-        banned: false,
-        rank: 0,
+    if(!snap.exists()){
+      const ref = new URLSearchParams(location.search).get('ref')||'';
+      const nu = {
+        uid, name: tgU?(tgU.first_name+(tgU.last_name?' '+tgU.last_name:'')):'User_'+uid.slice(0,6),
+        username:tgU?.username||'', tgId,
+        coins:500, totalEarned:500, quizzesPlayed:0, spinsUsed:0,
+        referrals:0, referralEarnings:0, referredBy:ref,
+        joinedAt:now, lastSeen:now, lastDailyBonus:0, lastSpin:0, banned:false, rank:0
       };
-      const { set, push, ref } = window._fb;
-      await set(ref(db, `users/${uid}`), newUser);
-      window.APP.userData = newUser;
-      if (refCode && refCode !== uid) applyReferralBonus(refCode, uid);
-      setTimeout(() => showWelcomePopup(newUser), 1500);
+      await db.ref('users/'+uid).set(nu);
+      S.data = nu;
+      if(ref && ref!==uid) applyRef(ref, uid);
+      setTimeout(()=>welcomePopup(nu), 1500);
     } else {
-      window.APP.userData = snap.val();
-      const { update, ref } = window._fb;
-      update(ref(db, `users/${uid}`), { lastSeen: now });
+      S.data = snap.val();
+      db.ref('users/'+uid).update({lastSeen:now});
     }
 
-    // Check if user is banned
-    if (window.APP.userData.banned) {
-      hideLoading();
-      document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px;"><div style="font-size:48px;margin-bottom:16px;">🚫</div><div style="font-size:20px;font-weight:800;">Account Banned</div><div style="color:#666;margin-top:8px;">Contact support for help.</div></div>';
+    if(S.data.banned){
+      dataReady=true; tryHideLoad();
+      document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px;"><div style="font-size:48px;margin-bottom:16px;width:64px;height:64px;border-radius:50%;background:#ef4444;border:4px solid #991b1b;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">X</div><div style="font-size:20px;font-weight:800;">Account Suspended</div><div style="color:#666;margin-top:8px;font-weight:600;">Contact support for help.</div></div>';
       return;
     }
 
-    onValue(ref(db, `users/${uid}`), (s) => {
-      if (s.exists()) { window.APP.userData = s.val(); updateUI(); }
+    db.ref('users/'+uid).on('value', s=>{
+      if(s.exists()){ S.data=s.val(); updateUI(); }
     });
 
-    await loadSettings();
+    await loadSets();
     await loadQuizzes();
-    await loadLeaderboardPreview();
+    await loadLBPreview();
+    loadWH(); loadSH(); loadRefs();
     updateUI();
-    drawSpinWheel();
-    loadWithdrawHistory();
-    loadSpinHistory();
-    loadReferrals();
+    drawWheel();
 
-    hideLoading();
+    document.getElementById('up').style.display = 'block';
+    if(S.isAdmin) addAdminBtn();
 
-    if (window.APP.isAdmin) {
-      document.getElementById('user-panel').style.display = 'block';
-      // Add admin button to header
-      addAdminButton();
+    dataReady=true; tryHideLoad();
+
+  } catch(e){
+    console.error('init error:',e);
+    dataReady=true; tryHideLoad();
+    document.getElementById('up').style.display='block';
+  }
+}
+
+// ===== SETTINGS =====
+async function loadSets(){
+  try{
+    const s = (await db.ref('settings').once('value')).val();
+    if(s) S.sets = {...S.sets,...s};
+  }catch(e){}
+  const w=document.getElementById('wmintxt');
+  if(w) w.textContent='Minimum: '+S.sets.minWd+' Coins';
+  const r=document.getElementById('rbinfo');
+  if(r) r.textContent='You earn '+S.sets.refBonus+' coins per referral!';
+}
+
+// ===== QUIZZES =====
+function defQuizzes(){return[
+  {title:'General Knowledge',cat:'General',reward:50,time:30,diff:'Easy',
+    qs:[{q:'Capital of Bangladesh?',opts:['Chittagong','Dhaka','Sylhet','Rajshahi'],a:1},
+        {q:'Days in a leap year?',opts:['365','364','366','367'],a:2},
+        {q:'Largest planet?',opts:['Saturn','Neptune','Jupiter','Mars'],a:2},
+        {q:'Symbol "O" element?',opts:['Gold','Oxygen','Osmium','Oganesson'],a:1},
+        {q:'How many continents?',opts:['5','6','7','8'],a:2}]},
+  {title:'Math Challenge',cat:'Math',reward:80,time:20,diff:'Medium',
+    qs:[{q:'15 × 12 = ?',opts:['160','170','180','190'],a:2},
+        {q:'Square root of 144?',opts:['11','12','13','14'],a:1},
+        {q:'25% of 200?',opts:['40','50','55','60'],a:1},
+        {q:'2 to power 8?',opts:['128','256','512','64'],a:1},
+        {q:'7! = ?',opts:['5040','2520','720','40320'],a:0}]},
+  {title:'Science Blast',cat:'Science',reward:60,time:25,diff:'Medium',
+    qs:[{q:'Formula for water?',opts:['H2O2','HO','H2O','H3O'],a:2},
+        {q:'Speed of light?',opts:['3×10⁸ m/s','3×10⁶ m/s','3×10⁴ m/s','3×10¹⁰ m/s'],a:0},
+        {q:'Bones in human body?',opts:['196','206','216','186'],a:1},
+        {q:'Plants absorb which gas?',opts:['Oxygen','Nitrogen','CO2','Hydrogen'],a:2},
+        {q:'Closest star to Earth?',opts:['Proxima Centauri','Sirius','Betelgeuse','The Sun'],a:3}]},
+  {title:'Crypto & Finance',cat:'Finance',reward:100,time:30,diff:'Hard',
+    qs:[{q:'Who created Bitcoin?',opts:['Elon Musk','Satoshi Nakamoto','Vitalik Buterin','Mark Z.'],a:1},
+        {q:'USDT = ?',opts:['US Dollar Token','Unified Stable Dollar Tether','US Dollar Tether','Universal Stable Dollar'],a:2},
+        {q:'Bitcoin max supply?',opts:['18M','21M','25M','100M'],a:1},
+        {q:'DeFi = ?',opts:['Digital Finance','Decentralized Finance','Distributed Finance','Direct Finance'],a:1},
+        {q:'Ether belongs to?',opts:['Bitcoin','Solana','Ethereum','Cardano'],a:2}]},
+  {title:'Daily Challenge',cat:'Daily',reward:200,time:60,diff:'Hard',daily:true,
+    qs:[{q:'National animal of Bangladesh?',opts:['Tiger','Elephant','Deer','Royal Bengal Tiger'],a:3},
+        {q:'Tea originated from?',opts:['India','China','Japan','Sri Lanka'],a:1},
+        {q:'Tallest mountain?',opts:['K2','Kangchenjunga','Mount Everest','Lhotse'],a:2},
+        {q:'Smartphone invented year?',opts:['1994','1997','2000','2007'],a:3},
+        {q:'Currency of Japan?',opts:['Yuan','Won','Yen','Ruble'],a:2}]}
+];}
+
+async function loadQuizzes(){
+  try{
+    const snap = await db.ref('quizzes').once('value');
+    if(snap.exists()){
+      S.quizzes = Object.entries(snap.val()).map(([id,q])=>({id,...q})).filter(q=>!q.deleted);
     } else {
-      document.getElementById('user-panel').style.display = 'block';
+      S.quizzes = defQuizzes();
+      S.quizzes.forEach(q=>db.ref('quizzes').push(q));
     }
-
-  } catch(e) {
-    console.error('loadUserData error:', e);
-    hideLoading();
-    document.getElementById('user-panel').style.display = 'block';
-  }
+  }catch(e){ S.quizzes = defQuizzes(); }
+  renderQCards(); renderFeatQ(); renderQCats();
 }
 
-function addAdminButton() {
-  const header = document.querySelector('#page-home > div > div:first-child');
-  if (!header) return;
-  if (document.getElementById('admin-btn')) return;
-  const btn = document.createElement('button');
-  btn.id = 'admin-btn';
-  btn.className = 'btn';
-  btn.style.cssText = 'background:#ffe94a;padding:8px 14px;font-size:13px;position:fixed;bottom:85px;right:16px;z-index:99;border-radius:50px;';
-  btn.textContent = 'Admin';
-  btn.onclick = openAdminPanel;
-  document.body.appendChild(btn);
+// ===== UI UPDATE =====
+function updateUI(){
+  const u=S.data; if(!u) return;
+  const coins=u.coins||0;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('uname', u.name||'User');
+  el('urank', 'Rank #'+(u.rank||'—'));
+  // Avatar initials
+  const av=document.getElementById('uav');
+  if(av) av.textContent=(u.name||'U').charAt(0).toUpperCase();
+  // Coins
+  animNum('bcoins', coins);
+  el('busdt',(coins/S.sets.coinUsdt).toFixed(4));
+  el('busd',(coins/S.sets.coinUsd).toFixed(4));
+  el('bbdt',(coins/S.sets.coinBdt).toFixed(2));
+  el('ccoins',coins+' Coins');
+  el('cusd2d',(coins/S.sets.coinUsd).toFixed(4));
+  el('cbdtd',(coins/S.sets.coinBdt).toFixed(2));
+  el('stq',u.quizzesPlayed||0);
+  el('str',u.referrals||0);
+  el('sts',u.spinsUsed||0);
+  el('tref',u.referrals||0);
+  el('rearn',u.referralEarnings||0);
+  const rl=document.getElementById('rlink');
+  if(rl) rl.value=refLink();
+  // Daily bonus
+  const today=new Date().toDateString();
+  const ld=new Date(u.lastDailyBonus||0).toDateString();
+  const ds=document.getElementById('dbs'), db2=document.getElementById('dbb');
+  if(today!==ld){ if(ds)ds.textContent='Tap to claim!'; if(db2){db2.disabled=false;db2.style.opacity='1';} }
+  else{ if(ds)ds.textContent='Claimed today!'; if(db2){db2.disabled=true;db2.style.opacity='.5';} }
 }
 
-window.openAdminPanel = async function() {
-  if (!window.APP.isAdmin) { showToast('Access denied!'); return; }
-  document.getElementById('user-panel').style.display = 'none';
-  document.getElementById('bottom-nav') && (document.getElementById('bottom-nav').style.display = 'none');
-  const adminBtn = document.getElementById('admin-btn');
-  if (adminBtn) adminBtn.style.display = 'none';
-  document.getElementById('admin-panel').style.display = 'block';
-  await loadAdminData();
-};
-
-window.adminLogout = function() {
-  document.getElementById('admin-panel').style.display = 'none';
-  document.getElementById('user-panel').style.display = 'block';
-  const nav = document.getElementById('bottom-nav');
-  if (nav) nav.style.display = 'flex';
-  const adminBtn = document.getElementById('admin-btn');
-  if (adminBtn) adminBtn.style.display = 'block';
-};
-
-async function applyReferralBonus(refUid, newUid) {
-  const { ref, get, update, increment, push } = window._fb;
-  const s = window.APP.settings;
-  try {
-    const refSnap = await get(ref(db, `users/${refUid}`));
-    if (refSnap.exists()) {
-      await update(ref(db, `users/${refUid}`), {
-        coins: increment(s.referralBonus),
-        referrals: increment(1),
-        referralEarnings: increment(s.referralBonus),
-      });
-      push(ref(db, `referrals/${refUid}`), { uid: newUid, timestamp: Date.now(), bonus: s.referralBonus });
-    }
-  } catch(e) {}
-}
-
-async function loadSettings() {
-  const { ref, get } = window._fb;
-  try {
-    const snap = await get(ref(db, 'settings'));
-    if (snap.exists()) {
-      const s = snap.val();
-      window.APP.settings = { ...window.APP.settings, ...s };
-      if (s.adsgram) window.APP.adsgram = { ...window.APP.adsgram, ...s.adsgram };
-      if (s.monetag) window.APP.monetag = { ...window.APP.monetag, ...s.monetag };
-    }
-  } catch(e) {}
-  const mw = document.getElementById('withdraw-min-text');
-  if (mw) mw.textContent = `Minimum: ${window.APP.settings.minWithdraw} Coins`;
-  const rb = document.getElementById('referral-bonus-info');
-  if (rb) rb.textContent = `You earn ${window.APP.settings.referralBonus} coins per referral!`;
-}
-
-async function loadQuizzes() {
-  const { ref, get, push } = window._fb;
-  try {
-    const snap = await get(ref(db, 'quizzes'));
-    if (snap.exists()) {
-      window.APP.quizzes = Object.entries(snap.val()).map(([id, q]) => ({ id, ...q })).filter(q => !q.deleted);
-    } else {
-      window.APP.quizzes = getDefaultQuizzes();
-      window.APP.quizzes.forEach(q => push(ref(db, 'quizzes'), q));
-    }
-  } catch(e) { window.APP.quizzes = getDefaultQuizzes(); }
-  renderQuizCards();
-  renderFeaturedQuizzes();
-  renderQuizCategories();
-}
-
-function getDefaultQuizzes() {
-  return [
-    { title:'General Knowledge',category:'General',reward:50,time:30,difficulty:'Easy',
-      questions:[
-        {q:'What is the capital of Bangladesh?',options:['Chittagong','Dhaka','Sylhet','Rajshahi'],answer:1},
-        {q:'How many days in a leap year?',options:['365','364','366','367'],answer:2},
-        {q:'Largest planet in solar system?',options:['Saturn','Neptune','Jupiter','Mars'],answer:2},
-        {q:'Element with symbol "O"?',options:['Gold','Oxygen','Osmium','Oganesson'],answer:1},
-        {q:'How many continents?',options:['5','6','7','8'],answer:2},
-      ]},
-    { title:'Math Challenge',category:'Math',reward:80,time:20,difficulty:'Medium',
-      questions:[
-        {q:'What is 15 × 12?',options:['160','170','180','190'],answer:2},
-        {q:'Square root of 144?',options:['11','12','13','14'],answer:1},
-        {q:'25% of 200?',options:['40','50','55','60'],answer:1},
-        {q:'What is 2⁸?',options:['128','256','512','64'],answer:1},
-        {q:'7! (factorial)?',options:['5040','2520','720','40320'],answer:0},
-      ]},
-    { title:'Science Blast',category:'Science',reward:60,time:25,difficulty:'Medium',
-      questions:[
-        {q:'Chemical formula for water?',options:['H2O2','HO','H2O','H3O'],answer:2},
-        {q:'Speed of light (approx)?',options:['3×10⁸ m/s','3×10⁶ m/s','3×10⁴ m/s','3×10¹⁰ m/s'],answer:0},
-        {q:'Bones in adult human body?',options:['196','206','216','186'],answer:1},
-        {q:'Gas plants absorb?',options:['Oxygen','Nitrogen','Carbon Dioxide','Hydrogen'],answer:2},
-        {q:'Closest star to Earth?',options:['Proxima Centauri','Sirius','Betelgeuse','The Sun'],answer:3},
-      ]},
-    { title:'Crypto & Finance',category:'Finance',reward:100,time:30,difficulty:'Hard',
-      questions:[
-        {q:'Who created Bitcoin?',options:['Elon Musk','Satoshi Nakamoto','Vitalik Buterin','Mark Zuckerberg'],answer:1},
-        {q:'USDT stands for?',options:['US Dollar Token','Unified Stable Dollar Tether','US Dollar Tether','Universal Stable Dollar'],answer:2},
-        {q:'Max supply of Bitcoin?',options:['18M','21M','25M','100M'],answer:1},
-        {q:'What is DeFi?',options:['Digital Finance','Decentralized Finance','Distributed Finance','Direct Finance'],answer:1},
-        {q:'Blockchain using "Ether"?',options:['Bitcoin','Solana','Ethereum','Cardano'],answer:2},
-      ]},
-    { title:'Daily Challenge',category:'Daily',reward:200,time:60,difficulty:'Hard',daily:true,
-      questions:[
-        {q:'National animal of Bangladesh?',options:['Tiger','Elephant','Deer','Royal Bengal Tiger'],answer:3},
-        {q:'Which country invented tea?',options:['India','China','Japan','Sri Lanka'],answer:1},
-        {q:'Tallest mountain on Earth?',options:['K2','Kangchenjunga','Mount Everest','Lhotse'],answer:2},
-        {q:'Year smartphone invented?',options:['1994','1997','2000','2007'],answer:3},
-        {q:'Currency of Japan?',options:['Yuan','Won','Yen','Ruble'],answer:2},
-      ]},
-  ];
-}
-
-// ======= UI UPDATES =======
-function updateUI() {
-  const u = window.APP.userData;
-  if (!u) return;
-  const s = window.APP.settings;
-  const coins = u.coins || 0;
-
-  const nameEl = document.getElementById('user-name-display');
-  if (nameEl) nameEl.textContent = u.name || 'User';
-  const rankEl = document.getElementById('user-rank-display');
-  if (rankEl) rankEl.textContent = 'Rank #' + (u.rank || '—');
-
-  animateCounter('balance-coins-display', coins);
-  const ud = document.getElementById('balance-usdt-display');
-  if (ud) ud.textContent = (coins / s.coinUsdt).toFixed(4);
-  const usd2 = document.getElementById('balance-usd-display');
-  if (usd2) usd2.textContent = (coins / s.coinUsd).toFixed(4);
-  const bdt = document.getElementById('balance-bdt-display');
-  if (bdt) bdt.textContent = (coins / s.coinBdt).toFixed(2);
-
-  const cc = document.getElementById('cash-coins');
-  if (cc) cc.textContent = coins + ' Coins';
-  const cu = document.getElementById('cash-usd');
-  if (cu) cu.textContent = (coins / s.coinUsd).toFixed(4);
-  const cb = document.getElementById('cash-bdt');
-  if (cb) cb.textContent = (coins / s.coinBdt).toFixed(2);
-
-  const sq = document.getElementById('stat-quizzes');
-  if (sq) sq.textContent = u.quizzesPlayed || 0;
-  const sr = document.getElementById('stat-refs');
-  if (sr) sr.textContent = u.referrals || 0;
-  const ss = document.getElementById('stat-spins');
-  if (ss) ss.textContent = u.spinsUsed || 0;
-
-  const tr = document.getElementById('total-referrals');
-  if (tr) tr.textContent = u.referrals || 0;
-  const re = document.getElementById('referral-earnings');
-  if (re) re.textContent = u.referralEarnings || 0;
-  const rl = document.getElementById('referral-link-input');
-  if (rl) rl.value = getReferralLink();
-
-  const today = new Date().toDateString();
-  const lastDay = new Date(u.lastDailyBonus || 0).toDateString();
-  const dbs = document.getElementById('daily-bonus-status');
-  const claimBtn = document.getElementById('claim-daily-btn');
-  if (today !== lastDay) {
-    if (dbs) dbs.textContent = 'Tap to claim!';
-    if (claimBtn) { claimBtn.disabled = false; claimBtn.style.opacity = '1'; }
-  } else {
-    if (dbs) dbs.textContent = 'Claimed today!';
-    if (claimBtn) { claimBtn.disabled = true; claimBtn.style.opacity = '.5'; }
-  }
-}
-
-function animateCounter(id, target) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const start = parseInt(el.textContent.replace(/,/g,'')) || 0;
-  if (start === target) return;
-  const duration = 600, t0 = performance.now();
-  function step(now) {
-    const p = Math.min((now - t0) / duration, 1);
-    const ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(start + (target - start) * ease).toLocaleString();
-    if (p < 1) requestAnimationFrame(step);
-    else el.textContent = target.toLocaleString();
-  }
+function animNum(id,target){
+  const el=document.getElementById(id); if(!el) return;
+  const start=parseInt(el.textContent.replace(/,/g,''))||0;
+  if(start===target) return;
+  const dur=600, t0=performance.now();
+  const step=now=>{
+    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(start+(target-start)*e).toLocaleString();
+    if(p<1) requestAnimationFrame(step);
+    else el.textContent=target.toLocaleString();
+  };
   requestAnimationFrame(step);
 }
 
-function getReferralLink() {
-  return `https://t.me/CashZillaBot?start=${window.APP.user?.uid || 'xxx'}`;
-}
+function refLink(){ return 'https://t.me/CashZillaBot?start='+(S.user?.uid||'x'); }
 
-// ======= NAVIGATION =======
-window.goToPage = function(page) {
-  haptic();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const el = document.getElementById('page-' + page);
-  if (el) el.classList.add('active');
-  const nav = document.getElementById('nav-' + page);
-  if (nav) nav.classList.add('active');
-  window.APP.currentPage = page;
-  if (page === 'quiz') { renderQuizCards(); renderQuizCategories(); }
-  if (page === 'leaderboard') loadLeaderboard('weekly');
-  if (page === 'cash') loadWithdrawHistory();
-  if (page === 'refer') loadReferrals();
-  if (page === 'spin') loadSpinHistory();
+// ===== NAV =====
+window.gp = function(page){
+  hap();
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('pg-'+page);
+  if(pg) pg.classList.add('on');
+  const ni=document.getElementById('ni-'+page);
+  if(ni) ni.classList.add('active');
+  if(page==='quiz'){renderQCards();renderQCats();}
+  if(page==='lb') loadLB();
+  if(page==='cash') loadWH();
+  if(page==='refer') loadRefs();
+  if(page==='spin') loadSH();
 };
-window.goToQuiz = () => goToPage('quiz');
-window.goToSpin = () => goToPage('spin');
 
-// ======= QUIZ SYSTEM =======
-let quizFilterCategory = 'All';
-
-function renderQuizCategories() {
-  const cats = ['All', ...new Set(window.APP.quizzes.map(q => q.category))];
-  const el = document.getElementById('quiz-categories');
-  if (!el) return;
-  el.innerHTML = cats.map(c => `<button class="cat-pill ${c===quizFilterCategory?'active':''}" onclick="filterQuizCategory('${c}',this)">${c}</button>`).join('');
+// ===== QUIZ =====
+let qFilter='All';
+function renderQCats(){
+  const cats=['All',...new Set(S.quizzes.map(q=>q.cat))];
+  const el=document.getElementById('qcats'); if(!el) return;
+  el.innerHTML=cats.map(c=>`<button class="pill ${c===qFilter?'active':''}" onclick="filtQ('${c}',this)">${c}</button>`).join('');
 }
-window.filterQuizCategory = function(cat, btn) {
-  quizFilterCategory = cat;
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+window.filtQ=function(c,btn){
+  qFilter=c;
+  document.querySelectorAll('#qcats .pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  renderQuizCards();
+  renderQCards();
 };
-
-function renderQuizCards() {
-  const filtered = quizFilterCategory === 'All' ? window.APP.quizzes : window.APP.quizzes.filter(q => q.category === quizFilterCategory);
-  const el = document.getElementById('quiz-cards-container');
-  if (!el) return;
-  const diffColors = { Easy:'#22c55e', Medium:'#f59e0b', Hard:'#ef4444' };
-  el.innerHTML = filtered.map(q => `<div class="card" style="padding:16px;cursor:pointer;" onclick="startQuiz('${q.id}')">
+function renderQCards(){
+  const list=qFilter==='All'?S.quizzes:S.quizzes.filter(q=>q.cat===qFilter);
+  const el=document.getElementById('qcards'); if(!el) return;
+  const dc={Easy:'#22c55e',Medium:'#f59e0b',Hard:'#ef4444'};
+  el.innerHTML=list.map(q=>`<div class="card" style="padding:16px;cursor:pointer;" onclick="startQ('${q.id}')">
     <div style="display:flex;align-items:center;gap:12px;">
-      <div style="background:#f3f4f6;border:2px solid #111;border-radius:14px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${getCategoryIcon(q.category)}</div>
+      <div style="background:#f3f4f6;border:2px solid #111;border-radius:14px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="font-size:11px;font-weight:900;color:#111;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
+      </div>
       <div style="flex:1;">
         <div style="font-weight:800;font-size:16px;">${q.title}</div>
-        <div style="font-size:12px;color:#666;font-weight:600;">${q.questions?.length||0} questions · ${q.time}s each</div>
+        <div style="font-size:12px;color:#666;font-weight:600;">${q.qs?.length||0} questions · ${q.time}s each</div>
         <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-          <span style="background:${diffColors[q.difficulty]||'#888'}22;color:${diffColors[q.difficulty]||'#888'};border:1.5px solid ${diffColors[q.difficulty]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${q.difficulty||'Medium'}</span>
+          <span style="background:${dc[q.diff]||'#888'}22;color:${dc[q.diff]||'#888'};border:1.5px solid ${dc[q.diff]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${q.diff||'Medium'}</span>
           ${q.daily?'<span style="background:#ffe94a;border:1.5px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">Daily</span>':''}
         </div>
       </div>
       <div style="background:var(--yellow);border:2px solid #111;border-radius:12px;padding:8px 12px;text-align:center;flex-shrink:0;">
-        <div style="font-size:11px;font-weight:700;">REWARD</div>
+        <div style="font-size:10px;font-weight:700;">REWARD</div>
         <div style="font-weight:900;font-size:18px;">+${q.reward}</div>
         <div style="font-size:10px;font-weight:600;">coins</div>
       </div>
     </div>
   </div>`).join('');
 }
-
-function getCategoryIcon(cat) {
-  const icons = { General:'GK', Math:'123', Science:'SCI', Finance:'BTC', Daily:'DAY' };
-  return `<span style="font-size:11px;font-weight:900;color:#111;">${icons[cat]||cat?.slice(0,3)||'QZ'}</span>`;
-}
-
-function renderFeaturedQuizzes() {
-  const el = document.getElementById('featured-quizzes');
-  if (!el) return;
-  el.innerHTML = window.APP.quizzes.slice(0,3).map(q => `<div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToPage('quiz')">
-    <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;">${getCategoryIcon(q.category)}</div>
-    <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.category} · +${q.reward} coins</div></div>
-    <div style="font-size:20px;color:#111;">›</div>
+function renderFeatQ(){
+  const el=document.getElementById('fquiz'); if(!el) return;
+  el.innerHTML=S.quizzes.slice(0,3).map(q=>`<div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="gp('quiz')">
+    <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
+    <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.cat} · +${q.reward} coins</div></div>
+    <div style="font-size:22px;color:#111;">›</div>
   </div>`).join('');
 }
 
-window.startQuiz = function(quizId) {
-  const quiz = window.APP.quizzes.find(q => q.id === quizId);
-  if (!quiz || !quiz.questions?.length) { showToast('Quiz not available!'); return; }
-  haptic('medium');
-  const lastPlayed = localStorage.getItem('quiz_last_' + quizId);
-  if (quiz.daily && lastPlayed && new Date().toDateString() === new Date(parseInt(lastPlayed)).toDateString()) {
-    showToast('Daily quiz already played today!'); return;
+window.startQ=function(id){
+  const quiz=S.quizzes.find(q=>q.id===id);
+  if(!quiz||!quiz.qs?.length){toast('Quiz not available!');return;}
+  hap('medium');
+  if(quiz.daily){
+    const lp=localStorage.getItem('qlast_'+id);
+    if(lp&&new Date().toDateString()===new Date(parseInt(lp)).toDateString()){toast('Daily quiz already played!');return;}
   }
-  window.APP.currentQuiz = quiz;
-  window.APP.currentQ = 0;
-  window.APP.quizScore = 0;
-  window.APP.quizCorrect = 0;
-  window.APP.quizWrong = 0;
-  document.getElementById('quiz-list-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-game-view').style.display = 'block';
-  renderQuestion();
+  S.curQuiz=quiz; S.curQ=0; S.score=0; S.correct=0; S.wrong=0;
+  document.getElementById('qlistview').style.display='none';
+  document.getElementById('qresult').style.display='none';
+  document.getElementById('qgame').style.display='block';
+  renderQ();
 };
 
-function renderQuestion() {
-  const quiz = window.APP.currentQuiz;
-  const q = quiz.questions[window.APP.currentQ];
-  if (!q) { endQuiz(); return; }
-  const total = quiz.questions.length, cur = window.APP.currentQ;
-  document.getElementById('quiz-q-num').textContent = `Q ${cur+1}/${total}`;
-  document.getElementById('quiz-score-display').textContent = `Score: ${window.APP.quizScore}`;
-  document.getElementById('quiz-progress-fill').style.width = `${(cur/total)*100}%`;
-  document.getElementById('quiz-category-label').textContent = quiz.category?.toUpperCase() || 'QUIZ';
-  document.getElementById('quiz-question-text').textContent = q.q;
-  const optLabels = ['A','B','C','D'];
-  document.getElementById('quiz-answers').innerHTML = q.options.map((opt, i) =>
-    `<button class="answer-btn" onclick="selectAnswer(${i})">${optLabels[i]}. ${opt}</button>`
-  ).join('');
-  clearInterval(window.APP.quizTimer);
-  let timeLeft = quiz.time || 30;
-  document.getElementById('quiz-timer-display').textContent = timeLeft + 's';
-  window.APP.quizTimer = setInterval(() => {
-    timeLeft--;
-    const td = document.getElementById('quiz-timer-display');
-    if (td) { td.textContent = timeLeft + 's'; if (timeLeft <= 5) td.style.background = '#fecaca'; }
-    if (timeLeft <= 0) {
-      clearInterval(window.APP.quizTimer);
-      window.APP.quizWrong++;
-      highlightAnswer(-1, q.answer);
-      setTimeout(() => nextQuestion(), 1500);
-    }
-  }, 1000);
+function renderQ(){
+  const quiz=S.curQuiz, q=quiz.qs[S.curQ];
+  if(!q){endQ();return;}
+  const tot=quiz.qs.length, cur=S.curQ;
+  const el=id=>document.getElementById(id);
+  el('qqnum').textContent=`Q ${cur+1}/${tot}`;
+  el('qscore').textContent='Score: '+S.score;
+  el('qprog').style.width=`${(cur/tot)*100}%`;
+  el('qcat').textContent=(quiz.cat||'QUIZ').toUpperCase();
+  el('qtext').textContent=q.q;
+  const labels=['A','B','C','D'];
+  el('qopts').innerHTML=q.opts.map((o,i)=>`<button class="ans-btn" onclick="pickA(${i})">${labels[i]}. ${o}</button>`).join('');
+  clearInterval(S.timer);
+  let t=quiz.time||30;
+  el('qtimer').textContent=t+'s';
+  el('qtimer').style.background='var(--yellow)';
+  S.timer=setInterval(()=>{
+    t--;
+    const td=el('qtimer');
+    if(td){td.textContent=t+'s';if(t<=5)td.style.background='#fecaca';}
+    if(t<=0){clearInterval(S.timer);S.wrong++;hilite(-1,q.a);setTimeout(nextQ,1500);}
+  },1000);
 }
 
-window.selectAnswer = function(selected) {
-  clearInterval(window.APP.quizTimer);
-  haptic();
-  const q = window.APP.currentQuiz.questions[window.APP.currentQ];
-  document.querySelectorAll('.answer-btn').forEach(b => b.onclick = null);
-  if (selected === q.answer) {
-    window.APP.quizScore += Math.floor(window.APP.currentQuiz.reward / window.APP.currentQuiz.questions.length);
-    window.APP.quizCorrect++;
-    haptic('medium');
-    spawnFloatingCoins();
-  } else { window.APP.quizWrong++; haptic('heavy'); }
-  highlightAnswer(selected, q.answer);
-  setTimeout(() => nextQuestion(), 1200);
+window.pickA=function(sel){
+  clearInterval(S.timer); hap();
+  const q=S.curQuiz.qs[S.curQ];
+  document.querySelectorAll('.ans-btn').forEach(b=>b.onclick=null);
+  if(sel===q.a){
+    S.score+=Math.floor(S.curQuiz.reward/S.curQuiz.qs.length);
+    S.correct++; hap('medium'); floatCoins();
+  } else { S.wrong++; hap('heavy'); }
+  hilite(sel,q.a);
+  setTimeout(nextQ,1200);
 };
-
-function highlightAnswer(selected, correct) {
-  document.querySelectorAll('.answer-btn').forEach((btn, i) => {
-    if (i === correct) btn.classList.add('correct');
-    else if (i === selected && selected !== correct) btn.classList.add('wrong');
+function hilite(sel,cor){
+  document.querySelectorAll('.ans-btn').forEach((b,i)=>{
+    if(i===cor)b.classList.add('ok');
+    else if(i===sel&&sel!==cor)b.classList.add('no');
   });
 }
-
-function nextQuestion() {
-  window.APP.currentQ++;
-  const td = document.getElementById('quiz-timer-display');
-  if (td) td.style.background = 'var(--yellow)';
-  if (window.APP.currentQ >= window.APP.currentQuiz.questions.length) endQuiz();
-  else renderQuestion();
+function nextQ(){
+  S.curQ++;
+  const td=document.getElementById('qtimer');
+  if(td)td.style.background='var(--yellow)';
+  if(S.curQ>=S.curQuiz.qs.length)endQ();else renderQ();
 }
-
-async function endQuiz() {
-  clearInterval(window.APP.quizTimer);
-  const quiz = window.APP.currentQuiz;
-  const earned = window.APP.quizScore;
-  localStorage.setItem('quiz_last_' + quiz.id, Date.now().toString());
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  try {
-    await update(ref(db, `users/${uid}`), { coins: increment(earned), totalEarned: increment(earned), quizzesPlayed: increment(1) });
-    push(ref(db, `transactions/${uid}`), { type: 'quiz', amount: earned, quizTitle: quiz.title, timestamp: Date.now() });
-  } catch(e) {}
-  document.getElementById('quiz-game-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'block';
-  const pct = Math.round((window.APP.quizCorrect / quiz.questions.length) * 100);
-  document.getElementById('result-title').textContent = pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good Job!' : 'Keep Practicing!';
-  document.getElementById('result-subtitle').textContent = `${window.APP.quizCorrect}/${quiz.questions.length} correct (${pct}%)`;
-  document.getElementById('result-coins').textContent = '+' + earned;
-  document.getElementById('result-correct').textContent = window.APP.quizCorrect;
-  document.getElementById('result-wrong').textContent = window.APP.quizWrong;
-  if (pct === 100) spawnConfetti();
-  haptic('medium');
+async function endQ(){
+  clearInterval(S.timer);
+  const quiz=S.curQuiz, earned=S.score;
+  localStorage.setItem('qlast_'+quiz.id, Date.now()+'');
+  try{
+    await db.ref('users/'+S.user.uid).update({
+      coins: firebase.database.ServerValue.increment(earned),
+      totalEarned: firebase.database.ServerValue.increment(earned),
+      quizzesPlayed: firebase.database.ServerValue.increment(1)
+    });
+    db.ref('transactions/'+S.user.uid).push({type:'quiz',amount:earned,title:quiz.title,ts:Date.now()});
+  }catch(e){}
+  document.getElementById('qgame').style.display='none';
+  document.getElementById('qresult').style.display='block';
+  const pct=Math.round((S.correct/quiz.qs.length)*100);
+  document.getElementById('rtitle').textContent=pct>=80?'Excellent!':pct>=50?'Good Job!':'Keep Trying!';
+  document.getElementById('rsub').textContent=`${S.correct}/${quiz.qs.length} correct (${pct}%)`;
+  document.getElementById('rcoins').textContent='+'+earned;
+  document.getElementById('rcor').textContent=S.correct;
+  document.getElementById('rwrong').textContent=S.wrong;
+  if(pct===100) confetti();
+  hap('medium');
 }
-
-window.exitQuiz = function() {
-  clearInterval(window.APP.quizTimer);
-  document.getElementById('quiz-game-view').style.display = 'none';
-  document.getElementById('quiz-result-view').style.display = 'none';
-  document.getElementById('quiz-list-view').style.display = 'block';
+window.exitQ=function(){
+  clearInterval(S.timer);
+  document.getElementById('qgame').style.display='none';
+  document.getElementById('qresult').style.display='none';
+  document.getElementById('qlistview').style.display='block';
 };
 
-// ======= SPIN WHEEL =======
-const SEGMENTS = [
-  {label:'50 Coins',value:50,color:'#00d4e8'},{label:'100 Coins',value:100,color:'#ffe94a'},
-  {label:'200 Coins',value:200,color:'#a855f7'},{label:'Try Again',value:0,color:'#f3f4f6'},
-  {label:'500 Coins',value:500,color:'#ff6eb4'},{label:'30 Coins',value:30,color:'#22c55e'},
-  {label:'1000 Coins',value:1000,color:'#ff7b39'},{label:'150 Coins',value:150,color:'#818cf8'},
+// ===== SPIN WHEEL =====
+const SEGS=[
+  {label:'50 Coins',val:50,color:'#00d4e8'},{label:'100 Coins',val:100,color:'#ffe94a'},
+  {label:'200 Coins',val:200,color:'#a855f7'},{label:'Try Again',val:0,color:'#e5e7eb'},
+  {label:'500 Coins',val:500,color:'#ff6eb4'},{label:'30 Coins',val:30,color:'#22c55e'},
+  {label:'1000 Coins',val:1000,color:'#ff7b39'},{label:'150 Coins',val:150,color:'#818cf8'},
 ];
-
-function drawSpinWheel(rotation = 0) {
-  const canvas = document.getElementById('spin-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const cx = canvas.width/2, cy = canvas.height/2, r = cx - 8;
-  const arc = (Math.PI*2) / SEGMENTS.length;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  SEGMENTS.forEach((seg, i) => {
-    const start = rotation + i*arc - Math.PI/2, end = start + arc;
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath();
-    ctx.fillStyle = seg.color; ctx.fill();
-    ctx.strokeStyle = '#111'; ctx.lineWidth = 3; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start + arc/2);
-    ctx.textAlign = 'right'; ctx.fillStyle = '#111'; ctx.font = 'bold 11px Nunito';
-    ctx.fillText(seg.label, r - 10, 4); ctx.restore();
+function drawWheel(rot=0){
+  const c=document.getElementById('wcanvas'); if(!c) return;
+  const ctx=c.getContext('2d'), cx=140, cy=140, r=132;
+  const arc=(Math.PI*2)/SEGS.length;
+  ctx.clearRect(0,0,280,280);
+  SEGS.forEach((seg,i)=>{
+    const s=rot+i*arc-Math.PI/2, e=s+arc;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
+    ctx.fillStyle=seg.color; ctx.fill();
+    ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(s+arc/2);
+    ctx.textAlign='right'; ctx.fillStyle='#111'; ctx.font='bold 11px Nunito,sans-serif';
+    ctx.fillText(seg.label,r-8,4); ctx.restore();
   });
   ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2);
-  ctx.fillStyle = '#ffe94a'; ctx.fill();
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 3; ctx.stroke();
-  ctx.fillStyle = '#111'; ctx.font = 'bold 14px Nunito';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('$', cx, cy);
+  ctx.fillStyle='#ffe94a'; ctx.fill();
+  ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
+  ctx.fillStyle='#111'; ctx.font='bold 16px Nunito,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('$',cx,cy);
 }
 
-window.spinWheel = async function() {
-  if (window.APP.spinRunning) return;
-  const u = window.APP.userData;
-  const now = Date.now(), cooldown = 24*60*60*1000;
-  if (now - (u.lastSpin||0) < cooldown) {
-    const h = Math.ceil((cooldown-(now-(u.lastSpin||0)))/3600000);
-    showToast(`Come back in ${h}h!`); return;
+window.doSpin=async function(){
+  if(S.spinning) return;
+  const u=S.data, now=Date.now(), cd=24*60*60*1000;
+  if(now-(u.lastSpin||0)<cd){
+    const h=Math.ceil((cd-(now-(u.lastSpin||0)))/3600000);
+    toast(`Come back in ${h}h!`); return;
   }
-  haptic('medium');
-  window.APP.spinRunning = true;
-  const btn = document.getElementById('spin-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Spinning...'; }
-  const winIndex = Math.floor(Math.random() * SEGMENTS.length);
-  const winner = SEGMENTS[winIndex];
-  const arcSize = (Math.PI*2) / SEGMENTS.length;
-  const targetAngle = (Math.PI*2*5) - (winIndex*arcSize) - arcSize/2;
-  const duration = 4000, t0 = performance.now();
-  function animate(now) {
-    const elapsed = now - t0, p = Math.min(elapsed/duration, 1);
-    const ease = 1 - Math.pow(1-p, 4);
-    drawSpinWheel(ease * targetAngle);
-    if (p < 1) requestAnimationFrame(animate);
-    else onSpinEnd(winner);
-  }
-  requestAnimationFrame(animate);
+  hap('medium'); S.spinning=true;
+  const btn=document.getElementById('spinbtn');
+  btn.disabled=true; btn.textContent='Spinning...';
+  const wi=Math.floor(Math.random()*SEGS.length), w=SEGS[wi];
+  const arcSz=(Math.PI*2)/SEGS.length;
+  const target=(Math.PI*2*5)-(wi*arcSz)-arcSz/2;
+  const dur=4000, t0=performance.now();
+  const anim=now=>{
+    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,4);
+    drawWheel(e*target);
+    if(p<1) requestAnimationFrame(anim); else spinDone(w);
+  };
+  requestAnimationFrame(anim);
 };
 
-async function onSpinEnd(winner) {
-  haptic('heavy');
-  window.APP.spinRunning = false;
-  const btn = document.getElementById('spin-btn');
-  if (btn) { btn.disabled = false; btn.textContent = 'SPIN NOW!'; }
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  if (winner.value > 0) {
-    spawnConfetti();
-    await update(ref(db, `users/${uid}`), { coins: increment(winner.value), totalEarned: increment(winner.value), spinsUsed: increment(1), lastSpin: Date.now() });
-    push(ref(db, `spins/${uid}`), { reward: winner.value, label: winner.label, timestamp: Date.now() });
-    showToast(`You won ${winner.label}!`);
-    showPopup('Lucky Spin!', `<div style="text-align:center;"><div style="font-size:24px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:28px;">${winner.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to your balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;">Awesome!</button></div>`);
+async function spinDone(w){
+  hap('heavy'); S.spinning=false;
+  const btn=document.getElementById('spinbtn');
+  btn.disabled=false; btn.textContent='SPIN NOW!';
+  const uid=S.user.uid;
+  if(w.val>0){
+    confetti();
+    await db.ref('users/'+uid).update({
+      coins:firebase.database.ServerValue.increment(w.val),
+      totalEarned:firebase.database.ServerValue.increment(w.val),
+      spinsUsed:firebase.database.ServerValue.increment(1),
+      lastSpin:Date.now()
+    });
+    db.ref('spins/'+uid).push({reward:w.val,label:w.label,ts:Date.now()});
+    toast('You won '+w.label+'!');
+    popup('Lucky Spin!',`<div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:28px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;font-size:15px;">Awesome!</button></div>`);
   } else {
-    await update(ref(db, `users/${uid}`), { spinsUsed: increment(1), lastSpin: Date.now() });
-    push(ref(db, `spins/${uid}`), { reward: 0, label: winner.label, timestamp: Date.now() });
-    showToast('Better luck next time!');
+    await db.ref('users/'+uid).update({spinsUsed:firebase.database.ServerValue.increment(1),lastSpin:Date.now()});
+    db.ref('spins/'+uid).push({reward:0,label:w.label,ts:Date.now()});
+    toast('Better luck next time!');
   }
-  const sct = document.getElementById('spin-cooldown-text');
-  if (sct) sct.textContent = 'Next spin available in 24 hours';
-  loadSpinHistory();
+  const sc=document.getElementById('spinct');
+  if(sc) sc.textContent='Next spin in 24 hours';
+  loadSH();
 }
 
-async function loadSpinHistory() {
-  const { ref, get } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  const el = document.getElementById('spin-history-list');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, `spins/${uid}`));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;font-weight:600;text-align:center;">No spins yet</div>'; return; }
-    const spins = Object.values(snap.val()).slice(-10).reverse();
-    el.innerHTML = spins.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+async function loadSH(){
+  const el=document.getElementById('shinst'); if(!el) return;
+  try{
+    const snap=await db.ref('spins/'+S.user?.uid).once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;font-weight:600;">No spins yet</div>';return;}
+    const sp=Object.values(snap.val()).slice(-10).reverse();
+    el.innerHTML=sp.map(s=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;">
       <span style="font-weight:600;">${s.label}</span>
-      <span style="color:#666;font-size:12px;">${new Date(s.timestamp).toLocaleDateString()}</span>
+      <span style="color:#888;font-size:12px;">${new Date(s.ts).toLocaleDateString()}</span>
     </div>`).join('');
-  } catch(e) {}
+  }catch(e){}
 }
 
-// ======= DAILY BONUS =======
-window.claimDailyBonus = async function() {
-  const u = window.APP.userData;
-  if (new Date().toDateString() === new Date(u.lastDailyBonus||0).toDateString()) { showToast('Already claimed today!'); return; }
-  haptic('medium');
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  await update(ref(db, `users/${uid}`), { coins: increment(100), totalEarned: increment(100), lastDailyBonus: Date.now() });
-  push(ref(db, `transactions/${uid}`), { type: 'daily_bonus', amount: 100, timestamp: Date.now() });
-  spawnConfetti();
-  showToast('Daily bonus claimed! +100 Coins');
-  spawnFloatingCoins();
+// ===== DAILY BONUS =====
+window.claimDaily=async function(){
+  const u=S.data;
+  if(new Date().toDateString()===new Date(u.lastDailyBonus||0).toDateString()){toast('Already claimed today!');return;}
+  hap('medium');
+  await db.ref('users/'+S.user.uid).update({
+    coins:firebase.database.ServerValue.increment(100),
+    totalEarned:firebase.database.ServerValue.increment(100),
+    lastDailyBonus:Date.now()
+  });
+  db.ref('transactions/'+S.user.uid).push({type:'daily',amount:100,ts:Date.now()});
+  confetti(); floatCoins(); toast('Daily bonus claimed! +100 Coins');
 };
 
-// ======= LEADERBOARD =======
-async function loadLeaderboardPreview() {
-  const { ref, query, orderByChild, limitToLast, get } = window._fb;
-  const el = document.getElementById('leaderboard-preview');
-  if (!el) return;
-  try {
-    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(5));
-    const snap = await get(q);
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No data yet</div>'; return; }
-    const users = [];
-    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
-    const medals = ['1st','2nd','3rd','4th','5th'];
-    el.innerHTML = users.slice(0,5).map((u,i) => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':'#f3f4f6'};border:2px solid #111;border-radius:8px;width:32px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">${medals[i]}</div>
+// ===== LEADERBOARD =====
+async function loadLBPreview(){
+  const el=document.getElementById('lbprev'); if(!el) return;
+  try{
+    const snap=await db.ref('users').orderByChild('totalEarned').limitToLast(5).once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No data yet</div>';return;}
+    const users=[]; snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
+    const med=['1st','2nd','3rd','4th','5th'];
+    el.innerHTML=users.slice(0,5).map((u,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':'#f3f4f6'};border:2px solid #111;border-radius:8px;width:34px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">${med[i]}</div>
       <div style="flex:1;font-weight:700;font-size:14px;">${u.name||'User'}</div>
       <div style="font-weight:800;color:var(--purple);">${(u.coins||0).toLocaleString()}</div>
     </div>`).join('');
-  } catch(e) {}
+  }catch(e){}
 }
 
-window.loadLeaderboard = async function(type, btn) {
-  if (btn) { document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active')); btn.classList.add('active'); }
-  const { ref, query, orderByChild, limitToLast, get } = window._fb;
-  const el = document.getElementById('full-leaderboard-list');
-  if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:auto;"></div></div>';
-  try {
-    const q = query(ref(db, 'users'), orderByChild('totalEarned'), limitToLast(20));
-    const snap = await get(q);
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">No data yet</div>'; return; }
-    const users = [];
-    snap.forEach(child => users.unshift({ id: child.key, ...child.val() }));
-    el.innerHTML = users.map((u, i) => `<div class="card" style="padding:14px;margin-bottom:10px;">
+window.loadLB=async function(btn){
+  if(btn){document.querySelectorAll('#pg-lb .pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');}
+  const el=document.getElementById('lbfull'); if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:20px;"><div class="spin" style="margin:auto;"></div></div>';
+  try{
+    const snap=await db.ref('users').orderByChild('totalEarned').limitToLast(20).once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:20px;">No data yet</div>';return;}
+    const users=[]; snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
+    el.innerHTML=users.map((u,i)=>`<div class="card" style="padding:14px;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;">${i<3?['1st','2nd','3rd'][i]:'#'+(i+1)}</div>
+        <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;">${i<3?['1st','2nd','3rd'][i]:'#'+(i+1)}</div>
         <div style="flex:1;"><div style="font-weight:800;">${u.name||'User'}</div><div style="font-size:12px;color:#666;">${u.totalEarned||0} total earned</div></div>
         <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;">${(u.coins||0).toLocaleString()}</div>
       </div>
     </div>`).join('');
-  } catch(e) { el.innerHTML = '<div style="color:#888;text-align:center;padding:20px;">Could not load</div>'; }
+  }catch(e){el.innerHTML='<div style="color:#888;text-align:center;padding:20px;">Error loading</div>';}
 };
 
-// ======= WITHDRAW =======
-window.selectMethod = function(method) {
-  window.APP.selectedMethod = method;
-  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-  document.querySelector(`[data-method="${method}"]`)?.classList.add('selected');
+// ===== WITHDRAW =====
+window.selM=function(m){
+  S.method=m;
+  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));
+  document.querySelector('[data-m="'+m+'"]')?.classList.add('sel');
 };
-
-window.submitWithdraw = async function() {
-  const u = window.APP.userData;
-  const amount = parseInt(document.getElementById('withdraw-amount').value) || 0;
-  const address = document.getElementById('withdraw-address').value.trim();
-  const min = window.APP.settings.minWithdraw;
-  if (!address) { showToast('Enter your account address!'); return; }
-  if (amount < min) { showToast(`Minimum ${min} coins required!`); return; }
-  if ((u.coins||0) < amount) { showToast('Not enough coins!'); return; }
-  haptic('medium');
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user.uid;
-  const s = window.APP.settings;
-  const withdraw = { uid, amount, address, method: window.APP.selectedMethod, status: 'pending', timestamp: Date.now(), amountUsdt: (amount/s.coinUsdt).toFixed(4), amountBdt: (amount/s.coinBdt).toFixed(2), userName: u.name };
-  try {
-    await push(ref(db, 'withdraws'), withdraw);
-    await update(ref(db, `users/${uid}`), { coins: increment(-amount) });
+window.doWithdraw=async function(){
+  const u=S.data, amt=parseInt(document.getElementById('wamt').value)||0;
+  const addr=document.getElementById('waddr').value.trim();
+  if(!addr){toast('Enter account address!');return;}
+  if(amt<S.sets.minWd){toast('Minimum '+S.sets.minWd+' coins!');return;}
+  if((u.coins||0)<amt){toast('Not enough coins!');return;}
+  hap('medium');
+  const s=S.sets, w={uid:S.user.uid,amount:amt,address:addr,method:S.method,
+    status:'pending',ts:Date.now(),amtUsdt:(amt/s.coinUsdt).toFixed(4),
+    amtBdt:(amt/s.coinBdt).toFixed(2),userName:u.name};
+  try{
+    await db.ref('withdraws').push(w);
+    await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(-amt)});
     // Notify admin via Telegram
-    await sendTelegramMessage(ADMIN_CHAT_ID, `💸 <b>New Withdrawal Request</b>\n\nUser: ${u.name}\nMethod: ${withdraw.method?.toUpperCase()}\nAmount: ${amount} coins\nAddress: ${address}\nUSDT: ${withdraw.amountUsdt}`);
-    showToast('Withdrawal request submitted!');
-    document.getElementById('withdraw-amount').value = '';
-    document.getElementById('withdraw-address').value = '';
-    loadWithdrawHistory();
-  } catch(e) { showToast('Error submitting request!'); }
+    tgSend(`💸 <b>New Withdrawal</b>\n\nUser: ${u.name}\nMethod: ${w.method.toUpperCase()}\nAmount: ${amt} coins\n≈ ${w.amtUsdt} USDT\nAddress: ${addr}`);
+    toast('Withdrawal submitted!');
+    document.getElementById('wamt').value='';
+    document.getElementById('waddr').value='';
+    loadWH();
+  }catch(e){toast('Error! Try again.');}
 };
 
-async function loadWithdrawHistory() {
-  const { ref, get } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  const el = document.getElementById('withdraw-history');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, 'withdraws'));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
-    const all = [];
-    snap.forEach(child => { const v = child.val(); if (v.uid === uid) all.push(v); });
-    if (!all.length) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>'; return; }
-    all.sort((a,b) => b.timestamp - a.timestamp);
-    const statusColor = { pending:'#f59e0b', approved:'#22c55e', rejected:'#ef4444' };
-    el.innerHTML = all.slice(0,10).map(w => `<div style="border:2px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;">
+async function loadWH(){
+  const el=document.getElementById('whist'); if(!el||!S.user) return;
+  try{
+    const snap=await db.ref('withdraws').once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>';return;}
+    const all=[]; snap.forEach(c=>{const v=c.val();if(v.uid===S.user.uid)all.push(v);});
+    if(!all.length){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>';return;}
+    all.sort((a,b)=>b.ts-a.ts);
+    const sc={pending:'#f59e0b',approved:'#22c55e',rejected:'#ef4444'};
+    el.innerHTML=all.slice(0,10).map(w=>`<div style="border:2px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><div style="font-weight:700;">${w.method?.toUpperCase()}</div><div style="font-size:12px;color:#666;">${new Date(w.timestamp).toLocaleDateString()}</div></div>
-        <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${statusColor[w.status]||'#888'}22;color:${statusColor[w.status]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</div></div>
+        <div><div style="font-weight:700;">${w.method?.toUpperCase()}</div><div style="font-size:12px;color:#888;">${new Date(w.ts).toLocaleDateString()}</div></div>
+        <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${sc[w.status]||'#888'}22;color:${sc[w.status]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${(w.status||'PENDING').toUpperCase()}</div></div>
       </div>
     </div>`).join('');
-  } catch(e) {}
+  }catch(e){}
 }
 
-// ======= REFERRALS =======
-async function loadReferrals() {
-  const { ref, get } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  const el = document.getElementById('my-referrals-list');
-  if (!el) return;
-  try {
-    const snap = await get(ref(db, `referrals/${uid}`));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No referrals yet</div>'; return; }
-    const refs = Object.values(snap.val()).slice(-20).reverse();
-    el.innerHTML = refs.map(r => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <div><div style="font-weight:700;">Friend joined</div><div style="font-size:12px;color:#666;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
+// ===== REFERRALS =====
+async function loadRefs(){
+  const el=document.getElementById('myref'); if(!el||!S.user) return;
+  try{
+    const snap=await db.ref('referrals/'+S.user.uid).once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No referrals yet</div>';return;}
+    const refs=Object.values(snap.val()).slice(-20).reverse();
+    el.innerHTML=refs.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <div><div style="font-weight:700;">Friend joined</div><div style="font-size:12px;color:#888;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
       <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
     </div>`).join('');
-  } catch(e) {}
+  }catch(e){}
 }
 
-window.copyReferralLink = function() {
-  navigator.clipboard.writeText(getReferralLink()).catch(()=>{});
-  showToast('Referral link copied!');
-  haptic();
-};
-window.shareReferralLink = function() {
-  const link = getReferralLink();
-  if (tg) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Join CashZilla and earn coins!')}`);
-  else navigator.clipboard.writeText(link);
-};
-
-// ======= ADS =======
-let lastAdMinute = 0, adsThisMinute = 0;
-window.handleAdClick = function() {
-  const now = Math.floor(Date.now()/60000);
-  if (now !== lastAdMinute) { lastAdMinute = now; adsThisMinute = 0; }
-  if (adsThisMinute >= 2) { showToast('Ad limit reached. Come back later!'); return; }
-  adsThisMinute++;
-  haptic();
-  const { ref, update, increment, push } = window._fb;
-  const uid = window.APP.user?.uid;
-  if (!uid) return;
-  update(ref(db, `users/${uid}`), { coins: increment(5) });
-  push(ref(db, `transactions/${uid}`), { type: 'ad_click', amount: 5, timestamp: Date.now() });
-  showToast('+5 coins from ad!');
-  spawnFloatingCoins();
-};
-
-// ======= NOTIFICATIONS =======
-window.showNotifications = function() {
-  showPopup('Notifications', `<div style="text-align:center;padding:10px;">
-    <div style="width:48px;height:48px;border-radius:50%;background:#f3f4f6;border:2px solid #111;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
-      <div class="ico-bell" style="font-size:22px;"></div>
-    </div>
-    <div style="font-weight:700;">No new notifications</div>
-    <div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div>
-  </div>`);
-};
-
-// ======= ADMIN =======
-window.showAdminTab = function(tab, btn) {
-  document.querySelectorAll('[id^="admin-tab-"]').forEach(el => el.style.display = 'none');
-  document.getElementById('admin-tab-' + tab).style.display = 'block';
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-};
-
-async function loadAdminData() {
-  const { ref, get } = window._fb;
-  try {
-    const snap = await get(ref(db, 'users'));
-    let total = 0, online = 0, totalCoins = 0;
-    if (snap.exists()) {
-      snap.forEach(child => {
-        const u = child.val(); total++; totalCoins += u.coins||0;
-        if (Date.now() - (u.lastSeen||0) < 300000) online++;
+async function applyRef(refUid,newUid){
+  try{
+    const snap=await db.ref('users/'+refUid).once('value');
+    if(snap.exists()){
+      await db.ref('users/'+refUid).update({
+        coins:firebase.database.ServerValue.increment(S.sets.refBonus),
+        referrals:firebase.database.ServerValue.increment(1),
+        referralEarnings:firebase.database.ServerValue.increment(S.sets.refBonus)
       });
+      db.ref('referrals/'+refUid).push({uid:newUid,timestamp:Date.now(),bonus:S.sets.refBonus});
     }
-    document.getElementById('admin-total-users').textContent = total;
-    document.getElementById('admin-online-users').textContent = online;
-    document.getElementById('admin-total-coins').textContent = totalCoins.toLocaleString();
-    loadAdminUsers(snap);
-  } catch(e) {}
-  try {
-    const snap = await get(ref(db, 'withdraws'));
-    let total = 0;
-    if (snap.exists()) snap.forEach(() => total++);
-    document.getElementById('admin-total-withdrawals').textContent = total;
-    loadAdminWithdrawals(snap);
-  } catch(e) {}
-  loadAdminSettings();
-  loadAdminQuizzes();
+  }catch(e){}
 }
 
-function loadAdminUsers(snap) {
-  const el = document.getElementById('admin-users-list');
-  if (!el || !snap || !snap.exists()) { if(el) el.innerHTML = '<div style="color:#888;text-align:center;">No users</div>'; return; }
-  const users = [];
-  snap.forEach(child => users.push({ id: child.key, ...child.val() }));
-  el.innerHTML = users.map(u => `<div class="card" style="padding:12px;margin-bottom:8px;">
+window.copyRef=function(){
+  navigator.clipboard.writeText(refLink()).catch(()=>{});
+  toast('Referral link copied!'); hap();
+};
+window.shareRef=function(){
+  const l=refLink();
+  if(tg) tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Join CashZilla & earn coins!'));
+  else navigator.clipboard.writeText(l);
+};
+
+// ===== ADS =====
+window.adClick=function(){
+  const now=Math.floor(Date.now()/60000);
+  if(now!==S.adMin){S.adMin=now;S.adCount=0;}
+  if(S.adCount>=2){toast('Ad limit reached. Come back later!');return;}
+  S.adCount++; hap();
+  db.ref('users/'+S.user?.uid).update({coins:firebase.database.ServerValue.increment(5)});
+  db.ref('transactions/'+S.user?.uid).push({type:'ad',amount:5,ts:Date.now()});
+  toast('+5 coins from ad!'); floatCoins();
+};
+
+// ===== NOTIFICATIONS =====
+window.showNotifs=function(){
+  popup('Notifications','<div style="text-align:center;padding:10px;"><div class="ic-bell" style="margin:0 auto 12px;width:32px;height:36px;"></div><div style="font-weight:700;">No new notifications</div><div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div></div>');
+};
+
+// ===== TELEGRAM API =====
+async function tgSend(text){
+  try{
+    await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:ADMIN_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true})
+    });
+  }catch(e){console.error('TG error:',e);}
+}
+
+// ===== ADMIN PANEL =====
+function addAdminBtn(){
+  if(document.getElementById('abtn')) return;
+  const b=document.createElement('button');
+  b.id='abtn'; b.className='btn';
+  b.style.cssText='position:fixed;bottom:85px;right:16px;z-index:200;background:#ffe94a;padding:10px 18px;font-size:13px;border-radius:50px;';
+  b.innerHTML='Admin';
+  b.onclick=openAdmin;
+  document.body.appendChild(b);
+}
+
+window.openAdmin=async function(){
+  if(!S.isAdmin){toast('Access denied!');return;}
+  document.getElementById('up').style.display='none';
+  document.getElementById('bnav') && (document.getElementById('bnav').style.display='none');
+  const ab=document.getElementById('abtn'); if(ab) ab.style.display='none';
+  document.getElementById('ap').style.display='block';
+  await loadAdminData();
+};
+
+window.adminLogout=function(){
+  document.getElementById('ap').style.display='none';
+  document.getElementById('up').style.display='block';
+  document.getElementById('bnav').style.display='flex';
+  const ab=document.getElementById('abtn'); if(ab) ab.style.display='block';
+};
+
+window.aTab=function(tab,btn){
+  document.querySelectorAll('[id^="at-"]').forEach(e=>e.style.display='none');
+  document.getElementById('at-'+tab).style.display='block';
+  document.querySelectorAll('.at').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+};
+
+async function loadAdminData(){
+  try{
+    const snap=await db.ref('users').once('value');
+    let tu=0,on=0,tc=0;
+    if(snap.exists()) snap.forEach(c=>{const u=c.val();tu++;tc+=u.coins||0;if(Date.now()-(u.lastSeen||0)<300000)on++;});
+    document.getElementById('a-tu').textContent=tu;
+    document.getElementById('a-on').textContent=on;
+    document.getElementById('a-tc').textContent=tc.toLocaleString();
+    loadAUsers(snap);
+  }catch(e){}
+  try{
+    const snap=await db.ref('withdraws').once('value');
+    let tw=0; if(snap.exists()) snap.forEach(()=>tw++);
+    document.getElementById('a-tw').textContent=tw;
+    loadAWD(snap);
+  }catch(e){}
+  loadASet(); loadAQuiz();
+}
+
+function loadAUsers(snap){
+  const el=document.getElementById('ulist'); if(!el) return;
+  if(!snap||!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;">No users</div>';return;}
+  const users=[]; snap.forEach(c=>users.push({id:c.key,...c.val()}));
+  el.innerHTML=users.map(u=>`<div class="card" style="padding:12px;margin-bottom:8px;">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:36px;height:36px;border-radius:10px;background:#f3f4f6;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">${(u.name||'U').charAt(0).toUpperCase()}</div>
-      <div style="flex:1;"><div style="font-weight:800;">${u.name||'User'}</div><div style="font-size:12px;color:#666;">${u.uid?.slice(0,10)}... · ${u.coins||0} coins</div></div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn" onclick="adminAddCoins('${u.uid}')" style="background:var(--green);color:#fff;padding:6px 10px;font-size:12px;">+Coins</button>
-        <button class="btn" onclick="adminBanUser('${u.uid}')" style="background:${u.banned?'#ef4444':'#f3f4f6'};padding:6px 10px;font-size:12px;">${u.banned?'Unban':'Ban'}</button>
+      <div style="width:38px;height:38px;border-radius:10px;background:#f3f4f6;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;">${(u.name||'U').charAt(0).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name||'User'}</div>
+        <div style="font-size:12px;color:#666;">${u.coins||0} coins · ${u.uid?.slice(0,8)}...</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn" onclick="aAddCoins('${u.uid}')" style="background:var(--green);color:#fff;padding:6px 10px;font-size:12px;">+</button>
+        <button class="btn" onclick="aBan('${u.uid}')" style="background:${u.banned?'#ef4444':'#f3f4f6'};padding:6px 10px;font-size:12px;">${u.banned?'Un':'Ban'}</button>
       </div>
     </div>
   </div>`).join('');
 }
 
-window.adminAddCoins = async function(uid) {
-  const amount = parseInt(prompt('Coins to add:') || '0');
-  if (!amount) return;
-  const { ref, update, increment } = window._fb;
-  await update(ref(db, `users/${uid}`), { coins: increment(amount) });
-  showToast(`Added ${amount} coins`);
-  loadAdminData();
+window.aAddCoins=async function(uid){
+  const n=parseInt(prompt('Coins to add:')||'0'); if(!n) return;
+  await db.ref('users/'+uid).update({coins:firebase.database.ServerValue.increment(n)});
+  toast('Added '+n+' coins'); loadAdminData();
+};
+window.aBan=async function(uid){
+  const snap=await db.ref('users/'+uid+'/banned').once('value');
+  const b=snap.val();
+  await db.ref('users/'+uid).update({banned:!b});
+  toast(b?'Unbanned':'Banned'); loadAdminData();
+};
+window.searchUsers=function(){
+  const q=document.getElementById('usearch').value.toLowerCase();
+  document.querySelectorAll('#ulist .card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'block':'none');
 };
 
-window.adminBanUser = async function(uid) {
-  const { ref, get, update } = window._fb;
-  const snap = await get(ref(db, `users/${uid}/banned`));
-  const banned = snap.val();
-  await update(ref(db, `users/${uid}`), { banned: !banned });
-  showToast(banned ? 'User unbanned' : 'User banned');
-  loadAdminData();
-};
-
-window.adminSearchUser = function() {
-  const q = document.getElementById('user-search').value.toLowerCase();
-  document.querySelectorAll('#admin-users-list .card').forEach(card => {
-    card.style.display = card.textContent.toLowerCase().includes(q) ? 'block' : 'none';
-  });
-};
-
-function loadAdminQuizzes() {
-  const el = document.getElementById('admin-quizzes-list');
-  if (!el) return;
-  el.innerHTML = window.APP.quizzes.map(q => `<div class="card" style="padding:12px;margin-bottom:8px;">
+function loadAQuiz(){
+  const el=document.getElementById('qlist'); if(!el) return;
+  el.innerHTML=S.quizzes.map(q=>`<div class="card" style="padding:12px;margin-bottom:8px;">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;">${getCategoryIcon(q.category)}</div>
-      <div style="flex:1;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.questions?.length||0} questions · +${q.reward} coins</div></div>
-      <button class="btn" onclick="adminDeleteQuiz('${q.id}')" style="background:#ef4444;color:#fff;padding:6px 10px;font-size:12px;">Del</button>
+      <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.qs?.length||0} q · +${q.reward} coins</div></div>
+      <button class="btn" onclick="aDelQ('${q.id}')" style="background:#ef4444;color:#fff;padding:6px 10px;font-size:12px;flex-shrink:0;">Del</button>
     </div>
   </div>`).join('');
 }
 
-window.adminDeleteQuiz = async function(id) {
-  if (!confirm('Delete this quiz?')) return;
-  const { ref, update } = window._fb;
-  await update(ref(db, `quizzes/${id}`), { deleted: true });
-  window.APP.quizzes = window.APP.quizzes.filter(q => q.id !== id);
-  loadAdminQuizzes();
-  showToast('Quiz deleted');
+window.aDelQ=async function(id){
+  if(!confirm('Delete quiz?')) return;
+  await db.ref('quizzes/'+id).update({deleted:true});
+  S.quizzes=S.quizzes.filter(q=>q.id!==id);
+  loadAQuiz(); toast('Quiz deleted');
 };
-
-window.showCreateQuizForm = function() {
-  showPopup('Create Quiz', `<div>
-    <input id="new-quiz-title" type="text" placeholder="Quiz Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-category" type="text" placeholder="Category" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-reward" type="number" placeholder="Reward (coins)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <input id="new-quiz-time" type="number" placeholder="Time per question (sec)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;"/>
-    <button class="btn" onclick="submitNewQuiz()" style="background:var(--green);color:#fff;width:100%;padding:12px;">Create Quiz</button>
+window.showNewQuiz=function(){
+  popup('New Quiz',`<div>
+    <input id="nqt" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
+    <input id="nqc" type="text" placeholder="Category" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
+    <input id="nqr" type="number" placeholder="Reward coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
+    <input id="nqtm" type="number" placeholder="Time per Q (sec)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
+    <button class="btn" onclick="saveNewQ()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Create</button>
   </div>`);
 };
-
-window.submitNewQuiz = async function() {
-  const title = document.getElementById('new-quiz-title')?.value;
-  const category = document.getElementById('new-quiz-category')?.value;
-  const reward = parseInt(document.getElementById('new-quiz-reward')?.value) || 50;
-  const time = parseInt(document.getElementById('new-quiz-time')?.value) || 30;
-  if (!title) { showToast('Enter a title!'); return; }
-  const { ref, push } = window._fb;
-  await push(ref(db, 'quizzes'), { title, category, reward, time, difficulty:'Medium', questions:[] });
-  showToast('Quiz created!');
-  closePopup();
-  loadAdminQuizzes();
+window.saveNewQ=async function(){
+  const t=document.getElementById('nqt')?.value?.trim();
+  if(!t){toast('Enter a title!');return;}
+  await db.ref('quizzes').push({
+    title:t, cat:document.getElementById('nqc')?.value||'General',
+    reward:parseInt(document.getElementById('nqr')?.value)||50,
+    time:parseInt(document.getElementById('nqtm')?.value)||30,
+    diff:'Medium', qs:[]
+  });
+  toast('Quiz created!'); closePopup(); loadAQuiz();
 };
 
-function loadAdminWithdrawals(snap) {
-  const el = document.getElementById('admin-withdrawals-list');
-  if (!el) return;
-  if (!snap || !snap.exists()) { el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">No withdrawals</div>'; return; }
-  const withdraws = [];
-  snap.forEach(child => withdraws.push({ id: child.key, ...child.val() }));
-  withdraws.sort((a,b) => b.timestamp - a.timestamp);
-  const sc = { pending:'#fef9c3', approved:'#dcfce7', rejected:'#fee2e2' };
-  el.innerHTML = withdraws.map(w => `<div class="card" style="padding:12px;margin-bottom:8px;">
+function loadAWD(snap){
+  const el=document.getElementById('wdlist'); if(!el) return;
+  if(!snap||!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals</div>';return;}
+  const all=[]; snap.forEach(c=>all.push({id:c.key,...c.val()}));
+  all.sort((a,b)=>b.ts-a.ts);
+  const sc={pending:'#fef9c3',approved:'#dcfce7',rejected:'#fee2e2'};
+  el.innerHTML=all.map(w=>`<div class="card" style="padding:12px;margin-bottom:8px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
       <div><div style="font-weight:800;">${w.userName||'User'}</div><div style="font-size:12px;color:#666;">${w.method?.toUpperCase()} · ${w.amount} coins</div></div>
-      <span style="background:${sc[w.status]||'#f3f4f6'};border:1.5px solid #111;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">${w.status?.toUpperCase()}</span>
+      <span style="background:${sc[w.status]||'#f3f4f6'};border:1.5px solid #111;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">${(w.status||'PENDING').toUpperCase()}</span>
     </div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px;word-break:break-all;">Address: ${w.address}</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px;word-break:break-all;">${w.address}</div>
     ${w.status==='pending'?`<div style="display:flex;gap:8px;">
-      <button class="btn" onclick="adminApproveWithdraw('${w.id}')" style="flex:1;background:var(--green);color:#fff;padding:8px;font-size:13px;">Approve</button>
-      <button class="btn" onclick="adminRejectWithdraw('${w.id}')" style="flex:1;background:#ef4444;color:#fff;padding:8px;font-size:13px;">Reject</button>
+      <button class="btn" onclick="aApp('${w.id}')" style="flex:1;background:var(--green);color:#fff;padding:8px;font-size:13px;">Approve</button>
+      <button class="btn" onclick="aRej('${w.id}')" style="flex:1;background:#ef4444;color:#fff;padding:8px;font-size:13px;">Reject</button>
     </div>`:''}
   </div>`).join('');
 }
 
-window.adminApproveWithdraw = async function(id) {
-  const { ref, update, get } = window._fb;
-  const snap = await get(ref(db, `withdraws/${id}`));
-  if (snap.exists()) {
-    const w = snap.val();
-    await update(ref(db, `withdraws/${id}`), { status: 'approved' });
-    await sendTelegramMessage(ADMIN_CHAT_ID, `✅ <b>Withdrawal Approved</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins\nMethod: ${w.method?.toUpperCase()}\nAddress: ${w.address}`);
+window.aApp=async function(id){
+  const snap=await db.ref('withdraws/'+id).once('value');
+  if(snap.exists()){
+    const w=snap.val();
+    await db.ref('withdraws/'+id).update({status:'approved'});
+    tgSend(`✅ <b>Withdrawal Approved</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins\nMethod: ${w.method?.toUpperCase()}\nAddress: ${w.address}`);
   }
-  showToast('Approved!');
-  loadAdminData();
+  toast('Approved!'); loadAdminData();
+};
+window.aRej=async function(id){
+  const snap=await db.ref('withdraws/'+id).once('value');
+  if(snap.exists()){
+    const w=snap.val();
+    await db.ref('withdraws/'+id).update({status:'rejected'});
+    await db.ref('users/'+w.uid).update({coins:firebase.database.ServerValue.increment(w.amount)});
+    tgSend(`❌ <b>Withdrawal Rejected</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins refunded`);
+  }
+  toast('Rejected & refunded!'); loadAdminData();
 };
 
-window.adminRejectWithdraw = async function(id) {
-  const { ref, update, get, increment } = window._fb;
-  const snap = await get(ref(db, `withdraws/${id}`));
-  if (snap.exists()) {
-    const w = snap.val();
-    await update(ref(db, `withdraws/${id}`), { status: 'rejected' });
-    await update(ref(db, `users/${w.uid}`), { coins: increment(w.amount) });
-    await sendTelegramMessage(ADMIN_CHAT_ID, `❌ <b>Withdrawal Rejected</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins refunded`);
-  }
-  showToast('Rejected & refunded!');
-  loadAdminData();
-};
-
-function loadAdminSettings() {
-  const s = window.APP.settings;
-  const fields = { 'coin-usdt': s.coinUsdt, 'coin-usd': s.coinUsd, 'coin-bdt': s.coinBdt, 'min-withdraw': s.minWithdraw, 'referral-bonus': s.referralBonus };
-  Object.entries(fields).forEach(([id, val]) => { const el = document.getElementById(id); if (el) el.value = val; });
+function loadASet(){
+  const s=S.sets;
+  const flds={'cusd':s.coinUsdt,'cusd2':s.coinUsd,'cbdt':s.coinBdt,'mwd':s.minWd,'rb':s.refBonus};
+  Object.entries(flds).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v;});
 }
-
-window.saveSettings = async function() {
-  const { ref, set } = window._fb;
-  const settings = {
-    coinUsdt: parseInt(document.getElementById('coin-usdt').value)||10000,
-    coinUsd: parseInt(document.getElementById('coin-usd').value)||10000,
-    coinBdt: parseInt(document.getElementById('coin-bdt').value)||833,
-    minWithdraw: parseInt(document.getElementById('min-withdraw').value)||5000,
-    referralBonus: parseInt(document.getElementById('referral-bonus').value)||500,
-    adsgram: window.APP.adsgram,
-    monetag: window.APP.monetag,
-  };
-  await set(ref(db, 'settings'), settings);
-  window.APP.settings = settings;
-  showToast('Settings saved!');
+window.saveSet=async function(){
+  const g=id=>parseInt(document.getElementById(id)?.value)||0;
+  const s={coinUsdt:g('cusd')||10000,coinUsd:g('cusd2')||10000,coinBdt:g('cbdt')||833,minWd:g('mwd')||5000,refBonus:g('rb')||500};
+  await db.ref('settings').set(s);
+  S.sets=s; toast('Settings saved!');
 };
 
-window.saveAdsgramConfig = async function() {
-  const { ref, update } = window._fb;
-  window.APP.adsgram.blockId = document.getElementById('adsgram-block-id')?.value || '';
-  window.APP.adsgram.zoneId = document.getElementById('adsgram-zone-id')?.value || '';
-  await update(ref(db, 'settings/adsgram'), window.APP.adsgram);
-  showToast('Adsgram saved!');
+window.sendTGNotif=async function(){
+  const title=document.getElementById('ntitle').value.trim();
+  const msg=document.getElementById('nmsg').value.trim();
+  const type=document.getElementById('nt').value;
+  const st=document.getElementById('nstatus');
+  if(!title||!msg){toast('Fill all fields!');return;}
+  const icons={info:'ℹ️',bonus:'💰',warning:'⚠️',update:'🔔'};
+  st.textContent='Sending...'; st.style.color='#888';
+  try{
+    const r=await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:ADMIN_CHAT,parse_mode:'HTML',disable_web_page_preview:true,
+        text:`${icons[type]||'ℹ️'} <b>CashZilla Notification</b>\n\n<b>${title}</b>\n\n${msg}\n\n<i>— CashZilla Team</i>`})
+    });
+    const d=await r.json();
+    if(d.ok){
+      st.textContent='Sent successfully!'; st.style.color='#22c55e';
+      document.getElementById('ntitle').value='';
+      document.getElementById('nmsg').value='';
+      toast('Sent to Telegram!');
+    } else { st.textContent='Failed: '+d.description; st.style.color='#ef4444'; }
+  }catch(e){ st.textContent='Network error'; st.style.color='#ef4444'; }
+};
+window.sendInApp=async function(){
+  const t=document.getElementById('iatitle').value.trim();
+  const m=document.getElementById('iamsg').value.trim();
+  if(!t||!m){toast('Fill all fields!');return;}
+  await db.ref('notifications').push({title:t,message:m,ts:Date.now()});
+  toast('In-app notification sent!');
+  document.getElementById('iatitle').value='';
+  document.getElementById('iamsg').value='';
 };
 
-window.saveMonetag = async function() {
-  const { ref, update } = window._fb;
-  window.APP.monetag.zoneId = document.getElementById('monetag-zone-id')?.value || '';
-  window.APP.monetag.smartlink = document.getElementById('monetag-smartlink')?.value || '';
-  await update(ref(db, 'settings/monetag'), window.APP.monetag);
-  showToast('Monetag saved!');
-};
-
-// ======= POPUP =======
-window.showPopup = function(title, html) {
-  document.getElementById('popup-box').innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+// ===== POPUP =====
+window.popup=function(title,html){
+  document.getElementById('pbox').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
     <div style="font-weight:800;font-size:18px;">${title}</div>
-    <button onclick="closePopup()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;">×</button>
+    <button onclick="closePopup()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:700;line-height:1;">×</button>
   </div>${html}`;
-  document.getElementById('popup-overlay').style.display = 'flex';
+  document.getElementById('pov').style.display='flex';
 };
-window.closePopup = () => { document.getElementById('popup-overlay').style.display = 'none'; };
+window.closePopup=()=>document.getElementById('pov').style.display='none';
 
-function showWelcomePopup(u) {
-  showPopup('Welcome!', `<div style="text-align:center;">
+function welcomePopup(u){
+  popup('Welcome to CashZilla!',`<div style="text-align:center;">
     <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(145deg,#f59e0b,#ffe94a);border:4px solid #92400e;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#92400e;margin:0 auto 12px;">$</div>
-    <div class="fredoka" style="font-size:24px;">Welcome, ${u.name?.split(' ')[0]}!</div>
-    <div style="color:#666;margin:10px 0;font-weight:600;">You received 500 welcome coins!</div>
-    <div class="balance-card" style="margin:14px 0;text-align:left;"><div style="font-size:13px;opacity:.8;">WELCOME BONUS</div><div class="fredoka" style="font-size:36px;">+500 Coins</div></div>
+    <div class="fredoka" style="font-size:22px;">Welcome, ${(u.name||'User').split(' ')[0]}!</div>
+    <div style="color:#666;margin:10px 0;font-weight:600;">You received a welcome bonus!</div>
+    <div class="balcard" style="margin:14px 0;text-align:left;">
+      <div style="font-size:13px;opacity:.8;">WELCOME BONUS</div>
+      <div class="fredoka" style="font-size:36px;">+500 Coins</div>
+    </div>
     <button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:14px;font-size:16px;">Start Earning!</button>
   </div>`);
 }
 
-// ======= TOAST =======
-window.showToast = function(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+// ===== TOAST =====
+window.toast=function(msg){
+  const e=document.getElementById('toast');
+  e.textContent=msg; e.classList.add('on');
+  setTimeout(()=>e.classList.remove('on'),3000);
 };
 
-// ======= CONFETTI =======
-window.spawnConfetti = function() {
-  const colors = ['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
-  for (let i = 0; i < 40; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'confetti-piece';
-      el.style.left = Math.random()*100 + 'vw';
-      el.style.background = colors[Math.floor(Math.random()*colors.length)];
-      el.style.animationDuration = (1.5+Math.random()) + 's';
-      el.style.animationDelay = Math.random()*.5 + 's';
-      el.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
-    }, i*30);
-  }
+// ===== CONFETTI =====
+window.confetti=function(){
+  const cs=['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
+  for(let i=0;i<40;i++) setTimeout(()=>{
+    const e=document.createElement('div');
+    e.className='cf';
+    e.style.left=Math.random()*100+'vw';
+    e.style.background=cs[Math.floor(Math.random()*cs.length)];
+    e.style.animationDuration=(1.5+Math.random())+'s';
+    e.style.borderRadius=Math.random()>.5?'50%':'2px';
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),3000);
+  },i*30);
 };
 
-window.spawnFloatingCoins = function() {
-  for (let i = 0; i < 5; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'floating-coin';
-      el.style.left = (30+Math.random()*40) + 'vw';
-      el.style.top = '50vh';
-      // CSS coin instead of emoji
-      el.style.width = '20px'; el.style.height = '20px';
-      el.style.borderRadius = '50%';
-      el.style.background = 'linear-gradient(145deg,#ffe94a,#f59e0b)';
-      el.style.border = '2px solid #92400e';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1500);
-    }, i*150);
-  }
+window.floatCoins=function(){
+  for(let i=0;i<5;i++) setTimeout(()=>{
+    const e=document.createElement('div');
+    e.className='fc';
+    e.style.left=(30+Math.random()*40)+'vw';
+    e.style.top='50vh';
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),1500);
+  },i*120);
 };
-
-console.log('CashZilla loaded!');
 </script>
 </body>
 </html>
