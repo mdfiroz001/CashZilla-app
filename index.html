@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>CashZilla</title>
+<title>CashZilla — Earn Coins</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#f7f8ff;--card:#fff;--bd:#111;
   --cyan:#00d4e8;--yellow:#ffe94a;--purple:#a855f7;
-  --pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;
+  --pink:#ff6eb4;--green:#22c55e;--orange:#ff7b39;--red:#ef4444;
   --sh:4px 4px 0 #111;--sh2:6px 6px 0 #111;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',sans-serif;}
@@ -23,21 +23,20 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 @keyframes lb{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
 .ld{display:flex;gap:8px;margin-top:24px;}
 .ldot{width:10px;height:10px;border-radius:50%;background:#111;animation:dp 1.2s ease-in-out infinite;}
-.ldot:nth-child(2){animation-delay:.2s;}
-.ldot:nth-child(3){animation-delay:.4s;}
+.ldot:nth-child(2){animation-delay:.2s;}.ldot:nth-child(3){animation-delay:.4s;}
 @keyframes dp{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
 .lpb{width:200px;height:6px;background:rgba(0,0,0,.15);border-radius:6px;margin-top:16px;overflow:hidden;}
 .lpbf{height:100%;background:#111;border-radius:6px;animation:lpf 5s linear forwards;}
 @keyframes lpf{from{width:0%;}to{width:100%;}}
 
-/* CARDS & BUTTONS */
+/* BASE */
 .card{background:#fff;border:3px solid #111;border-radius:20px;box-shadow:var(--sh);}
-.btn{border:3px solid #111;border-radius:14px;font-weight:800;box-shadow:var(--sh);cursor:pointer;transition:transform .1s,box-shadow .1s;display:inline-flex;align-items:center;justify-content:center;}
+.btn{border:3px solid #111;border-radius:14px;font-weight:800;box-shadow:var(--sh);cursor:pointer;transition:transform .1s,box-shadow .1s;display:inline-flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;}
 .btn:active{transform:translate(3px,3px);box-shadow:none;}
 
 /* NAV */
 #bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #111;display:flex;z-index:100;}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;gap:4px;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 14px;cursor:pointer;gap:4px;}
 .ni.active{background:var(--yellow);}
 .nl{font-size:10px;font-weight:800;color:#111;}
 
@@ -50,21 +49,9 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 .ic-brain::after{content:'';position:absolute;bottom:0;left:7px;width:8px;height:6px;border-radius:0 0 4px 4px;background:#111;}
 .ic-wheel{width:22px;height:22px;border-radius:50%;border:3px solid #111;background:conic-gradient(#00d4e8 0 25%,#ff6eb4 25% 50%,#ffe94a 50% 75%,#22c55e 75% 100%);position:relative;}
 .ic-wheel::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#111;}
-.ic-ref{width:24px;height:20px;position:relative;}
-.ic-ref::before{content:'';position:absolute;top:0;left:1px;width:9px;height:9px;border-radius:50%;background:#111;}
-.ic-ref::after{content:'';position:absolute;bottom:0;left:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#111;}
-.ic-ref2{position:absolute;top:0;right:1px;width:9px;height:9px;border-radius:50%;background:#a855f7;border:2px solid #111;}
-.ic-ref3{position:absolute;bottom:0;right:0;width:11px;height:8px;border-radius:5px 5px 0 0;background:#a855f7;border:2px solid #111;}
 .ic-cash{width:22px;height:18px;position:relative;}
 .ic-cash::before{content:'';position:absolute;top:50%;left:0;right:8px;height:3px;background:#22c55e;transform:translateY(-50%);border-radius:2px;}
 .ic-cash::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #22c55e;}
-.ic-coin{width:1em;height:1em;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;display:inline-flex;align-items:center;justify-content:center;font-size:.55em;font-weight:900;color:#92400e;flex-shrink:0;}
-.ic-check{width:1em;height:1em;border-radius:50%;background:#22c55e;border:2px solid #166534;position:relative;flex-shrink:0;}
-.ic-check::after{content:'';position:absolute;left:22%;top:48%;width:33%;height:18%;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);}
-.ic-x{width:1em;height:1em;border-radius:50%;background:#ef4444;border:2px solid #991b1b;position:relative;flex-shrink:0;}
-.ic-x::before,.ic-x::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2.5px;background:#fff;border-radius:2px;}
-.ic-x::before{transform:translate(-50%,-50%) rotate(45deg);}
-.ic-x::after{transform:translate(-50%,-50%) rotate(-45deg);}
 .ic-bell{width:20px;height:22px;position:relative;}
 .ic-bell::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:14px;height:12px;border-radius:7px 7px 0 0;background:#111;}
 .ic-bell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:8px;height:5px;border-radius:0 0 4px 4px;background:#111;}
@@ -74,14 +61,19 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 .ic-gift{width:20px;height:20px;position:relative;}
 .ic-gift::before{content:'';position:absolute;top:4px;left:1px;width:18px;height:14px;background:#ff6eb4;border:2px solid #9d174d;border-radius:2px;}
 .ic-gift::after{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:2px;height:14px;background:#9d174d;}
-.ic-shield{width:18px;height:22px;background:#a855f7;border:2px solid #4c1d95;clip-path:polygon(50% 0%,100% 20%,100% 60%,50% 100%,0% 60%,0% 20%);}
 .ic-star{width:20px;height:20px;background:#ffe94a;border:2px solid #92400e;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+.ic-check{width:1em;height:1em;border-radius:50%;background:#22c55e;border:2px solid #166534;position:relative;flex-shrink:0;}
+.ic-check::after{content:'';position:absolute;left:22%;top:48%;width:33%;height:18%;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);}
+.ic-x{width:1em;height:1em;border-radius:50%;background:#ef4444;border:2px solid #991b1b;position:relative;flex-shrink:0;}
+.ic-x::before,.ic-x::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2.5px;background:#fff;border-radius:2px;}
+.ic-x::before{transform:translate(-50%,-50%) rotate(45deg);}
+.ic-x::after{transform:translate(-50%,-50%) rotate(-45deg);}
 
 /* BALANCE CARD */
 .balcard{background:linear-gradient(135deg,#00d4e8,#a855f7);border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);color:#fff;padding:20px;}
 
 /* QUIZ */
-.ans-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;width:100%;transition:transform .1s;}
+.ans-btn{border:3px solid #111;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;background:#fff;box-shadow:3px 3px 0 #111;text-align:left;width:100%;transition:transform .1s;font-family:'Nunito',sans-serif;}
 .ans-btn:hover{transform:translate(-2px,-2px);}
 .ans-btn.ok{background:#bbf7d0;border-color:#16a34a;}
 .ans-btn.no{background:#fecaca;border-color:#dc2626;}
@@ -120,46 +112,29 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 .fc{position:fixed;width:18px;height:18px;border-radius:50%;background:linear-gradient(145deg,#ffe94a,#f59e0b);border:2px solid #92400e;pointer-events:none;animation:fu 1.2s ease-out forwards;z-index:8000;}
 @keyframes fu{from{transform:translateY(0);opacity:1;}to{transform:translateY(-110px);opacity:0;}}
 
-/* SPINNER */
-.spin{width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:ro .7s linear infinite;}
-@keyframes ro{to{transform:rotate(360deg);}}
-
-/* ADMIN */
-#ap{display:none;}
-.at{padding:10px 16px;border:2px solid #111;border-radius:10px;cursor:pointer;font-weight:700;background:#f3f4f6;font-size:13px;}
-.at.active{background:var(--yellow);}
-.asc{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:var(--sh);padding:16px;}
-
-/* AD FRAME */
-.adf{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:var(--sh);}
-
-/* ---- HEADER AD FRAME ---- */
-.header-ad-frame{width:100%;min-height:60px;border-bottom:3px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-.header-ad-label{position:absolute;top:3px;left:6px;background:var(--yellow);border:1.5px solid #111;border-radius:4px;font-size:9px;font-weight:900;padding:1px 5px;z-index:2;}
-
-/* ---- SPIN WHEEL (image-like style) ---- */
-.spin-page-wrapper{padding:16px;text-align:center;}
-.spin-header-card{background:linear-gradient(135deg,#7c3aed,#a855f7);border:3px solid #111;border-radius:20px;box-shadow:var(--sh2);padding:16px;margin-bottom:18px;color:#fff;display:flex;align-items:center;gap:12px;}
-.spin-stats-row{display:flex;gap:8px;margin-top:10px;}
-.spin-stat-badge{background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 14px;font-weight:800;font-size:13px;color:#111;display:flex;align-items:center;gap:5px;}
-.wheel-container{position:relative;display:inline-block;margin-bottom:10px;}
-.wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid #111;}
-.wheel-pointer::after{content:'';position:absolute;top:-24px;left:-10px;width:20px;height:12px;background:#ef4444;border:2px solid #111;border-radius:4px 4px 0 0;}
+/* SPIN */
+.spin-hdr{background:linear-gradient(135deg,#7c3aed,#a855f7);border:3px solid #111;border-radius:20px;box-shadow:var(--sh2);padding:16px;margin-bottom:18px;color:#fff;display:flex;align-items:center;gap:12px;}
+.stat-bdg{background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 14px;font-weight:800;font-size:13px;color:#111;display:flex;align-items:center;gap:5px;}
+.wheel-wrap{position:relative;display:inline-block;margin-bottom:10px;}
+.wheel-ptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid #111;}
+.wheel-ptr::after{content:'';position:absolute;top:-24px;left:-10px;width:20px;height:12px;background:#ef4444;border:2px solid #111;border-radius:4px 4px 0 0;}
 #wcanvas{border:5px solid #111;border-radius:50%;box-shadow:0 8px 0 #111,var(--sh2);display:block;}
-.spin-btn-main{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;margin-top:12px;letter-spacing:.5px;}
-.spin-history-card{margin-top:16px;background:#fff;border:3px solid #111;border-radius:20px;box-shadow:var(--sh);padding:16px;text-align:left;}
 
-/* ---- REFER PAGE (image-like) ---- */
+/* REFER */
 .refer-hero{background:linear-gradient(135deg,#111,#1f2937);border:3px solid #111;border-radius:24px;box-shadow:var(--sh2);color:#fff;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
-.refer-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05);}
 .refer-link-box{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:3px solid #111;border-radius:20px;box-shadow:var(--sh);padding:16px;margin-bottom:16px;}
-.refer-copy-row{display:flex;gap:8px;margin-top:8px;}
-.refer-copy-row input{flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;}
-.refer-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.refer-stat-card{background:#fff;border:3px solid #111;border-radius:18px;box-shadow:var(--sh);padding:16px;text-align:center;}
 .how-step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;}
 .how-step:last-child{border-bottom:none;}
 .step-num{width:36px;height:36px;border-radius:10px;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;}
+
+/* AD FRAME */
+.header-ad-frame{width:100%;min-height:60px;border-bottom:3px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.ad-label{position:absolute;top:3px;left:6px;background:var(--yellow);border:1.5px solid #111;border-radius:4px;font-size:9px;font-weight:900;padding:1px 5px;}
+.adf{border:3px dashed #111;border-radius:20px;background:#fff;padding:14px;box-shadow:var(--sh);}
+
+/* SPINNER */
+.spin-loader{width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--purple);border-radius:50%;animation:ro .7s linear infinite;}
+@keyframes ro{to{transform:rotate(360deg);}}
 
 ::-webkit-scrollbar{width:0;}
 </style>
@@ -178,198 +153,17 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
   <div class="ld"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
 </div>
 
-<!-- ====== ADMIN PANEL ====== -->
-<div id="ap">
-  <div style="background:linear-gradient(135deg,#111,#1f2937);padding:18px;color:#fff;position:sticky;top:0;z-index:50;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:42px;height:42px;border-radius:12px;background:#ffe94a;display:flex;align-items:center;justify-content:center;">
-        <div class="ic-shield"></div>
-      </div>
-      <div>
-        <div class="fredoka" style="font-size:20px;">Admin Panel</div>
-        <div style="font-size:11px;opacity:.6;">CashZilla Control</div>
-      </div>
-      <button onclick="adminLogout()" class="btn" style="margin-left:auto;background:#ef4444;color:#fff;padding:8px 14px;font-size:13px;">Logout</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px;">
-      <button class="at active" onclick="aTab('dash',this)">Dashboard</button>
-      <button class="at" onclick="aTab('users',this)">Users</button>
-      <button class="at" onclick="aTab('quiz',this)">Quizzes</button>
-      <button class="at" onclick="aTab('wd',this)">Withdrawals</button>
-      <button class="at" onclick="aTab('ads',this)">Ads</button>
-      <button class="at" onclick="aTab('notify',this)">Notify</button>
-      <button class="at" onclick="aTab('sets',this)">Settings</button>
-    </div>
-  </div>
-
-  <div style="padding:16px;">
-    <!-- DASH -->
-    <div id="at-dash">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="asc" style="background:linear-gradient(135deg,#e0f7fa,#b2ebf2);">
-          <div style="font-size:11px;font-weight:700;color:#006064;">TOTAL USERS</div>
-          <div class="fredoka" style="font-size:30px;" id="a-tu">0</div>
-        </div>
-        <div class="asc" style="background:linear-gradient(135deg,#fffde7,#fff176);">
-          <div style="font-size:11px;font-weight:700;color:#f57f17;">ONLINE</div>
-          <div class="fredoka" style="font-size:30px;" id="a-on">0</div>
-        </div>
-        <div class="asc" style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);">
-          <div style="font-size:11px;font-weight:700;color:#4a148c;">TOTAL COINS</div>
-          <div class="fredoka" style="font-size:30px;" id="a-tc">0</div>
-        </div>
-        <div class="asc" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);">
-          <div style="font-size:11px;font-weight:700;color:#880e4f;">WITHDRAWALS</div>
-          <div class="fredoka" style="font-size:30px;" id="a-tw">0</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- USERS -->
-    <div id="at-users" style="display:none;">
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input id="usearch" type="text" placeholder="Search..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;font-size:14px;"/>
-        <button class="btn" onclick="searchUsers()" style="background:var(--yellow);padding:10px 14px;">Go</button>
-      </div>
-      <div id="ulist"></div>
-    </div>
-
-    <!-- QUIZZES -->
-    <div id="at-quiz" style="display:none;">
-      <button class="btn" onclick="showNewQuiz()" style="background:var(--green);color:#fff;padding:12px;width:100%;margin-bottom:14px;font-size:15px;">+ New Quiz</button>
-      <div id="qlist"></div>
-    </div>
-
-    <!-- WITHDRAWALS -->
-    <div id="at-wd" style="display:none;"><div id="wdlist"></div></div>
-
-    <!-- ADS MANAGEMENT -->
-    <div id="at-ads" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;font-size:16px;margin-bottom:4px;">Ad Network Settings</div>
-        <div style="font-size:12px;color:#666;font-weight:600;margin-bottom:14px;">Active network ads will show automatically</div>
-
-        <!-- Active Network Selector -->
-        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">Active Ad Network</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-          <div class="mc sel" id="net-none" data-net="none" onclick="selNet('none')">
-            <div style="font-weight:800;font-size:13px;">None (Off)</div>
-            <div style="font-size:11px;color:#666;">Disable all ads</div>
-          </div>
-          <div class="mc" id="net-monetag" data-net="monetag" onclick="selNet('monetag')">
-            <div style="font-weight:800;font-size:13px;">Monetag</div>
-            <div style="font-size:11px;color:#666;">Zone ID based</div>
-          </div>
-          <div class="mc" id="net-adsgram" data-net="adsgram" onclick="selNet('adsgram')">
-            <div style="font-weight:800;font-size:13px;">Adsgram</div>
-            <div style="font-size:11px;color:#666;">Block ID based</div>
-          </div>
-        </div>
-
-        <!-- Monetag Settings -->
-        <div id="monetag-settings" style="display:none;">
-          <div style="font-weight:800;font-size:15px;margin-bottom:10px;color:#a855f7;">🟣 Monetag Settings</div>
-          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Zone ID</label><input id="monetag-zone" type="text" placeholder="e.g. 9288208" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-          <div style="font-size:11px;color:#666;font-weight:600;margin-bottom:10px;">Script: //libtl.com/sdk.js?zone=ZONE_ID</div>
-          <div style="font-weight:700;font-size:13px;margin-bottom:8px;">Ad Types</div>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
-            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-banner" style="width:16px;height:16px;"> Banner Ad (Header)</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-popup" style="width:16px;height:16px;"> Pop-up Ad</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="mg-interstitial" style="width:16px;height:16px;"> Interstitial Ad</label>
-          </div>
-        </div>
-
-        <!-- Adsgram Settings -->
-        <div id="adsgram-settings" style="display:none;">
-          <div style="font-weight:800;font-size:15px;margin-bottom:10px;color:#00d4e8;">🔵 Adsgram Settings</div>
-          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Block ID</label><input id="adsgram-block" type="text" placeholder="e.g. 12345" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-          <div style="font-size:11px;color:#666;font-weight:600;margin-bottom:10px;">Rewarded video ads via Adsgram SDK</div>
-          <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Reward Coins per Ad View</label><input id="adsgram-reward" type="number" placeholder="e.g. 10" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        </div>
-
-        <!-- Banner Ad URL -->
-        <div id="banner-settings" style="margin-bottom:10px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Banner Ad (Header) URL/HTML</div>
-          <textarea id="banner-html" rows="3" placeholder="<a href='...'><img src='...'></a> or any HTML" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;"></textarea>
-        </div>
-
-        <!-- 1-Click Ad URL -->
-        <div style="margin-bottom:14px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">1-Click Ad URL</div>
-          <input id="oneclick-url" type="text" placeholder="https://..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;"/>
-          <div style="font-size:11px;color:#666;margin-top:4px;font-weight:600;">Opens when user taps the ad area on home</div>
-        </div>
-
-        <!-- Pop-up Ad HTML -->
-        <div style="margin-bottom:14px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Pop-up Ad HTML</div>
-          <textarea id="popup-html" rows="3" placeholder="HTML content for popup ad..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:13px;resize:none;"></textarea>
-          <div style="font-size:11px;color:#666;margin-top:4px;font-weight:600;">Shown every 3 minutes to users</div>
-        </div>
-
-        <button class="btn" onclick="saveAdSettings()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">💾 Save Ad Settings</button>
-      </div>
-
-      <!-- Ad Preview -->
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">Ad Preview</div>
-        <div id="ad-preview-area" style="border:2px dashed #ccc;border-radius:12px;padding:12px;min-height:60px;background:#f9f9f9;">
-          <div style="color:#888;text-align:center;font-weight:600;font-size:13px;">Save settings to preview</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTIFY -->
-    <div id="at-notify" style="display:none;">
-      <div class="card" style="padding:16px;margin-bottom:12px;">
-        <div style="font-weight:800;font-size:16px;margin-bottom:4px;">Telegram Notification</div>
-        <div style="font-size:12px;color:#666;font-weight:600;margin-bottom:12px;">Direct message to admin Telegram chat</div>
-        <select id="nt" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-weight:600;font-size:14px;margin-bottom:8px;">
-          <option value="info">Info</option>
-          <option value="bonus">Bonus Alert</option>
-          <option value="warning">Warning</option>
-          <option value="update">Update</option>
-        </select>
-        <input id="ntitle" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
-        <textarea id="nmsg" rows="4" placeholder="Message..." style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;margin-bottom:8px;"></textarea>
-        <button class="btn" onclick="sendTGNotif()" style="background:var(--cyan);width:100%;padding:12px;font-size:15px;">Send to Telegram</button>
-        <div id="nstatus" style="text-align:center;font-size:13px;font-weight:600;margin-top:8px;"></div>
-      </div>
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:10px;">In-App Notification</div>
-        <input id="iatitle" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px;font-weight:600;"/>
-        <textarea id="iamsg" rows="3" placeholder="Message" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;font-size:14px;resize:none;"></textarea>
-        <button class="btn" onclick="sendInApp()" style="background:#a855f7;color:#fff;width:100%;padding:12px;margin-top:8px;font-size:15px;">Send In-App</button>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div id="at-sets" style="display:none;">
-      <div class="card" style="padding:16px;">
-        <div style="font-weight:800;margin-bottom:12px;">Coin Conversion</div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USDT</label><input id="cusd" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 USD</label><input id="cusd2" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Coins per 1 BDT</label><input id="cbdt" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:8px;"><label style="font-weight:700;font-size:13px;">Min Withdraw (Coins)</label><input id="mwd" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <div style="margin-bottom:14px;"><label style="font-weight:700;font-size:13px;">Referral Bonus (Coins)</label><input id="rb" type="number" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-top:4px;font-weight:600;"/></div>
-        <button class="btn" onclick="saveSet()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ====== USER PANEL ====== -->
+<!-- USER PANEL -->
 <div id="up" style="display:none;">
 
   <!-- HOME -->
   <div id="pg-home" class="pg on">
-    <!-- Header Ad Frame -->
     <div class="header-ad-frame" id="header-ad-home" style="display:none;">
-      <span class="header-ad-label">AD</span>
+      <span class="ad-label">AD</span>
       <div id="header-ad-content-home" style="width:100%;text-align:center;"></div>
     </div>
-
     <div style="padding:16px;">
+      <!-- TOP BAR -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="width:48px;height:48px;border-radius:14px;border:3px solid #111;background:var(--yellow);display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #111;font-size:22px;font-weight:900;color:#111;" id="uav">?</div>
@@ -380,12 +174,11 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <div style="background:#dcfce7;border:2px solid #111;border-radius:10px;padding:5px 10px;font-size:11px;font-weight:800;color:#166534;">Online</div>
-          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 9px;cursor:pointer;" onclick="showNotifs()">
-            <div class="ic-bell"></div>
-          </div>
+          <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:6px 9px;cursor:pointer;" onclick="showNotifs()"><div class="ic-bell"></div></div>
         </div>
       </div>
 
+      <!-- BALANCE -->
       <div class="balcard" style="margin-bottom:16px;">
         <div style="font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px;">YOUR BALANCE</div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
@@ -408,60 +201,61 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
         </div>
       </div>
 
+      <!-- ACTION BUTTONS -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <button class="btn" onclick="gp('quiz')" style="background:var(--cyan);padding:15px;font-size:15px;gap:8px;">
-          <div class="ic-brain"></div> Start Quiz
+          <div class="ic-brain"></div> Quiz
         </button>
         <button class="btn" onclick="gp('spin')" style="background:var(--yellow);padding:15px;font-size:15px;gap:8px;">
-          <div class="ic-wheel" style="width:20px;height:20px;"></div> Daily Spin
+          <div class="ic-wheel" style="width:20px;height:20px;"></div> Spin
         </button>
       </div>
 
+      <!-- DAILY BONUS -->
       <div class="card" style="padding:14px;margin-bottom:16px;background:linear-gradient(135deg,#fef9c3,#ffe94a);display:flex;align-items:center;justify-content:space-between;">
         <div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
             <div class="ic-gift"></div>
             <span style="font-weight:800;font-size:15px;">Daily Bonus</span>
           </div>
-          <div style="font-size:12px;color:#666;font-weight:600;" id="dbs">Tap to claim!</div>
+          <div style="font-size:12px;color:#555;font-weight:600;" id="dbs">Tap to claim!</div>
         </div>
-        <button class="btn" id="dbb" onclick="claimDaily()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;">Claim</button>
+        <button class="btn" id="dbb" onclick="claimDaily()" style="background:#111;color:#fff;padding:10px 18px;font-size:13px;box-shadow:3px 3px 0 #333;">Claim</button>
       </div>
 
-      <!-- Sponsor Ad — no reward, opens 1-click URL -->
-      <div class="adf" style="margin-bottom:16px;cursor:pointer;" id="sponsor-ad-box" onclick="sponsorAdClick()" style="display:none;">
+      <!-- SPONSOR AD -->
+      <div class="adf" style="margin-bottom:16px;cursor:pointer;display:none;" id="sponsor-ad-box" onclick="sponsorAdClick()">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <span style="background:#ffe94a;border:2px solid #111;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;">AD</span>
           <span style="font-size:12px;color:#888;font-weight:600;">Sponsored</span>
         </div>
         <div id="sponsor-ad-inner" style="background:linear-gradient(135deg,#00d4e8,#a855f7);border-radius:12px;height:80px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;gap:8px;">
-          <div class="ic-star" style="width:20px;height:20px;"></div>
-          Earn More with CashZilla Premium
+          <div class="ic-star" style="width:20px;height:20px;"></div> Earn More with CashZilla
         </div>
         <div style="font-size:11px;color:#888;margin-top:6px;font-weight:600;text-align:center;">Sponsored</div>
       </div>
 
-      <!-- Adsgram reward ad button -->
+      <!-- ADSGRAM BTN -->
       <div id="adsgram-ad-btn-wrap" style="display:none;margin-bottom:16px;">
         <button class="btn" onclick="showAdsgramAd()" style="background:linear-gradient(135deg,#00d4e8,#0891b2);color:#fff;width:100%;padding:14px;font-size:15px;">🎬 Watch Ad &amp; Earn Coins</button>
       </div>
 
+      <!-- LEADERBOARD PREVIEW -->
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="ic-trophy"></div>
-            <span style="font-weight:800;font-size:16px;">Leaderboard</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:8px;"><div class="ic-trophy"></div><span style="font-weight:800;font-size:16px;">Leaderboard</span></div>
           <button onclick="gp('lb')" style="background:none;border:none;color:var(--purple);font-weight:700;cursor:pointer;font-size:13px;">See All</button>
         </div>
         <div id="lbprev"></div>
       </div>
 
+      <!-- FEATURED QUIZZES -->
       <div style="margin-bottom:16px;">
         <div style="font-weight:800;font-size:16px;margin-bottom:10px;">Featured Quizzes</div>
         <div id="fquiz" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
 
+      <!-- STATS -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div class="card" style="padding:12px;text-align:center;">
           <div class="ic-check" style="font-size:20px;margin:0 auto 4px;"></div>
@@ -487,20 +281,18 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- QUIZ PAGE -->
   <div id="pg-quiz" class="pg">
-    <!-- Header Ad Frame for Quiz -->
     <div class="header-ad-frame" id="header-ad-quiz" style="display:none;">
-      <span class="header-ad-label">AD</span>
-      <div id="header-ad-content-quiz" style="width:100%;text-align:center;"></div>
+      <span class="ad-label">AD</span><div id="header-ad-content-quiz" style="width:100%;text-align:center;"></div>
     </div>
     <div style="padding:16px;">
       <div id="qlistview">
         <div class="fredoka" style="font-size:22px;margin-bottom:14px;">Quiz Arena</div>
-        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;" id="qcats"></div>
+        <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;scrollbar-width:none;" id="qcats"></div>
         <div id="qcards" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
       <div id="qgame" style="display:none;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <button onclick="exitQ()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
+          <button onclick="exitQ()" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">← Back</button>
           <div style="flex:1;" class="pbar"><div class="pfill" id="qprog" style="background:var(--cyan);width:0%;"></div></div>
           <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;" id="qtimer">30s</div>
         </div>
@@ -541,42 +333,28 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- SPIN PAGE -->
   <div id="pg-spin" class="pg">
-    <div class="spin-page-wrapper">
-      <!-- Header Ad for Spin -->
-      <div class="header-ad-frame" id="header-ad-spin" style="display:none;">
-        <span class="header-ad-label">AD</span>
-        <div id="header-ad-content-spin" style="width:100%;text-align:center;"></div>
+    <div style="padding:16px;text-align:center;">
+      <div class="header-ad-frame" id="header-ad-spin" style="display:none;margin-bottom:8px;">
+        <span class="ad-label">AD</span><div id="header-ad-content-spin" style="width:100%;text-align:center;"></div>
       </div>
-
-      <!-- Header Card like screenshot -->
-      <div class="spin-header-card" style="margin-top:8px;">
+      <div class="spin-hdr" style="margin-top:0;">
         <div style="font-size:32px;">🎰</div>
-        <div>
+        <div style="text-align:left;">
           <div class="fredoka" style="font-size:22px;letter-spacing:.5px;">SPIN THE WHEEL</div>
           <div style="font-size:12px;opacity:.8;font-weight:600;">Daily GodZilla Spin</div>
-          <div style="font-size:12px;opacity:.7;margin-top:2px;">Spin the wheel and win cash prizes!</div>
-          <div class="spin-stats-row">
-            <div class="spin-stat-badge">
-              <span>🎯</span> Total Spins: <span id="spin-total-count">0</span>
-            </div>
-            <div class="spin-stat-badge">
-              <span>⏱️</span> Cooldown: 24h
-            </div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+            <div class="stat-bdg">🎯 Spins: <span id="spin-total-count">0</span></div>
+            <div class="stat-bdg" id="spin-cd-badge">⏱️ 24h cooldown</div>
           </div>
         </div>
       </div>
-
-      <!-- Wheel -->
-      <div class="wheel-container">
-        <div class="wheel-pointer"></div>
+      <div class="wheel-wrap">
+        <div class="wheel-ptr"></div>
         <canvas id="wcanvas" width="300" height="300"></canvas>
       </div>
-
-      <button class="btn spin-btn-main" id="spinbtn" onclick="doSpin()">🎯 SPIN NOW!</button>
+      <button class="btn" id="spinbtn" onclick="doSpin()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:16px 40px;font-size:18px;border-radius:18px;width:100%;margin-top:12px;letter-spacing:.5px;">🎯 SPIN NOW!</button>
       <div style="font-size:13px;color:#888;font-weight:600;margin-top:10px;" id="spinct"></div>
-
-      <!-- Spin History -->
-      <div class="spin-history-card">
+      <div class="card" style="margin-top:16px;padding:16px;text-align:left;">
         <div style="font-weight:800;margin-bottom:10px;font-size:15px;">Spin History</div>
         <div id="shinst"></div>
       </div>
@@ -585,18 +363,14 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- REFER PAGE -->
   <div id="pg-refer" class="pg">
-    <!-- Header Ad for Refer -->
     <div class="header-ad-frame" id="header-ad-refer" style="display:none;">
-      <span class="header-ad-label">AD</span>
-      <div id="header-ad-content-refer" style="width:100%;text-align:center;"></div>
+      <span class="ad-label">AD</span><div id="header-ad-content-refer" style="width:100%;text-align:center;"></div>
     </div>
-
     <div style="padding:16px;">
-      <!-- Hero card like screenshot -->
       <div class="refer-hero">
         <div style="font-size:11px;font-weight:700;opacity:.6;margin-bottom:4px;">CASHZILLA</div>
         <div class="fredoka" style="font-size:28px;margin-bottom:4px;">Refer &amp; Earn 🚀</div>
-        <div style="font-size:13px;opacity:.8;font-weight:600;">Invite friends &amp; earn coins for every join!</div>
+        <div style="font-size:13px;opacity:.8;font-weight:600;">Invite friends &amp; earn coins!</div>
         <div style="display:flex;gap:10px;margin-top:14px;">
           <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;text-align:center;flex:1;">
             <div style="font-size:10px;font-weight:700;opacity:.8;">YOUR REFS</div>
@@ -609,35 +383,20 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
           </div>
         </div>
       </div>
-
-      <!-- Referral link box -->
       <div class="refer-link-box">
         <div style="font-size:12px;font-weight:800;color:#166534;margin-bottom:4px;">📎 YOUR REFERRAL LINK</div>
-        <div class="refer-copy-row">
-          <input id="rlink" readonly value="Loading..."/>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="rlink" readonly value="Loading..." style="flex:1;border:2px solid #111;border-radius:10px;padding:10px;font-size:12px;font-weight:600;background:#fff;"/>
           <button class="btn" onclick="copyRef()" style="background:var(--green);color:#fff;padding:10px 16px;font-size:14px;">Copy</button>
         </div>
         <button class="btn" onclick="shareRef()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:10px;font-size:14px;">📤 Share on Telegram</button>
       </div>
-
-      <!-- How it works -->
       <div class="card" style="padding:16px;margin-bottom:16px;">
         <div style="font-weight:800;font-size:15px;margin-bottom:12px;">How It Works</div>
-        <div class="how-step">
-          <div class="step-num" style="background:var(--cyan);">1</div>
-          <div style="font-weight:600;">Share your unique referral link with friends</div>
-        </div>
-        <div class="how-step">
-          <div class="step-num" style="background:var(--yellow);">2</div>
-          <div style="font-weight:600;">Friend joins CashZilla using your link</div>
-        </div>
-        <div class="how-step">
-          <div class="step-num" style="background:var(--pink);color:#fff;">3</div>
-          <div style="font-weight:600;" id="rbinfo">You earn 500 coins instantly!</div>
-        </div>
+        <div class="how-step"><div class="step-num" style="background:var(--cyan);">1</div><div style="font-weight:600;">Share your unique referral link</div></div>
+        <div class="how-step"><div class="step-num" style="background:var(--yellow);">2</div><div style="font-weight:600;">Friend joins CashZilla with your link</div></div>
+        <div class="how-step"><div class="step-num" style="background:var(--pink);color:#fff;">3</div><div style="font-weight:600;" id="rbinfo">You earn 500 coins instantly!</div></div>
       </div>
-
-      <!-- My Referrals -->
       <div class="card" style="padding:16px;">
         <div style="font-weight:800;margin-bottom:10px;">My Referrals</div>
         <div id="myref"></div>
@@ -647,10 +406,8 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 
   <!-- CASH PAGE -->
   <div id="pg-cash" class="pg">
-    <!-- Header Ad for Cash -->
     <div class="header-ad-frame" id="header-ad-cash" style="display:none;">
-      <span class="header-ad-label">AD</span>
-      <div id="header-ad-content-cash" style="width:100%;text-align:center;"></div>
+      <span class="ad-label">AD</span><div id="header-ad-content-cash" style="width:100%;text-align:center;"></div>
     </div>
     <div style="padding:16px;">
       <div class="fredoka" style="font-size:26px;margin-bottom:16px;">Cash Out</div>
@@ -680,44 +437,32 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
     </div>
   </div>
 
-  <!-- LEADERBOARD PAGE -->
+  <!-- LEADERBOARD -->
   <div id="pg-lb" class="pg">
     <div style="padding:16px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-        <button onclick="gp('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">Back</button>
+        <button onclick="gp('home')" style="background:#f3f4f6;border:2px solid #111;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;">← Back</button>
         <div class="fredoka" style="font-size:22px;">Leaderboard</div>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <button class="pill active" onclick="loadLB(this)">Weekly</button>
-        <button class="pill" onclick="loadLB(this)">Monthly</button>
-        <button class="pill" onclick="loadLB(this)">All Time</button>
       </div>
       <div id="lbfull"></div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- NAV -->
   <nav id="bnav">
-    <div class="ni active" onclick="gp('home')" id="ni-home">
-      <div class="ic-home"></div><span class="nl">Home</span>
-    </div>
-    <div class="ni" onclick="gp('quiz')" id="ni-quiz">
-      <div class="ic-brain"></div><span class="nl">Quiz</span>
-    </div>
-    <div class="ni" onclick="gp('spin')" id="ni-spin">
-      <div class="ic-wheel"></div><span class="nl">Spin</span>
-    </div>
+    <div class="ni active" onclick="gp('home')" id="ni-home"><div class="ic-home"></div><span class="nl">Home</span></div>
+    <div class="ni" onclick="gp('quiz')" id="ni-quiz"><div class="ic-brain"></div><span class="nl">Quiz</span></div>
+    <div class="ni" onclick="gp('spin')" id="ni-spin"><div class="ic-wheel"></div><span class="nl">Spin</span></div>
     <div class="ni" onclick="gp('refer')" id="ni-refer">
-      <div style="position:relative;width:24px;height:20px;">
-        <div class="ic-ref"></div>
-        <div class="ic-ref2"></div>
-        <div class="ic-ref3"></div>
+      <div style="position:relative;width:22px;height:20px;">
+        <div style="position:absolute;top:0;left:0;width:10px;height:10px;border-radius:50%;background:#111;"></div>
+        <div style="position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:#a855f7;border:1.5px solid #111;"></div>
+        <div style="position:absolute;bottom:0;left:0;width:12px;height:8px;border-radius:5px 5px 0 0;background:#111;"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:8px;border-radius:5px 5px 0 0;background:#a855f7;border:1.5px solid #111;"></div>
       </div>
       <span class="nl">Refer</span>
     </div>
-    <div class="ni" onclick="gp('cash')" id="ni-cash">
-      <div class="ic-cash"></div><span class="nl">Cash</span>
-    </div>
+    <div class="ni" onclick="gp('cash')" id="ni-cash"><div class="ic-cash"></div><span class="nl">Cash</span></div>
   </nav>
 </div>
 
@@ -727,7 +472,6 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden;padding-bottom:80px
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// ===== CONFIG =====
 const FB_CFG = {
   apiKey:"AIzaSyC011YIUbBkF52QklfCepKYLUgMMhlLdy4",
   authDomain:"ai-tools-9f9a3.firebaseapp.com",
@@ -737,12 +481,8 @@ const FB_CFG = {
   messagingSenderId:"839431476061",
   appId:"1:839431476061:web:c6e9ce5af6e01eb8584eb4"
 };
-const ADMIN_TG_ID = '8601120665';
-const BOT_TOKEN   = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
-const ADMIN_CHAT  = '8601120665';
-
-// Default Monetag Zone ID
-const DEFAULT_MONETAG_ZONE = '9288208';
+const BOT_TOKEN = '8718369945:AAFc772TEaYunC9lLtLxukbi9XJ1niF4NOU';
+const ADMIN_CHAT = '8601120665';
 
 firebase.initializeApp(FB_CFG);
 const auth = firebase.auth();
@@ -750,294 +490,229 @@ const db   = firebase.database();
 
 // ===== STATE =====
 const S = {
-  user:null, data:null, isAdmin:false,
-  sets:{coinUsdt:10000,coinUsd:10000,coinBdt:833,minWd:5000,refBonus:500},
+  user:null, data:null,
+  sets:{coinUsdt:10000,coinUsd:10000,coinBdt:833,minWd:5000,refBonus:500,dailyBonus:100},
   quizzes:[], curQuiz:null, curQ:0, score:0, correct:0, wrong:0, timer:null,
   spinning:false, method:'bkash',
-  adSettings:{
-    activeNetwork:'none', // 'none','monetag','adsgram'
-    monetagZone:'', monetagBanner:false, monetagPopup:false, monetagInterstitial:false,
-    adsgramBlock:'', adsgramReward:10,
-    bannerHtml:'', oneclickUrl:'', popupHtml:''
-  },
-  adsgramInstance: null
+  adSettings:{activeNetwork:'none',monetagZone:'',monetagBanner:false,monetagPopup:false,monetagInterstitial:false,adsgramBlock:'',adsgramReward:10,bannerHtml:'',oneclickUrl:'',popupHtml:''},
+  spinConfig:{cooldownHours:24,segments:[]},
+  adsgramInstance:null
 };
+
+const DEFAULT_SEGS=[
+  {label:'Sorry!',val:0,color:'#1a1a2e'},{label:'50 Coins',val:50,color:'#ffe94a'},
+  {label:'Try Again',val:0,color:'#00d4e8'},{label:'Sorry!',val:0,color:'#ff6eb4'},
+  {label:'100 Coins',val:100,color:'#7c3aed'},{label:'50 Coins',val:50,color:'#22c55e'},
+  {label:'Try Again',val:0,color:'#f97316'},{label:'200 Coins',val:200,color:'#06b6d4'},
+];
 
 const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();tg.enableClosingConfirmation();}
-const hap = t => tg?.HapticFeedback?.impactOccurred(t||'light');
+const hap = t=>tg?.HapticFeedback?.impactOccurred(t||'light');
 
-// Loading
-let loadReady = false, dataReady = false;
-setTimeout(()=>{ loadReady = true; tryHideLoad(); }, 5000);
+let loadReady=false,dataReady=false;
+setTimeout(()=>{loadReady=true;tryHideLoad();},5000);
 function tryHideLoad(){
-  if(loadReady && dataReady){
-    const ls = document.getElementById('ls');
-    ls.classList.add('hide');
-    setTimeout(()=>ls.style.display='none', 500);
+  if(loadReady&&dataReady){
+    const ls=document.getElementById('ls'); ls.classList.add('hide');
+    setTimeout(()=>ls.style.display='none',500);
   }
 }
 
 // ===== AUTH =====
-auth.onAuthStateChanged(async u => {
-  if(u){ S.user = u; await init(u.uid); }
-  else {
-    auth.signInAnonymously().catch(e=>{
-      console.error(e); dataReady=true; tryHideLoad();
-      document.getElementById('up').style.display='block';
-    });
-  }
+auth.onAuthStateChanged(async u=>{
+  if(u){S.user=u;await init(u.uid);}
+  else auth.signInAnonymously().catch(e=>{dataReady=true;tryHideLoad();document.getElementById('up').style.display='block';});
 });
 
 async function init(uid){
   try{
     const snap = await db.ref('users/'+uid).once('value');
-    const tgU  = tg?.initDataUnsafe?.user;
-    const now  = Date.now();
-
-    // Admin check — multiple methods
-    const tgId = String(tgU?.id||'');
-    if(tgId === ADMIN_TG_ID) S.isAdmin = true;
-    if(new URLSearchParams(location.search).get('admin_uid') === ADMIN_TG_ID) S.isAdmin = true;
-    // Firebase admin flag check
-    if(snap.exists() && snap.val().isAdmin === true) S.isAdmin = true;
-    // URL hash override for testing
-    if(location.hash === '#admin_'+ADMIN_TG_ID) S.isAdmin = true;
+    const tgU = tg?.initDataUnsafe?.user;
+    const now = Date.now();
 
     if(!snap.exists()){
       const ref = new URLSearchParams(location.search).get('ref')||'';
-      const nu = {
-        uid, name: tgU?(tgU.first_name+(tgU.last_name?' '+tgU.last_name:'')):'User_'+uid.slice(0,6),
-        username:tgU?.username||'', tgId,
-        coins:500, totalEarned:500, quizzesPlayed:0, spinsUsed:0,
-        referrals:0, referralEarnings:0, referredBy:ref,
-        joinedAt:now, lastSeen:now, lastDailyBonus:0, lastSpin:0, banned:false, rank:0
-      };
-      await db.ref('users/'+uid).set(nu);
-      S.data = nu;
-      if(ref && ref!==uid) applyRef(ref, uid);
-      setTimeout(()=>welcomePopup(nu), 1500);
+      const nu={uid,name:tgU?(tgU.first_name+(tgU.last_name?' '+tgU.last_name:'')):'User_'+uid.slice(0,6),
+        username:tgU?.username||'',tgId:String(tgU?.id||''),
+        coins:500,totalEarned:500,quizzesPlayed:0,spinsUsed:0,
+        referrals:0,referralEarnings:0,referredBy:ref,
+        joinedAt:now,lastSeen:now,lastDailyBonus:0,lastSpin:0,banned:false,rank:0};
+      await db.ref('users/'+uid).set(nu); S.data=nu;
+      if(ref&&ref!==uid) applyRef(ref,uid);
+      setTimeout(()=>welcomePopup(nu),1500);
     } else {
-      S.data = snap.val();
-      db.ref('users/'+uid).update({lastSeen:now});
+      S.data=snap.val(); db.ref('users/'+uid).update({lastSeen:now});
     }
 
     if(S.data.banned){
-      dataReady=true; tryHideLoad();
-      document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px;"><div style="font-size:48px;margin-bottom:16px;width:64px;height:64px;border-radius:50%;background:#ef4444;border:4px solid #991b1b;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">X</div><div style="font-size:20px;font-weight:800;">Account Suspended</div><div style="color:#666;margin-top:8px;font-weight:600;">Contact support for help.</div></div>';
+      dataReady=true;tryHideLoad();
+      document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px;"><div style="font-size:48px;margin-bottom:16px;">🔒</div><div style="font-size:20px;font-weight:800;">Account Suspended</div><div style="color:#666;margin-top:8px;">Contact support for help.</div></div>';
       return;
     }
 
-    db.ref('users/'+uid).on('value', s=>{ if(s.exists()){ S.data=s.val(); updateUI(); } });
+    db.ref('users/'+uid).on('value',s=>{if(s.exists()){S.data=s.val();updateUI();}});
 
-    await loadSets();
-    await loadAdSettingsFromDB();
-    await loadQuizzes();
+    await Promise.all([loadSets(),loadAdSettingsFromDB(),loadSpinConfig(),loadQuizzes()]);
     await loadLBPreview();
-    loadWH(); loadSH(); loadRefs();
-    updateUI();
-    drawWheel();
-    initAdSystem();
+    loadWH();loadSH();loadRefs();updateUI();drawWheel();initAdSystem();
 
-    document.getElementById('up').style.display = 'block';
-    if(S.isAdmin) addAdminBtn();
-
-    dataReady=true; tryHideLoad();
-
-  } catch(e){
-    console.error('init error:',e);
-    dataReady=true; tryHideLoad();
+    document.getElementById('up').style.display='block';
+    dataReady=true;tryHideLoad();
+  }catch(e){
+    console.error(e);dataReady=true;tryHideLoad();
     document.getElementById('up').style.display='block';
   }
 }
 
+// ===== SETTINGS =====
+async function loadSets(){
+  try{const s=(await db.ref('settings').once('value')).val();if(s)S.sets={...S.sets,...s};}catch(e){}
+  const w=document.getElementById('wmintxt');if(w)w.textContent='Minimum: '+S.sets.minWd+' Coins';
+  const r=document.getElementById('rbinfo');if(r)r.textContent='You earn '+S.sets.refBonus+' coins per referral!';
+}
+
+// ===== SPIN CONFIG FROM DB =====
+async function loadSpinConfig(){
+  try{
+    const snap=await db.ref('spinConfig').once('value');
+    if(snap.exists()){
+      S.spinConfig={...S.spinConfig,...snap.val()};
+      if(!Array.isArray(S.spinConfig.segments)||!S.spinConfig.segments.length)
+        S.spinConfig.segments=[...DEFAULT_SEGS];
+    } else { S.spinConfig.segments=[...DEFAULT_SEGS]; }
+  }catch(e){S.spinConfig.segments=[...DEFAULT_SEGS];}
+  // Update cooldown badge
+  const badge=document.getElementById('spin-cd-badge');
+  if(badge) badge.textContent='⏱️ '+S.spinConfig.cooldownHours+'h cooldown';
+}
+
 // ===== AD SYSTEM =====
 async function loadAdSettingsFromDB(){
-  try{
-    const snap = await db.ref('adSettings').once('value');
-    if(snap.exists()) S.adSettings = {...S.adSettings, ...snap.val()};
-  }catch(e){}
+  try{const snap=await db.ref('adSettings').once('value');if(snap.exists())S.adSettings={...S.adSettings,...snap.val()};}catch(e){}
 }
 
 function initAdSystem(){
-  const ads = S.adSettings;
+  const ads=S.adSettings;
+  const sponsorBox=document.getElementById('sponsor-ad-box');
+  if(ads.oneclickUrl&&ads.oneclickUrl.trim()){if(sponsorBox)sponsorBox.style.display='block';}
+  else{if(sponsorBox)sponsorBox.style.display='none';}
 
-  // Show/hide sponsor ad box (1-click, no reward)
-  const sponsorBox = document.getElementById('sponsor-ad-box');
-  if(ads.oneclickUrl && ads.oneclickUrl.trim()){
-    if(sponsorBox) sponsorBox.style.display='block';
-  } else {
-    if(sponsorBox) sponsorBox.style.display='none';
-  }
-
-  // Header ads
-  const pages = ['home','quiz','spin','refer','cash'];
-  pages.forEach(pg => {
-    const frame = document.getElementById('header-ad-'+pg);
-    const content = document.getElementById('header-ad-content-'+pg);
-    if(!frame || !content) return;
-
-    if(ads.activeNetwork === 'monetag' && ads.monetagBanner && ads.monetagZone){
-      frame.style.display = 'flex';
-      if(pg === 'home') injectMonetagBanner(content, ads.monetagZone);
-    } else if(ads.bannerHtml && ads.bannerHtml.trim()){
-      frame.style.display = 'flex';
-      content.innerHTML = ads.bannerHtml;
-    } else {
-      frame.style.display = 'none';
-    }
+  ['home','quiz','spin','refer','cash'].forEach(pg=>{
+    const frame=document.getElementById('header-ad-'+pg);
+    const content=document.getElementById('header-ad-content-'+pg);
+    if(!frame||!content) return;
+    if(ads.activeNetwork==='monetag'&&ads.monetagBanner&&ads.monetagZone){
+      frame.style.display='flex';
+      if(pg==='home') injectMonetagBanner(content,ads.monetagZone);
+    } else if(ads.bannerHtml&&ads.bannerHtml.trim()){
+      frame.style.display='flex'; content.innerHTML=ads.bannerHtml;
+    } else { frame.style.display='none'; }
   });
 
-  // Adsgram init
-  if(ads.activeNetwork === 'adsgram' && ads.adsgramBlock){
-    const wrap = document.getElementById('adsgram-ad-btn-wrap');
-    if(wrap) wrap.style.display='block';
+  if(ads.activeNetwork==='adsgram'&&ads.adsgramBlock){
+    const wrap=document.getElementById('adsgram-ad-btn-wrap');
+    if(wrap)wrap.style.display='block';
     loadAdsgramSDK(ads.adsgramBlock);
   }
-
-  // Monetag full init (popup/interstitial)
-  if(ads.activeNetwork === 'monetag' && ads.monetagZone){
-    injectMonetagSDK(ads.monetagZone, ads.monetagPopup, ads.monetagInterstitial);
-  }
-
-  // Pop-up ad from HTML setting (every 3 min)
-  if(ads.popupHtml && ads.popupHtml.trim()){
-    setTimeout(()=>showPopupAd(), 180000);
-  }
+  if(ads.activeNetwork==='monetag'&&ads.monetagZone)
+    injectMonetagSDK(ads.monetagZone,ads.monetagPopup,ads.monetagInterstitial);
+  if(ads.popupHtml&&ads.popupHtml.trim())
+    setTimeout(()=>showPopupAd(),180000);
 }
 
-function injectMonetagBanner(container, zoneId){
-  // Monetag banner via SDK
-  const s = document.createElement('script');
-  s.src = '//libtl.com/sdk.js';
-  s.setAttribute('data-zone', zoneId);
-  s.setAttribute('data-sdk', 'show_'+zoneId);
-  container.appendChild(s);
+function injectMonetagBanner(container,zoneId){
+  const s=document.createElement('script');
+  s.src='//libtl.com/sdk.js';s.setAttribute('data-zone',zoneId);
+  s.setAttribute('data-sdk','show_'+zoneId);container.appendChild(s);
 }
-
-function injectMonetagSDK(zoneId, popup, interstitial){
-  if(!popup && !interstitial) return;
-  const s = document.createElement('script');
-  s.src = '//libtl.com/sdk.js';
-  s.setAttribute('data-zone', zoneId);
-  s.setAttribute('data-sdk', 'show_'+zoneId);
-  document.head.appendChild(s);
+function injectMonetagSDK(zoneId,popup,interstitial){
+  if(!popup&&!interstitial)return;
+  const s=document.createElement('script');
+  s.src='//libtl.com/sdk.js';s.setAttribute('data-zone',zoneId);
+  s.setAttribute('data-sdk','show_'+zoneId);document.head.appendChild(s);
 }
-
 function loadAdsgramSDK(blockId){
-  const s = document.createElement('script');
-  s.src = 'https://sad.adsgram.ai/js/sad.min.js';
-  s.onload = () => {
-    try{
-      S.adsgramInstance = window.Adsgram?.init({blockId: String(blockId)});
-    }catch(e){ console.log('Adsgram init error', e); }
-  };
+  const s=document.createElement('script'); s.src='https://sad.adsgram.ai/js/sad.min.js';
+  s.onload=()=>{ try{S.adsgramInstance=window.Adsgram?.init({blockId:String(blockId)});}catch(e){} };
   document.head.appendChild(s);
 }
-
-window.showAdsgramAd = async function(){
-  if(!S.adsgramInstance){ toast('Ad not ready, try again!'); return; }
+window.showAdsgramAd=async function(){
+  if(!S.adsgramInstance){toast('Ad not ready!');return;}
   try{
-    const result = await S.adsgramInstance.show();
+    const result=await S.adsgramInstance.show();
     if(result.done){
-      const reward = S.adSettings.adsgramReward || 10;
-      await db.ref('users/'+S.user.uid).update({
-        coins: firebase.database.ServerValue.increment(reward),
-        totalEarned: firebase.database.ServerValue.increment(reward)
-      });
+      const reward=S.adSettings.adsgramReward||10;
+      await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(reward),totalEarned:firebase.database.ServerValue.increment(reward)});
       db.ref('transactions/'+S.user.uid).push({type:'adsgram',amount:reward,ts:Date.now()});
-      confetti(); floatCoins();
-      toast('🎬 +'+reward+' coins earned!');
+      confetti();floatCoins();toast('🎬 +'+reward+' coins earned!');
     }
-  }catch(e){ console.log('Adsgram ad error', e); }
-};
-
-function showPopupAd(){
-  const ads = S.adSettings;
-  if(!ads.popupHtml) return;
-  popup('Advertisement', ads.popupHtml + '<br><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:10px;margin-top:8px;">Close</button>');
-}
-
-window.sponsorAdClick = function(){
-  const url = S.adSettings.oneclickUrl;
-  if(!url) return;
-  hap();
-  if(tg) tg.openLink(url);
-  else window.open(url,'_blank');
-  // No reward — sponsor ad only
-};
-
-// ===== AD ADMIN FUNCTIONS =====
-window.selNet = function(net){
-  S.adSettings.activeNetwork = net;
-  document.querySelectorAll('[data-net]').forEach(el => el.classList.remove('sel'));
-  document.getElementById('net-'+net)?.classList.add('sel');
-  document.getElementById('monetag-settings').style.display = net==='monetag' ? 'block' : 'none';
-  document.getElementById('adsgram-settings').style.display = net==='adsgram' ? 'block' : 'none';
-};
-
-window.saveAdSettings = async function(){
-  const ads = {
-    activeNetwork: S.adSettings.activeNetwork,
-    monetagZone: document.getElementById('monetag-zone')?.value?.trim()||'',
-    monetagBanner: document.getElementById('mg-banner')?.checked||false,
-    monetagPopup: document.getElementById('mg-popup')?.checked||false,
-    monetagInterstitial: document.getElementById('mg-interstitial')?.checked||false,
-    adsgramBlock: document.getElementById('adsgram-block')?.value?.trim()||'',
-    adsgramReward: parseInt(document.getElementById('adsgram-reward')?.value)||10,
-    bannerHtml: document.getElementById('banner-html')?.value||'',
-    oneclickUrl: document.getElementById('oneclick-url')?.value?.trim()||'',
-    popupHtml: document.getElementById('popup-html')?.value||''
-  };
-  try{
-    await db.ref('adSettings').set(ads);
-    S.adSettings = ads;
-    // Preview
-    const preview = document.getElementById('ad-preview-area');
-    if(preview){
-      if(ads.bannerHtml) preview.innerHTML = ads.bannerHtml;
-      else if(ads.activeNetwork==='monetag' && ads.monetagZone) preview.innerHTML = `<div style="background:#f3f4f6;padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;">Monetag Zone: ${ads.monetagZone}</div>`;
-      else if(ads.activeNetwork==='adsgram' && ads.adsgramBlock) preview.innerHTML = `<div style="background:#e0f2fe;padding:10px;border-radius:8px;text-align:center;font-weight:600;font-size:13px;">Adsgram Block: ${ads.adsgramBlock}</div>`;
-      else preview.innerHTML = '<div style="color:#888;text-align:center;font-weight:600;font-size:13px;">No active ad</div>';
-    }
-    toast('✅ Ad settings saved!');
-  }catch(e){ toast('Error saving!'); }
-};
-
-function loadAdSettingsUI(){
-  const ads = S.adSettings;
-  // Network selection
-  document.querySelectorAll('[data-net]').forEach(el => el.classList.remove('sel'));
-  document.getElementById('net-'+(ads.activeNetwork||'none'))?.classList.add('sel');
-  document.getElementById('monetag-settings').style.display = ads.activeNetwork==='monetag' ? 'block' : 'none';
-  document.getElementById('adsgram-settings').style.display = ads.activeNetwork==='adsgram' ? 'block' : 'none';
-  // Monetag
-  const mz = document.getElementById('monetag-zone'); if(mz) mz.value = ads.monetagZone||'';
-  const mb = document.getElementById('mg-banner'); if(mb) mb.checked = !!ads.monetagBanner;
-  const mp = document.getElementById('mg-popup'); if(mp) mp.checked = !!ads.monetagPopup;
-  const mi = document.getElementById('mg-interstitial'); if(mi) mi.checked = !!ads.monetagInterstitial;
-  // Adsgram
-  const ab = document.getElementById('adsgram-block'); if(ab) ab.value = ads.adsgramBlock||'';
-  const ar = document.getElementById('adsgram-reward'); if(ar) ar.value = ads.adsgramReward||10;
-  // Other
-  const bh = document.getElementById('banner-html'); if(bh) bh.value = ads.bannerHtml||'';
-  const oc = document.getElementById('oneclick-url'); if(oc) oc.value = ads.oneclickUrl||'';
-  const ph = document.getElementById('popup-html'); if(ph) ph.value = ads.popupHtml||'';
-}
-
-// ===== SETTINGS =====
-async function loadSets(){
-  try{
-    const s = (await db.ref('settings').once('value')).val();
-    if(s) S.sets = {...S.sets,...s};
   }catch(e){}
-  const w=document.getElementById('wmintxt');
-  if(w) w.textContent='Minimum: '+S.sets.minWd+' Coins';
-  const r=document.getElementById('rbinfo');
-  if(r) r.textContent='You earn '+S.sets.refBonus+' coins per referral!';
+};
+function showPopupAd(){
+  const ads=S.adSettings; if(!ads.popupHtml) return;
+  popup('Advertisement',ads.popupHtml+'<br><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:10px;margin-top:8px;">Close</button>');
+}
+window.sponsorAdClick=function(){
+  const url=S.adSettings.oneclickUrl; if(!url) return;
+  hap(); if(tg)tg.openLink(url); else window.open(url,'_blank');
+};
+
+// ===== UI UPDATE =====
+function updateUI(){
+  const u=S.data; if(!u) return;
+  const coins=u.coins||0;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('uname',u.name||'User'); el('urank','Rank #'+(u.rank||'—'));
+  const av=document.getElementById('uav');if(av)av.textContent=(u.name||'U').charAt(0).toUpperCase();
+  animNum('bcoins',coins);
+  el('busdt',(coins/S.sets.coinUsdt).toFixed(4));
+  el('busd',(coins/S.sets.coinUsd).toFixed(4));
+  el('bbdt',(coins/S.sets.coinBdt).toFixed(2));
+  el('ccoins',coins+' Coins');
+  el('cusd2d',(coins/S.sets.coinUsd).toFixed(4));
+  el('cbdtd',(coins/S.sets.coinBdt).toFixed(2));
+  el('stq',u.quizzesPlayed||0);el('str',u.referrals||0);el('sts',u.spinsUsed||0);
+  el('tref',u.referrals||0);el('rearn',u.referralEarnings||0);
+  const rl=document.getElementById('rlink');if(rl)rl.value=refLink();
+  const stc=document.getElementById('spin-total-count');if(stc)stc.textContent=u.spinsUsed||0;
+  const today=new Date().toDateString(), ld=new Date(u.lastDailyBonus||0).toDateString();
+  const ds=document.getElementById('dbs'),db2=document.getElementById('dbb');
+  if(today!==ld){if(ds)ds.textContent='Tap to claim!';if(db2){db2.disabled=false;db2.style.opacity='1';}}
+  else{if(ds)ds.textContent='Claimed today ✓';if(db2){db2.disabled=true;db2.style.opacity='.5';}}
 }
 
-// ===== QUIZZES =====
+function animNum(id,target){
+  const el=document.getElementById(id); if(!el) return;
+  const start=parseInt(el.textContent.replace(/,/g,''))||0; if(start===target) return;
+  const dur=600,t0=performance.now();
+  const step=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(start+(target-start)*e).toLocaleString();if(p<1)requestAnimationFrame(step);else el.textContent=target.toLocaleString();};
+  requestAnimationFrame(step);
+}
+function refLink(){return 'https://t.me/CashZillaBot?start='+(S.user?.uid||'x');}
+
+// ===== NAV =====
+window.gp=function(page){
+  hap(); document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('pg-'+page); if(pg)pg.classList.add('on');
+  const ni=document.getElementById('ni-'+page); if(ni)ni.classList.add('active');
+  if(page==='quiz'){renderQCards();renderQCats();}
+  if(page==='lb')loadLB();
+  if(page==='cash')loadWH();
+  if(page==='refer')loadRefs();
+  if(page==='spin')loadSH();
+};
+
+// ===== QUIZ =====
+let qFilter='All';
+function renderQCats(){
+  const cats=['All',...new Set(S.quizzes.map(q=>q.cat))];
+  const el=document.getElementById('qcats'); if(!el) return;
+  el.innerHTML=cats.map(c=>`<button class="pill ${c===qFilter?'active':''}" onclick="filtQ('${c}',this)">${c}</button>`).join('');
+}
+window.filtQ=function(c,btn){qFilter=c;document.querySelectorAll('#qcats .pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');renderQCards();};
+
 function defQuizzes(){return[
   {title:'General Knowledge',cat:'General',reward:50,time:30,diff:'Easy',
     qs:[{q:'Capital of Bangladesh?',opts:['Chittagong','Dhaka','Sylhet','Rajshahi'],a:1},
@@ -1051,123 +726,28 @@ function defQuizzes(){return[
         {q:'25% of 200?',opts:['40','50','55','60'],a:1},
         {q:'2 to power 8?',opts:['128','256','512','64'],a:1},
         {q:'7! = ?',opts:['5040','2520','720','40320'],a:0}]},
-  {title:'Science Blast',cat:'Science',reward:60,time:25,diff:'Medium',
-    qs:[{q:'Formula for water?',opts:['H2O2','HO','H2O','H3O'],a:2},
-        {q:'Speed of light?',opts:['3×10⁸ m/s','3×10⁶ m/s','3×10⁴ m/s','3×10¹⁰ m/s'],a:0},
-        {q:'Bones in human body?',opts:['196','206','216','186'],a:1},
-        {q:'Plants absorb which gas?',opts:['Oxygen','Nitrogen','CO2','Hydrogen'],a:2},
-        {q:'Closest star to Earth?',opts:['Proxima Centauri','Sirius','Betelgeuse','The Sun'],a:3}]},
   {title:'Crypto & Finance',cat:'Finance',reward:100,time:30,diff:'Hard',
     qs:[{q:'Who created Bitcoin?',opts:['Elon Musk','Satoshi Nakamoto','Vitalik Buterin','Mark Z.'],a:1},
-        {q:'USDT = ?',opts:['US Dollar Token','Unified Stable Dollar Tether','US Dollar Tether','Universal Stable Dollar'],a:2},
         {q:'Bitcoin max supply?',opts:['18M','21M','25M','100M'],a:1},
         {q:'DeFi = ?',opts:['Digital Finance','Decentralized Finance','Distributed Finance','Direct Finance'],a:1},
-        {q:'Ether belongs to?',opts:['Bitcoin','Solana','Ethereum','Cardano'],a:2}]},
-  {title:'Daily Challenge',cat:'Daily',reward:200,time:60,diff:'Hard',daily:true,
-    qs:[{q:'National animal of Bangladesh?',opts:['Tiger','Elephant','Deer','Royal Bengal Tiger'],a:3},
-        {q:'Tea originated from?',opts:['India','China','Japan','Sri Lanka'],a:1},
-        {q:'Tallest mountain?',opts:['K2','Kangchenjunga','Mount Everest','Lhotse'],a:2},
-        {q:'Smartphone invented year?',opts:['1994','1997','2000','2007'],a:3},
-        {q:'Currency of Japan?',opts:['Yuan','Won','Yen','Ruble'],a:2}]}
+        {q:'USDT stands for?',opts:['US Dollar Token','US Dollar Tether','Unified Stable Tether','Universal Dollar'],a:1},
+        {q:'Ether belongs to?',opts:['Bitcoin','Solana','Ethereum','Cardano'],a:2}]}
 ];}
 
 async function loadQuizzes(){
   try{
-    const snap = await db.ref('quizzes').once('value');
-    if(snap.exists()){
-      S.quizzes = Object.entries(snap.val()).map(([id,q])=>({id,...q})).filter(q=>!q.deleted);
-    } else {
-      S.quizzes = defQuizzes();
-      S.quizzes.forEach(q=>db.ref('quizzes').push(q));
-    }
-  }catch(e){ S.quizzes = defQuizzes(); }
-  renderQCards(); renderFeatQ(); renderQCats();
+    const snap=await db.ref('quizzes').once('value');
+    if(snap.exists()){S.quizzes=Object.entries(snap.val()).map(([id,q])=>({id,...q})).filter(q=>!q.deleted);}
+    else{S.quizzes=defQuizzes();S.quizzes.forEach(q=>db.ref('quizzes').push(q));}
+  }catch(e){S.quizzes=defQuizzes();}
+  renderQCards();renderFeatQ();renderQCats();
 }
 
-// ===== UI UPDATE =====
-function updateUI(){
-  const u=S.data; if(!u) return;
-  const coins=u.coins||0;
-  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  el('uname', u.name||'User');
-  el('urank', 'Rank #'+(u.rank||'—'));
-  const av=document.getElementById('uav');
-  if(av) av.textContent=(u.name||'U').charAt(0).toUpperCase();
-  animNum('bcoins', coins);
-  el('busdt',(coins/S.sets.coinUsdt).toFixed(4));
-  el('busd',(coins/S.sets.coinUsd).toFixed(4));
-  el('bbdt',(coins/S.sets.coinBdt).toFixed(2));
-  el('ccoins',coins+' Coins');
-  el('cusd2d',(coins/S.sets.coinUsd).toFixed(4));
-  el('cbdtd',(coins/S.sets.coinBdt).toFixed(2));
-  el('stq',u.quizzesPlayed||0);
-  el('str',u.referrals||0);
-  el('sts',u.spinsUsed||0);
-  el('tref',u.referrals||0);
-  el('rearn',u.referralEarnings||0);
-  const rl=document.getElementById('rlink');
-  if(rl) rl.value=refLink();
-  // Spin count
-  const stc = document.getElementById('spin-total-count');
-  if(stc) stc.textContent = u.spinsUsed||0;
-  // Daily bonus
-  const today=new Date().toDateString();
-  const ld=new Date(u.lastDailyBonus||0).toDateString();
-  const ds=document.getElementById('dbs'), db2=document.getElementById('dbb');
-  if(today!==ld){ if(ds)ds.textContent='Tap to claim!'; if(db2){db2.disabled=false;db2.style.opacity='1';} }
-  else{ if(ds)ds.textContent='Claimed today!'; if(db2){db2.disabled=true;db2.style.opacity='.5';} }
-}
-
-function animNum(id,target){
-  const el=document.getElementById(id); if(!el) return;
-  const start=parseInt(el.textContent.replace(/,/g,''))||0;
-  if(start===target) return;
-  const dur=600, t0=performance.now();
-  const step=now=>{
-    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,3);
-    el.textContent=Math.round(start+(target-start)*e).toLocaleString();
-    if(p<1) requestAnimationFrame(step);
-    else el.textContent=target.toLocaleString();
-  };
-  requestAnimationFrame(step);
-}
-
-function refLink(){ return 'https://t.me/CashZillaBot?start='+(S.user?.uid||'x'); }
-
-// ===== NAV =====
-window.gp = function(page){
-  hap();
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  const pg=document.getElementById('pg-'+page);
-  if(pg) pg.classList.add('on');
-  const ni=document.getElementById('ni-'+page);
-  if(ni) ni.classList.add('active');
-  if(page==='quiz'){renderQCards();renderQCats();}
-  if(page==='lb') loadLB();
-  if(page==='cash') loadWH();
-  if(page==='refer') loadRefs();
-  if(page==='spin') loadSH();
-};
-
-// ===== QUIZ =====
-let qFilter='All';
-function renderQCats(){
-  const cats=['All',...new Set(S.quizzes.map(q=>q.cat))];
-  const el=document.getElementById('qcats'); if(!el) return;
-  el.innerHTML=cats.map(c=>`<button class="pill ${c===qFilter?'active':''}" onclick="filtQ('${c}',this)">${c}</button>`).join('');
-}
-window.filtQ=function(c,btn){
-  qFilter=c;
-  document.querySelectorAll('#qcats .pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  renderQCards();
-};
 function renderQCards(){
   const list=qFilter==='All'?S.quizzes:S.quizzes.filter(q=>q.cat===qFilter);
   const el=document.getElementById('qcards'); if(!el) return;
   const dc={Easy:'#22c55e',Medium:'#f59e0b',Hard:'#ef4444'};
-  el.innerHTML=list.map(q=>`<div class="card" style="padding:16px;cursor:pointer;" onclick="startQ('${q.id}')">
+  el.innerHTML=list.map(q=>`<div class="card" style="padding:16px;cursor:pointer;" onclick="startQ('${q.id||q.title}')">
     <div style="display:flex;align-items:center;gap:12px;">
       <div style="background:#f3f4f6;border:2px solid #111;border-radius:14px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <div style="font-size:11px;font-weight:900;color:#111;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
@@ -1198,14 +778,11 @@ function renderFeatQ(){
 }
 
 window.startQ=function(id){
-  const quiz=S.quizzes.find(q=>q.id===id);
+  const quiz=S.quizzes.find(q=>(q.id||q.title)===id);
   if(!quiz||!quiz.qs?.length){toast('Quiz not available!');return;}
   hap('medium');
-  if(quiz.daily){
-    const lp=localStorage.getItem('qlast_'+id);
-    if(lp&&new Date().toDateString()===new Date(parseInt(lp)).toDateString()){toast('Daily quiz already played!');return;}
-  }
-  S.curQuiz=quiz; S.curQ=0; S.score=0; S.correct=0; S.wrong=0;
+  if(quiz.daily){const lp=localStorage.getItem('qlast_'+id);if(lp&&new Date().toDateString()===new Date(parseInt(lp)).toDateString()){toast('Daily quiz already played!');return;}}
+  S.curQuiz=quiz;S.curQ=0;S.score=0;S.correct=0;S.wrong=0;
   document.getElementById('qlistview').style.display='none';
   document.getElementById('qresult').style.display='none';
   document.getElementById('qgame').style.display='block';
@@ -1213,62 +790,36 @@ window.startQ=function(id){
 };
 
 function renderQ(){
-  const quiz=S.curQuiz, q=quiz.qs[S.curQ];
-  if(!q){endQ();return;}
-  const tot=quiz.qs.length, cur=S.curQ;
+  const quiz=S.curQuiz,q=quiz.qs[S.curQ];if(!q){endQ();return;}
+  const tot=quiz.qs.length,cur=S.curQ;
   const el=id=>document.getElementById(id);
-  el('qqnum').textContent=`Q ${cur+1}/${tot}`;
-  el('qscore').textContent='Score: '+S.score;
-  el('qprog').style.width=`${(cur/tot)*100}%`;
-  el('qcat').textContent=(quiz.cat||'QUIZ').toUpperCase();
+  el('qqnum').textContent=`Q ${cur+1}/${tot}`;el('qscore').textContent='Score: '+S.score;
+  el('qprog').style.width=`${(cur/tot)*100}%`;el('qcat').textContent=(quiz.cat||'QUIZ').toUpperCase();
   el('qtext').textContent=q.q;
   const labels=['A','B','C','D'];
   el('qopts').innerHTML=q.opts.map((o,i)=>`<button class="ans-btn" onclick="pickA(${i})">${labels[i]}. ${o}</button>`).join('');
   clearInterval(S.timer);
-  let t=quiz.time||30;
-  el('qtimer').textContent=t+'s';
-  el('qtimer').style.background='var(--yellow)';
+  let t=quiz.time||30; el('qtimer').textContent=t+'s';el('qtimer').style.background='var(--yellow)';
   S.timer=setInterval(()=>{
-    t--;
-    const td=el('qtimer');
-    if(td){td.textContent=t+'s';if(t<=5)td.style.background='#fecaca';}
+    t--;const td=el('qtimer');if(td){td.textContent=t+'s';if(t<=5)td.style.background='#fecaca';}
     if(t<=0){clearInterval(S.timer);S.wrong++;hilite(-1,q.a);setTimeout(nextQ,1500);}
   },1000);
 }
-
 window.pickA=function(sel){
-  clearInterval(S.timer); hap();
+  clearInterval(S.timer);hap();
   const q=S.curQuiz.qs[S.curQ];
   document.querySelectorAll('.ans-btn').forEach(b=>b.onclick=null);
-  if(sel===q.a){
-    S.score+=Math.floor(S.curQuiz.reward/S.curQuiz.qs.length);
-    S.correct++; hap('medium'); floatCoins();
-  } else { S.wrong++; hap('heavy'); }
-  hilite(sel,q.a);
-  setTimeout(nextQ,1200);
+  if(sel===q.a){S.score+=Math.floor(S.curQuiz.reward/S.curQuiz.qs.length);S.correct++;hap('medium');floatCoins();}
+  else{S.wrong++;hap('heavy');}
+  hilite(sel,q.a);setTimeout(nextQ,1200);
 };
-function hilite(sel,cor){
-  document.querySelectorAll('.ans-btn').forEach((b,i)=>{
-    if(i===cor)b.classList.add('ok');
-    else if(i===sel&&sel!==cor)b.classList.add('no');
-  });
-}
-function nextQ(){
-  S.curQ++;
-  const td=document.getElementById('qtimer');
-  if(td)td.style.background='var(--yellow)';
-  if(S.curQ>=S.curQuiz.qs.length)endQ();else renderQ();
-}
+function hilite(sel,cor){document.querySelectorAll('.ans-btn').forEach((b,i)=>{if(i===cor)b.classList.add('ok');else if(i===sel&&sel!==cor)b.classList.add('no');});}
+function nextQ(){S.curQ++;const td=document.getElementById('qtimer');if(td)td.style.background='var(--yellow)';if(S.curQ>=S.curQuiz.qs.length)endQ();else renderQ();}
 async function endQ(){
-  clearInterval(S.timer);
-  const quiz=S.curQuiz, earned=S.score;
-  localStorage.setItem('qlast_'+quiz.id, Date.now()+'');
+  clearInterval(S.timer);const quiz=S.curQuiz,earned=S.score;
+  localStorage.setItem('qlast_'+(quiz.id||quiz.title),Date.now()+'');
   try{
-    await db.ref('users/'+S.user.uid).update({
-      coins: firebase.database.ServerValue.increment(earned),
-      totalEarned: firebase.database.ServerValue.increment(earned),
-      quizzesPlayed: firebase.database.ServerValue.increment(1)
-    });
+    await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(earned),totalEarned:firebase.database.ServerValue.increment(earned),quizzesPlayed:firebase.database.ServerValue.increment(1)});
     db.ref('transactions/'+S.user.uid).push({type:'quiz',amount:earned,title:quiz.title,ts:Date.now()});
   }catch(e){}
   document.getElementById('qgame').style.display='none';
@@ -1279,8 +830,7 @@ async function endQ(){
   document.getElementById('rcoins').textContent='+'+earned;
   document.getElementById('rcor').textContent=S.correct;
   document.getElementById('rwrong').textContent=S.wrong;
-  if(pct===100) confetti();
-  hap('medium');
+  if(pct===100)confetti();hap('medium');
 }
 window.exitQ=function(){
   clearInterval(S.timer);
@@ -1290,114 +840,90 @@ window.exitQ=function(){
 };
 
 // ===== SPIN WHEEL =====
-const SEGS=[
-  {label:'Sorry',val:0,color:'#1a1a2e'},{label:'$0.01',val:50,color:'#ffe94a'},
-  {label:'$0.00',val:0,color:'#00d4e8'},{label:'Sorry',val:0,color:'#ff6eb4'},
-  {label:'$0.00',val:0,color:'#7c3aed'},{label:'$0.01',val:50,color:'#22c55e'},
-  {label:'$0.00',val:0,color:'#f97316'},{label:'$0.00',val:0,color:'#06b6d4'},
-];
-
 function drawWheel(rot=0){
   const c=document.getElementById('wcanvas'); if(!c) return;
-  const ctx=c.getContext('2d'), sz=300, cx=sz/2, cy=sz/2, r=sz/2-6;
-  const arc=(Math.PI*2)/SEGS.length;
+  const segs=S.spinConfig.segments; if(!segs||!segs.length) return;
+  const ctx=c.getContext('2d'),sz=300,cx=sz/2,cy=sz/2,r=sz/2-6;
+  const arc=(Math.PI*2)/segs.length;
   ctx.clearRect(0,0,sz,sz);
-
-  SEGS.forEach((seg,i)=>{
-    const s=rot+i*arc-Math.PI/2, e=s+arc;
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
-    ctx.fillStyle=seg.color; ctx.fill();
-    ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
-
-    // Dots on border
-    const dotAngle = rot + i*arc - Math.PI/2 + arc/2;
-    ctx.beginPath();
-    ctx.arc(cx + (r+0)*Math.cos(rot+i*arc-Math.PI/2), cy + (r+0)*Math.sin(rot+i*arc-Math.PI/2), 5, 0, Math.PI*2);
-    ctx.fillStyle='#ffe94a'; ctx.fill();
-    ctx.strokeStyle='#111'; ctx.lineWidth=2; ctx.stroke();
-
-    // Text
-    ctx.save();
-    ctx.translate(cx,cy);
-    ctx.rotate(s+arc/2);
+  segs.forEach((seg,i)=>{
+    const s=rot+i*arc-Math.PI/2,e=s+arc;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+    ctx.fillStyle=seg.color;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);
     ctx.textAlign='right';
-    ctx.fillStyle = seg.val===0 ? '#fff' : '#111';
-    ctx.font=`bold 13px Nunito,sans-serif`;
-    ctx.fillText(seg.label, r-12, 5);
-    ctx.restore();
+    ctx.fillStyle='#fff';
+    ctx.font=`bold ${Math.max(9,14-segs.length)}px Nunito,sans-serif`;
+    ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=4;
+    ctx.fillText(seg.label,r-10,5);ctx.restore();
+    // Divider dot
+    ctx.beginPath();
+    ctx.arc(cx+(r-4)*Math.cos(rot+i*arc-Math.PI/2),cy+(r-4)*Math.sin(rot+i*arc-Math.PI/2),4,0,Math.PI*2);
+    ctx.fillStyle='#ffe94a';ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=1.5;ctx.stroke();
   });
-
-  // Center circle
-  ctx.beginPath(); ctx.arc(cx,cy,34,0,Math.PI*2);
-  const grad = ctx.createRadialGradient(cx-8,cy-8,4,cx,cy,34);
-  grad.addColorStop(0,'#ffe94a'); grad.addColorStop(1,'#f59e0b');
-  ctx.fillStyle=grad; ctx.fill();
-  ctx.strokeStyle='#111'; ctx.lineWidth=4; ctx.stroke();
-
-  // Center godzilla face (simple emoji-like)
-  ctx.font='22px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('🦖',cx,cy);
+  // Center
+  ctx.beginPath();ctx.arc(cx,cy,32,0,Math.PI*2);
+  const g=ctx.createRadialGradient(cx-6,cy-6,3,cx,cy,32);
+  g.addColorStop(0,'#ffe94a');g.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=4;ctx.stroke();
+  ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowBlur=0;ctx.fillText('🦖',cx,cy);
 }
 
 window.doSpin=async function(){
-  if(S.spinning) return;
-  const u=S.data, now=Date.now(), cd=24*60*60*1000;
+  if(S.spinning)return;
+  const u=S.data,now=Date.now();
+  const cd=(S.spinConfig.cooldownHours||24)*60*60*1000;
   if(now-(u.lastSpin||0)<cd){
     const h=Math.ceil((cd-(now-(u.lastSpin||0)))/3600000);
-    toast(`Come back in ${h}h!`); return;
+    const m=Math.ceil((cd-(now-(u.lastSpin||0)))/60000);
+    toast(`⏳ Come back in ${h>1?h+'h':m+'min'}!`);return;
   }
-  hap('medium'); S.spinning=true;
+  hap('medium');S.spinning=true;
   const btn=document.getElementById('spinbtn');
-  btn.disabled=true; btn.textContent='Spinning...';
-  const wi=Math.floor(Math.random()*SEGS.length), w=SEGS[wi];
-  const arcSz=(Math.PI*2)/SEGS.length;
+  btn.disabled=true;btn.textContent='Spinning...';
+  const segs=S.spinConfig.segments;
+  const wi=Math.floor(Math.random()*segs.length),w=segs[wi];
+  const arcSz=(Math.PI*2)/segs.length;
   const target=(Math.PI*2*6)-(wi*arcSz+arcSz/2);
-  const dur=4500, t0=performance.now();
-  const anim=now=>{
-    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,4);
-    drawWheel(e*target);
-    if(p<1) requestAnimationFrame(anim); else spinDone(w);
-  };
+  const dur=4500,t0=performance.now();
+  const anim=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,4);drawWheel(e*target);if(p<1)requestAnimationFrame(anim);else spinDone(w);};
   requestAnimationFrame(anim);
 };
 
 async function spinDone(w){
-  hap('heavy'); S.spinning=false;
-  const btn=document.getElementById('spinbtn');
-  btn.disabled=false; btn.textContent='🎯 SPIN NOW!';
+  hap('heavy');S.spinning=false;
+  const btn=document.getElementById('spinbtn');btn.disabled=false;btn.textContent='🎯 SPIN NOW!';
   const uid=S.user.uid;
   if(w.val>0){
     confetti();
-    await db.ref('users/'+uid).update({
-      coins:firebase.database.ServerValue.increment(w.val),
-      totalEarned:firebase.database.ServerValue.increment(w.val),
-      spinsUsed:firebase.database.ServerValue.increment(1),
-      lastSpin:Date.now()
-    });
+    await db.ref('users/'+uid).update({coins:firebase.database.ServerValue.increment(w.val),totalEarned:firebase.database.ServerValue.increment(w.val),spinsUsed:firebase.database.ServerValue.increment(1),lastSpin:Date.now()});
     db.ref('spins/'+uid).push({reward:w.val,label:w.label,ts:Date.now()});
-    toast('You won '+w.label+'!');
-    popup('🎉 Lucky Spin!',`<div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:28px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;font-size:15px;">Awesome!</button></div>`);
+    toast('🎉 You won '+w.label+'!');
+    popup('🎉 Lucky Spin!',`<div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;margin-bottom:8px;">Congratulations!</div><div class="fredoka" style="font-size:32px;color:var(--purple);">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Added to your balance!</div><button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:12px;margin-top:16px;font-size:15px;">Awesome! 🎊</button></div>`);
   } else {
     await db.ref('users/'+uid).update({spinsUsed:firebase.database.ServerValue.increment(1),lastSpin:Date.now()});
     db.ref('spins/'+uid).push({reward:0,label:w.label,ts:Date.now()});
     toast('Better luck next time!');
-    popup('😔 Try Again',`<div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">😔</div><div style="font-weight:800;font-size:18px;">Sorry!</div><div style="color:#666;font-weight:600;margin-top:8px;">Better luck next time!</div><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:16px;font-size:15px;">OK</button></div>`);
+    popup('😔 Try Again',`<div style="text-align:center;"><div style="font-size:40px;margin-bottom:10px;">😔</div><div style="font-weight:800;font-size:18px;">${w.label}</div><div style="color:#666;font-weight:600;margin-top:8px;">Better luck next spin!</div><button class="btn" onclick="closePopup()" style="background:#111;color:#fff;width:100%;padding:12px;margin-top:16px;font-size:15px;">OK</button></div>`);
   }
   const sc=document.getElementById('spinct');
-  if(sc) sc.textContent='⏳ Next spin available in 24 hours';
+  const cd=S.spinConfig.cooldownHours||24;
+  if(sc)sc.textContent=`⏳ Next spin in ${cd} hours`;
   loadSH();
 }
 
 async function loadSH(){
-  const el=document.getElementById('shinst'); if(!el) return;
+  const el=document.getElementById('shinst'); if(!el||!S.user) return;
   try{
-    const snap=await db.ref('spins/'+S.user?.uid).once('value');
-    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;font-weight:600;padding:10px;">No spins yet. Try your luck!</div>';return;}
+    const snap=await db.ref('spins/'+S.user.uid).once('value');
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;font-weight:600;padding:10px;">No spins yet!</div>';return;}
     const sp=Object.values(snap.val()).slice(-10).reverse();
     el.innerHTML=sp.map(s=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;align-items:center;">
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="width:32px;height:32px;border-radius:8px;background:${s.reward>0?'#dcfce7':'#fee2e2'};border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;">${s.reward>0?'🎉':'😔'}</div>
-        <span style="font-weight:700;">${s.label}</span>
+        <div><div style="font-weight:700;">${s.label}</div><div style="font-size:11px;color:#888;">${s.reward>0?'+'+s.reward+' coins':'No reward'}</div></div>
       </div>
       <span style="color:#888;font-size:12px;font-weight:600;">${new Date(s.ts).toLocaleDateString()}</span>
     </div>`).join('');
@@ -1409,13 +935,10 @@ window.claimDaily=async function(){
   const u=S.data;
   if(new Date().toDateString()===new Date(u.lastDailyBonus||0).toDateString()){toast('Already claimed today!');return;}
   hap('medium');
-  await db.ref('users/'+S.user.uid).update({
-    coins:firebase.database.ServerValue.increment(100),
-    totalEarned:firebase.database.ServerValue.increment(100),
-    lastDailyBonus:Date.now()
-  });
-  db.ref('transactions/'+S.user.uid).push({type:'daily',amount:100,ts:Date.now()});
-  confetti(); floatCoins(); toast('Daily bonus claimed! +100 Coins');
+  const bonus=S.sets.dailyBonus||100;
+  await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(bonus),totalEarned:firebase.database.ServerValue.increment(bonus),lastDailyBonus:Date.now()});
+  db.ref('transactions/'+S.user.uid).push({type:'daily',amount:bonus,ts:Date.now()});
+  confetti();floatCoins();toast('🎁 Daily bonus! +'+bonus+' Coins');
 };
 
 // ===== LEADERBOARD =====
@@ -1424,28 +947,28 @@ async function loadLBPreview(){
   try{
     const snap=await db.ref('users').orderByChild('totalEarned').limitToLast(5).once('value');
     if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No data yet</div>';return;}
-    const users=[]; snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
-    const med=['1st','2nd','3rd','4th','5th'];
+    const users=[];snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
+    const medals=['🥇','🥈','🥉','4th','5th'];
     el.innerHTML=users.slice(0,5).map((u,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;">
-      <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':'#f3f4f6'};border:2px solid #111;border-radius:8px;width:34px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">${med[i]}</div>
+      <div style="font-size:${i<3?'18px':'13px'};font-weight:800;width:28px;text-align:center;">${medals[i]}</div>
       <div style="flex:1;font-weight:700;font-size:14px;">${u.name||'User'}</div>
       <div style="font-weight:800;color:var(--purple);">${(u.coins||0).toLocaleString()}</div>
     </div>`).join('');
   }catch(e){}
 }
 
-window.loadLB=async function(btn){
-  if(btn){document.querySelectorAll('#pg-lb .pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');}
+window.loadLB=async function(){
   const el=document.getElementById('lbfull'); if(!el) return;
-  el.innerHTML='<div style="text-align:center;padding:20px;"><div class="spin" style="margin:auto;"></div></div>';
+  el.innerHTML='<div style="text-align:center;padding:20px;"><div class="spin-loader" style="margin:auto;"></div></div>';
   try{
     const snap=await db.ref('users').orderByChild('totalEarned').limitToLast(20).once('value');
     if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:20px;">No data yet</div>';return;}
-    const users=[]; snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
+    const users=[];snap.forEach(c=>users.unshift({id:c.key,...c.val()}));
+    const medals=['🥇','🥈','🥉'];
     el.innerHTML=users.map((u,i)=>`<div class="card" style="padding:14px;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="background:${i===0?'#ffe94a':i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;">${i<3?['1st','2nd','3rd'][i]:'#'+(i+1)}</div>
-        <div style="flex:1;"><div style="font-weight:800;">${u.name||'User'}</div><div style="font-size:12px;color:#666;">${u.totalEarned||0} total earned</div></div>
+        <div style="width:36px;height:36px;border-radius:10px;background:${i===0?'var(--yellow)':i===1?'#e5e7eb':i===2?'#fdba74':'#f3f4f6'};border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:${i<3?'18px':'12px'};">${i<3?medals[i]:'#'+(i+1)}</div>
+        <div style="flex:1;"><div style="font-weight:800;">${u.name||'User'}</div><div style="font-size:12px;color:#666;">${(u.totalEarned||0).toLocaleString()} total earned</div></div>
         <div style="background:var(--yellow);border:2px solid #111;border-radius:10px;padding:6px 12px;font-weight:800;">${(u.coins||0).toLocaleString()}</div>
       </div>
     </div>`).join('');
@@ -1453,44 +976,37 @@ window.loadLB=async function(btn){
 };
 
 // ===== WITHDRAW =====
-window.selM=function(m){
-  S.method=m;
-  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));
-  document.querySelector('[data-m="'+m+'"]')?.classList.add('sel');
-};
+window.selM=function(m){S.method=m;document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));document.querySelector('[data-m="'+m+'"]')?.classList.add('sel');};
 window.doWithdraw=async function(){
-  const u=S.data, amt=parseInt(document.getElementById('wamt').value)||0;
+  const u=S.data,amt=parseInt(document.getElementById('wamt').value)||0;
   const addr=document.getElementById('waddr').value.trim();
   if(!addr){toast('Enter account address!');return;}
   if(amt<S.sets.minWd){toast('Minimum '+S.sets.minWd+' coins!');return;}
   if((u.coins||0)<amt){toast('Not enough coins!');return;}
   hap('medium');
-  const s=S.sets, w={uid:S.user.uid,amount:amt,address:addr,method:S.method,
-    status:'pending',ts:Date.now(),amtUsdt:(amt/s.coinUsdt).toFixed(4),
-    amtBdt:(amt/s.coinBdt).toFixed(2),userName:u.name};
+  const s=S.sets;
+  const w={uid:S.user.uid,amount:amt,address:addr,method:S.method,status:'pending',ts:Date.now(),amtUsdt:(amt/s.coinUsdt).toFixed(4),amtBdt:(amt/s.coinBdt).toFixed(2),userName:u.name};
   try{
     await db.ref('withdraws').push(w);
     await db.ref('users/'+S.user.uid).update({coins:firebase.database.ServerValue.increment(-amt)});
     tgSend(`💸 <b>New Withdrawal</b>\n\nUser: ${u.name}\nMethod: ${w.method.toUpperCase()}\nAmount: ${amt} coins\n≈ ${w.amtUsdt} USDT\nAddress: ${addr}`);
-    toast('Withdrawal submitted!');
-    document.getElementById('wamt').value='';
-    document.getElementById('waddr').value='';
+    toast('✅ Withdrawal submitted!');
+    document.getElementById('wamt').value='';document.getElementById('waddr').value='';
     loadWH();
   }catch(e){toast('Error! Try again.');}
 };
-
 async function loadWH(){
   const el=document.getElementById('whist'); if(!el||!S.user) return;
   try{
     const snap=await db.ref('withdraws').once('value');
     if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>';return;}
-    const all=[]; snap.forEach(c=>{const v=c.val();if(v.uid===S.user.uid)all.push(v);});
+    const all=[];snap.forEach(c=>{const v=c.val();if(v.uid===S.user.uid)all.push(v);});
     if(!all.length){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals yet</div>';return;}
     all.sort((a,b)=>b.ts-a.ts);
     const sc={pending:'#f59e0b',approved:'#22c55e',rejected:'#ef4444'};
     el.innerHTML=all.slice(0,10).map(w=>`<div style="border:2px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><div style="font-weight:700;">${w.method?.toUpperCase()}</div><div style="font-size:12px;color:#888;">${new Date(w.ts).toLocaleDateString()}</div></div>
+        <div><div style="font-weight:700;">${(w.method||'').toUpperCase()}</div><div style="font-size:12px;color:#888;">${new Date(w.ts||0).toLocaleDateString()}</div></div>
         <div style="text-align:right;"><div style="font-weight:800;">${w.amount} coins</div><div style="background:${sc[w.status]||'#888'}22;color:${sc[w.status]||'#888'};border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${(w.status||'PENDING').toUpperCase()}</div></div>
       </div>
     </div>`).join('');
@@ -1502,277 +1018,43 @@ async function loadRefs(){
   const el=document.getElementById('myref'); if(!el||!S.user) return;
   try{
     const snap=await db.ref('referrals/'+S.user.uid).once('value');
-    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No referrals yet. Share your link!</div>';return;}
+    if(!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No referrals yet!</div>';return;}
     const refs=Object.values(snap.val()).slice(-20).reverse();
     el.innerHTML=refs.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6;">
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="width:32px;height:32px;border-radius:8px;background:var(--yellow);border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;">👤</div>
-        <div><div style="font-weight:700;font-size:13px;">Friend joined</div><div style="font-size:12px;color:#888;">${new Date(r.timestamp).toLocaleDateString()}</div></div>
+        <div><div style="font-weight:700;font-size:13px;">Friend joined</div><div style="font-size:12px;color:#888;">${new Date(r.timestamp||0).toLocaleDateString()}</div></div>
       </div>
       <div style="background:#dcfce7;border:1.5px solid #22c55e;border-radius:8px;padding:4px 10px;font-weight:800;color:#166534;">+${r.bonus} coins</div>
     </div>`).join('');
   }catch(e){}
 }
-
 async function applyRef(refUid,newUid){
   try{
     const snap=await db.ref('users/'+refUid).once('value');
     if(snap.exists()){
-      await db.ref('users/'+refUid).update({
-        coins:firebase.database.ServerValue.increment(S.sets.refBonus),
-        referrals:firebase.database.ServerValue.increment(1),
-        referralEarnings:firebase.database.ServerValue.increment(S.sets.refBonus)
-      });
+      await db.ref('users/'+refUid).update({coins:firebase.database.ServerValue.increment(S.sets.refBonus),referrals:firebase.database.ServerValue.increment(1),referralEarnings:firebase.database.ServerValue.increment(S.sets.refBonus)});
       db.ref('referrals/'+refUid).push({uid:newUid,timestamp:Date.now(),bonus:S.sets.refBonus});
     }
   }catch(e){}
 }
-
-window.copyRef=function(){
-  navigator.clipboard.writeText(refLink()).catch(()=>{});
-  toast('Referral link copied!'); hap();
-};
+window.copyRef=function(){navigator.clipboard.writeText(refLink()).catch(()=>{});toast('✅ Link copied!');hap();};
 window.shareRef=function(){
   const l=refLink();
-  if(tg) tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Join CashZilla & earn coins!'));
+  if(tg)tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Join CashZilla & earn coins! 🎰'));
   else navigator.clipboard.writeText(l);
 };
 
 // ===== NOTIFICATIONS =====
 window.showNotifs=function(){
-  popup('Notifications','<div style="text-align:center;padding:10px;"><div class="ic-bell" style="margin:0 auto 12px;width:32px;height:36px;"></div><div style="font-weight:700;">No new notifications</div><div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div></div>');
+  popup('Notifications','<div style="text-align:center;padding:10px;"><div style="font-size:40px;margin-bottom:10px;">🔔</div><div style="font-weight:700;">No new notifications</div><div style="color:#888;font-size:14px;margin-top:8px;">Check back later!</div></div>');
 };
 
-// ===== TELEGRAM API =====
+// ===== TELEGRAM =====
 async function tgSend(text){
-  try{
-    await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chat_id:ADMIN_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true})
-    });
-  }catch(e){console.error('TG error:',e);}
+  try{await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:ADMIN_CHAT,text,parse_mode:'HTML',disable_web_page_preview:true})});}
+  catch(e){}
 }
-
-// ===== ADMIN PANEL =====
-function addAdminBtn(){
-  if(document.getElementById('abtn')) return;
-  const b=document.createElement('button');
-  b.id='abtn'; b.className='btn';
-  b.style.cssText='position:fixed;bottom:85px;right:16px;z-index:200;background:#ffe94a;padding:10px 18px;font-size:13px;border-radius:50px;';
-  b.innerHTML='🛡️ Admin';
-  b.onclick=openAdmin;
-  document.body.appendChild(b);
-}
-
-window.openAdmin=async function(){
-  if(!S.isAdmin){
-    // Try setting admin flag via TG ID match
-    const tgU = tg?.initDataUnsafe?.user;
-    if(String(tgU?.id||'') !== ADMIN_TG_ID){
-      toast('Access denied!'); return;
-    }
-    S.isAdmin = true;
-    // Set admin flag in DB for future
-    if(S.user) await db.ref('users/'+S.user.uid).update({isAdmin:true});
-  }
-  document.getElementById('up').style.display='none';
-  document.getElementById('bnav') && (document.getElementById('bnav').style.display='none');
-  const ab=document.getElementById('abtn'); if(ab) ab.style.display='none';
-  document.getElementById('ap').style.display='block';
-  await loadAdminData();
-  loadAdSettingsUI();
-};
-
-window.adminLogout=function(){
-  document.getElementById('ap').style.display='none';
-  document.getElementById('up').style.display='block';
-  document.getElementById('bnav').style.display='flex';
-  const ab=document.getElementById('abtn'); if(ab) ab.style.display='block';
-};
-
-window.aTab=function(tab,btn){
-  document.querySelectorAll('[id^="at-"]').forEach(e=>e.style.display='none');
-  document.getElementById('at-'+tab).style.display='block';
-  document.querySelectorAll('.at').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  if(tab==='ads') loadAdSettingsUI();
-};
-
-async function loadAdminData(){
-  try{
-    const snap=await db.ref('users').once('value');
-    let tu=0,on=0,tc=0;
-    if(snap.exists()) snap.forEach(c=>{const u=c.val();tu++;tc+=u.coins||0;if(Date.now()-(u.lastSeen||0)<300000)on++;});
-    document.getElementById('a-tu').textContent=tu;
-    document.getElementById('a-on').textContent=on;
-    document.getElementById('a-tc').textContent=tc.toLocaleString();
-    loadAUsers(snap);
-  }catch(e){}
-  try{
-    const snap=await db.ref('withdraws').once('value');
-    let tw=0; if(snap.exists()) snap.forEach(()=>tw++);
-    document.getElementById('a-tw').textContent=tw;
-    loadAWD(snap);
-  }catch(e){}
-  loadASet(); loadAQuiz();
-}
-
-function loadAUsers(snap){
-  const el=document.getElementById('ulist'); if(!el) return;
-  if(!snap||!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;">No users</div>';return;}
-  const users=[]; snap.forEach(c=>users.push({id:c.key,...c.val()}));
-  el.innerHTML=users.map(u=>`<div class="card" style="padding:12px;margin-bottom:8px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:38px;height:38px;border-radius:10px;background:#f3f4f6;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;">${(u.name||'U').charAt(0).toUpperCase()}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name||'User'}</div>
-        <div style="font-size:12px;color:#666;">${u.coins||0} coins · ${u.uid?.slice(0,8)}...</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0;">
-        <button class="btn" onclick="aAddCoins('${u.uid}')" style="background:var(--green);color:#fff;padding:6px 10px;font-size:12px;">+</button>
-        <button class="btn" onclick="aBan('${u.uid}')" style="background:${u.banned?'#ef4444':'#f3f4f6'};padding:6px 10px;font-size:12px;">${u.banned?'Un':'Ban'}</button>
-      </div>
-    </div>
-  </div>`).join('');
-}
-
-window.aAddCoins=async function(uid){
-  const n=parseInt(prompt('Coins to add:')||'0'); if(!n) return;
-  await db.ref('users/'+uid).update({coins:firebase.database.ServerValue.increment(n)});
-  toast('Added '+n+' coins'); loadAdminData();
-};
-window.aBan=async function(uid){
-  const snap=await db.ref('users/'+uid+'/banned').once('value');
-  const b=snap.val();
-  await db.ref('users/'+uid).update({banned:!b});
-  toast(b?'Unbanned':'Banned'); loadAdminData();
-};
-window.searchUsers=function(){
-  const q=document.getElementById('usearch').value.toLowerCase();
-  document.querySelectorAll('#ulist .card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'block':'none');
-};
-
-function loadAQuiz(){
-  const el=document.getElementById('qlist'); if(!el) return;
-  el.innerHTML=S.quizzes.map(q=>`<div class="card" style="padding:12px;margin-bottom:8px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="background:#f3f4f6;border:2px solid #111;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">${(q.cat||'QZ').slice(0,3).toUpperCase()}</div>
-      <div style="flex:1;min-width:0;"><div style="font-weight:800;">${q.title}</div><div style="font-size:12px;color:#666;">${q.qs?.length||0} q · +${q.reward} coins</div></div>
-      <button class="btn" onclick="aDelQ('${q.id}')" style="background:#ef4444;color:#fff;padding:6px 10px;font-size:12px;flex-shrink:0;">Del</button>
-    </div>
-  </div>`).join('');
-}
-
-window.aDelQ=async function(id){
-  if(!confirm('Delete quiz?')) return;
-  await db.ref('quizzes/'+id).update({deleted:true});
-  S.quizzes=S.quizzes.filter(q=>q.id!==id);
-  loadAQuiz(); toast('Quiz deleted');
-};
-window.showNewQuiz=function(){
-  popup('New Quiz',`<div>
-    <input id="nqt" type="text" placeholder="Title" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
-    <input id="nqc" type="text" placeholder="Category" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
-    <input id="nqr" type="number" placeholder="Reward coins" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
-    <input id="nqtm" type="number" placeholder="Time per Q (sec)" style="width:100%;border:2px solid #111;border-radius:10px;padding:10px;margin-bottom:8px;font-weight:600;font-size:14px;"/>
-    <button class="btn" onclick="saveNewQ()" style="background:var(--green);color:#fff;width:100%;padding:12px;font-size:15px;">Create</button>
-  </div>`);
-};
-window.saveNewQ=async function(){
-  const t=document.getElementById('nqt')?.value?.trim();
-  if(!t){toast('Enter a title!');return;}
-  await db.ref('quizzes').push({
-    title:t, cat:document.getElementById('nqc')?.value||'General',
-    reward:parseInt(document.getElementById('nqr')?.value)||50,
-    time:parseInt(document.getElementById('nqtm')?.value)||30,
-    diff:'Medium', qs:[]
-  });
-  toast('Quiz created!'); closePopup(); loadAQuiz();
-};
-
-function loadAWD(snap){
-  const el=document.getElementById('wdlist'); if(!el) return;
-  if(!snap||!snap.exists()){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;">No withdrawals</div>';return;}
-  const all=[]; snap.forEach(c=>all.push({id:c.key,...c.val()}));
-  all.sort((a,b)=>b.ts-a.ts);
-  const sc={pending:'#fef9c3',approved:'#dcfce7',rejected:'#fee2e2'};
-  el.innerHTML=all.map(w=>`<div class="card" style="padding:12px;margin-bottom:8px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div><div style="font-weight:800;">${w.userName||'User'}</div><div style="font-size:12px;color:#666;">${w.method?.toUpperCase()} · ${w.amount} coins</div></div>
-      <span style="background:${sc[w.status]||'#f3f4f6'};border:1.5px solid #111;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;">${(w.status||'PENDING').toUpperCase()}</span>
-    </div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px;word-break:break-all;">${w.address}</div>
-    ${w.status==='pending'?`<div style="display:flex;gap:8px;">
-      <button class="btn" onclick="aApp('${w.id}')" style="flex:1;background:var(--green);color:#fff;padding:8px;font-size:13px;">Approve</button>
-      <button class="btn" onclick="aRej('${w.id}')" style="flex:1;background:#ef4444;color:#fff;padding:8px;font-size:13px;">Reject</button>
-    </div>`:''}
-  </div>`).join('');
-}
-
-window.aApp=async function(id){
-  const snap=await db.ref('withdraws/'+id).once('value');
-  if(snap.exists()){
-    const w=snap.val();
-    await db.ref('withdraws/'+id).update({status:'approved'});
-    tgSend(`✅ <b>Withdrawal Approved</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins\nMethod: ${w.method?.toUpperCase()}\nAddress: ${w.address}`);
-  }
-  toast('Approved!'); loadAdminData();
-};
-window.aRej=async function(id){
-  const snap=await db.ref('withdraws/'+id).once('value');
-  if(snap.exists()){
-    const w=snap.val();
-    await db.ref('withdraws/'+id).update({status:'rejected'});
-    await db.ref('users/'+w.uid).update({coins:firebase.database.ServerValue.increment(w.amount)});
-    tgSend(`❌ <b>Withdrawal Rejected</b>\nUser: ${w.userName}\nAmount: ${w.amount} coins refunded`);
-  }
-  toast('Rejected & refunded!'); loadAdminData();
-};
-
-function loadASet(){
-  const s=S.sets;
-  const flds={'cusd':s.coinUsdt,'cusd2':s.coinUsd,'cbdt':s.coinBdt,'mwd':s.minWd,'rb':s.refBonus};
-  Object.entries(flds).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v;});
-}
-window.saveSet=async function(){
-  const g=id=>parseInt(document.getElementById(id)?.value)||0;
-  const s={coinUsdt:g('cusd')||10000,coinUsd:g('cusd2')||10000,coinBdt:g('cbdt')||833,minWd:g('mwd')||5000,refBonus:g('rb')||500};
-  await db.ref('settings').set(s);
-  S.sets=s; toast('Settings saved!');
-};
-
-window.sendTGNotif=async function(){
-  const title=document.getElementById('ntitle').value.trim();
-  const msg=document.getElementById('nmsg').value.trim();
-  const type=document.getElementById('nt').value;
-  const st=document.getElementById('nstatus');
-  if(!title||!msg){toast('Fill all fields!');return;}
-  const icons={info:'ℹ️',bonus:'💰',warning:'⚠️',update:'🔔'};
-  st.textContent='Sending...'; st.style.color='#888';
-  try{
-    const r=await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chat_id:ADMIN_CHAT,parse_mode:'HTML',disable_web_page_preview:true,
-        text:`${icons[type]||'ℹ️'} <b>CashZilla Notification</b>\n\n<b>${title}</b>\n\n${msg}\n\n<i>— CashZilla Team</i>`})
-    });
-    const d=await r.json();
-    if(d.ok){
-      st.textContent='Sent successfully!'; st.style.color='#22c55e';
-      document.getElementById('ntitle').value='';
-      document.getElementById('nmsg').value='';
-      toast('Sent to Telegram!');
-    } else { st.textContent='Failed: '+d.description; st.style.color='#ef4444'; }
-  }catch(e){ st.textContent='Network error'; st.style.color='#ef4444'; }
-};
-window.sendInApp=async function(){
-  const t=document.getElementById('iatitle').value.trim();
-  const m=document.getElementById('iamsg').value.trim();
-  if(!t||!m){toast('Fill all fields!');return;}
-  await db.ref('notifications').push({title:t,message:m,ts:Date.now()});
-  toast('In-app notification sent!');
-  document.getElementById('iatitle').value='';
-  document.getElementById('iamsg').value='';
-};
 
 // ===== POPUP =====
 window.popup=function(title,html){
@@ -1793,41 +1075,20 @@ function welcomePopup(u){
       <div style="font-size:13px;opacity:.8;">WELCOME BONUS</div>
       <div class="fredoka" style="font-size:36px;">+500 Coins</div>
     </div>
-    <button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:14px;font-size:16px;">Start Earning!</button>
+    <button class="btn" onclick="closePopup()" style="background:var(--yellow);width:100%;padding:14px;font-size:16px;">Start Earning! 🚀</button>
   </div>`);
 }
 
 // ===== TOAST =====
-window.toast=function(msg){
-  const e=document.getElementById('toast');
-  e.textContent=msg; e.classList.add('on');
-  setTimeout(()=>e.classList.remove('on'),3000);
-};
+window.toast=function(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),3000);};
 
 // ===== CONFETTI =====
 window.confetti=function(){
   const cs=['#ffe94a','#00d4e8','#a855f7','#ff6eb4','#22c55e','#ff7b39'];
-  for(let i=0;i<40;i++) setTimeout(()=>{
-    const e=document.createElement('div');
-    e.className='cf';
-    e.style.left=Math.random()*100+'vw';
-    e.style.background=cs[Math.floor(Math.random()*cs.length)];
-    e.style.animationDuration=(1.5+Math.random())+'s';
-    e.style.borderRadius=Math.random()>.5?'50%':'2px';
-    document.body.appendChild(e);
-    setTimeout(()=>e.remove(),3000);
-  },i*30);
+  for(let i=0;i<40;i++)setTimeout(()=>{const e=document.createElement('div');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=cs[Math.floor(Math.random()*cs.length)];e.style.animationDuration=(1.5+Math.random())+'s';e.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(e);setTimeout(()=>e.remove(),3000);},i*30);
 };
-
 window.floatCoins=function(){
-  for(let i=0;i<5;i++) setTimeout(()=>{
-    const e=document.createElement('div');
-    e.className='fc';
-    e.style.left=(30+Math.random()*40)+'vw';
-    e.style.top='50vh';
-    document.body.appendChild(e);
-    setTimeout(()=>e.remove(),1500);
-  },i*120);
+  for(let i=0;i<5;i++)setTimeout(()=>{const e=document.createElement('div');e.className='fc';e.style.left=(30+Math.random()*40)+'vw';e.style.top='50vh';document.body.appendChild(e);setTimeout(()=>e.remove(),1500);},i*120);
 };
 </script>
 </body>
